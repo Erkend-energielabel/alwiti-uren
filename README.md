@@ -1,23 +1,58 @@
 # Alwiti Urenregistratie
 
-Urenregistratie voor de monteurs van Alwiti bv (aluminium geveltechniek): monteurs vullen hun uren per project in (buiten, werkplaats of kantoor), kantoor beoordeelt weekstaten, bonnetjes en rapportages, en alles kan naar Excel.
+Urenregistratie voor de monteurs van Alwiti bv (aluminium geveltechniek). Monteurs vullen hun uren per project in (buiten, werkplaats of kantoor) en sturen bonnetjes in. Kantoor beoordeelt weekstaten en bonnetjes, bekijkt rapporten en exporteert alles naar Excel.
 
-## Let op: deze versie draait in Claude
-
-`index.html` in de hoofdmap is de versie die als app in Claude draait. Opslag, inloggen, rechten (monteur of kantoor), foto's van bonnetjes en "netjes maken" komen van Claude. Open je dit bestand los, bijvoorbeeld via GitHub Pages, dan verschijnt de pagina wel, maar kan er niets worden opgeslagen of geladen.
-
-De werkende app gebruik je via de gedeelde link in Claude. Toegang regel je daar via het Share-menu:
-- Monteurs: **Contributor**. Zij zien en vullen alleen hun eigen uren in.
-- Kantoor: **Editor**. Zij zien alles.
+De app werkt los van Claude. Inloggen gaat met naam en pincode, en alle gegevens staan in een Google Sheet van Alwiti.
 
 ## Mappen
 
-| Map | Inhoud |
+| Bestand of map | Inhoud |
 |---|---|
-| `index.html` | De Claude-versie van de app (projecten, weekstaten, bonnetjes, ranglijst, locaties, rapport) |
+| `index.html` | De app (via GitHub Pages: `https://erkend-energielabel.github.io/alwiti-uren/`) |
+| `config.js` | De link naar de Google Sheet (web-app-URL van Apps Script) |
+| `Code.gs` | De code die in de Google Sheet draait (Extensies > Apps Script) |
 | `documenten/` | Papieren urenlijst (PDF) en Excel-sjablonen voor het inlezen van monteurs en projecten |
-| `oude-versie-google-sheet/` | De eerdere losse versie met Google Sheet als opslag en inloggen met pincode. Zie de README in die map. Via GitHub Pages blijft die bereikbaar op `/oude-versie-google-sheet/`. |
+| `claude-versie/` | Dezelfde app zoals hij in Claude draait (werkt alleen binnen Claude) |
 
-## Backup
+## Bijwerken vanaf de vorige versie
 
-In Claude draait elke vrijdag om 17:56 een automatische backup naar het project "Alwiti" (map `backups`). Op kantoor kan ook altijd met de hand een backup worden gedownload via **Backup downloaden**.
+De Google Sheet en `config.js` blijven hetzelfde, dus monteurs en uren blijven bewaard. Alleen de code in de Sheet moet worden vervangen:
+
+1. Open de Google Sheet en kies **Extensies > Apps Script**.
+2. Selecteer alle code in `Code.gs`, verwijder die en plak de nieuwe **Code.gs** uit deze map. Klik op Opslaan.
+3. Kies bovenaan de functie **installeer** en klik op **Uitvoeren**. Dit maakt de nieuwe tabbladen Bonnen en Fotos aan. Bestaande gegevens blijven staan.
+4. Kies **Implementeren > Implementaties beheren**, klik op het potloodje, kies bij Versie **Nieuwe versie** en klik op **Implementeren**. De link blijft hetzelfde.
+5. Zet in het tabblad **Monteurs** bij jezelf de Rol op **eigenaar**. Alleen de eigenaar kan de administratie leegmaken.
+
+## Nieuwe installatie
+
+1. Ga naar sheets.new en noem de Sheet "Alwiti uren".
+2. Kies **Extensies > Apps Script** en plak de inhoud van **Code.gs** over de bestaande code heen.
+3. Kies de functie **installeer** en klik op Uitvoeren. Geef toestemming (Geavanceerd > Ga naar … > Toestaan).
+4. Vul in het tabblad **Monteurs** bij jezelf een naam en pincode in, met Rol **eigenaar**.
+5. Kies **Implementeren > Nieuwe implementatie > Web-app**, met Uitvoeren als **Ik** en Toegang **Iedereen**. Kopieer de web-app-URL (eindigt op `/exec`).
+6. Plak die URL in `config.js`.
+
+## Rollen
+
+| Rol (tabblad Monteurs) | Wat kan iemand |
+|---|---|
+| monteur | Alleen eigen uren en bonnetjes invullen en bekijken |
+| kantoor | Alles zien, goedkeuren, aanpassen, rapporten en export |
+| eigenaar | Als kantoor, en daarnaast de administratie leegmaken |
+
+## Dagelijks gebruik
+
+- **Monteur toevoegen:** in de app, tabblad Monteurs. Voeg de naam toe, kies hem in de lijst en stel een pincode in. Het kan ook direct in de Sheet.
+- **Blokkeren:** een geblokkeerde monteur kan niet meer inloggen. Zijn uren blijven bewaard.
+- **Pincode vergeten:** stel in de app een nieuwe in. Na 5 foute pogingen wordt inloggen 10 minuten geblokkeerd.
+- **Overzichten in de Sheet:** de tabbladen Uren, Werken en Bonnen worden automatisch bijgewerkt. Laat de tabbladen Data en Fotos ongemoeid.
+- **Backup en Excel:** op kantoor via de knoppen **Backup downloaden** en **Exporteer naar Excel**. De Google Sheet zelf houdt ook een versiegeschiedenis bij (Bestand > Versiegeschiedenis).
+
+## Wat alleen in de Claude-versie zit
+
+"Netjes maken" van ingesproken tekst en het uitlezen van een foto van een papieren urenlijst gebruiken Claude. In deze losse versie staan die knoppen uit. Inspreken via het toetsenbord van de telefoon werkt wel.
+
+## Beveiliging
+
+De pagina zelf is openbaar te openen, maar zonder naam en pincode is er niets te zien. Alle gegevens staan in de Google Sheet, en de Sheet bepaalt per verzoek wat iemand mag lezen of wijzigen. Monteurs zien alleen hun eigen uren, bonnetjes en foto's.
