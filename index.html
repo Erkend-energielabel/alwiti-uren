@@ -286,6 +286,34 @@ details.fold[open]>*+*{margin-top:14px}
 .toast{bottom:calc(64px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg)}
 .toast.err{background:var(--red);color:var(--red-ink)}
 #b-uit{padding:6px 10px;font-size:13px}
+.msub{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px;margin-bottom:16px;max-width:560px}
+.msub button{flex:1;font:600 15px var(--f-display);text-transform:uppercase;letter-spacing:.05em;border:0;background:transparent;color:var(--muted);padding:10px;border-radius:4px;cursor:pointer}
+.msub button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+.mcol{display:flex;flex-direction:column;gap:16px;max-width:560px;min-width:0}
+.mgrid{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+#m-ov .mijnweek,#m-ov .game{order:0}
+.dagkies{gap:12px}
+.dknav{display:flex;align-items:center;gap:8px}
+.dkmid{flex:1;text-align:center;display:flex;flex-direction:column;line-height:1.2}
+.dkmid b{font-family:var(--f-display);font-size:20px;text-transform:uppercase;letter-spacing:.03em}
+.dkmid small{color:var(--muted);font-size:13px}
+.dknav .btn{padding:8px 14px;font-size:18px}
+.dkdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dk{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer;font:500 13px var(--f-body);min-width:0}
+.dk .dn{text-transform:uppercase;font-size:11px;color:var(--muted);letter-spacing:.05em;font-weight:600}
+.dk .dd{font:700 20px var(--f-display);line-height:1.1}
+.dk .du{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dk.heeft .du{color:var(--ok);font-weight:600}
+.dk.wknd{background:transparent}
+.dk.vandaag .dd{color:var(--red)}
+.dk.sel{border-color:var(--red);background:var(--red-soft);box-shadow:inset 0 -3px 0 var(--red)}
+#dk-now{align-self:center}
+.btn.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+.kact{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#mo-wk tr{cursor:pointer}
+#mo-wk tr:hover td{background:var(--bg)}
+.pill.blok{background:var(--warn-soft);color:var(--warn)}
 </style>
 
 <header class="top"><div class="wrap">
@@ -307,11 +335,22 @@ details.fold[open]>*+*{margin-top:14px}
   <div id="offline" class="notice" hidden>Geen verbinding met de opslag. Controleer je internet en ververs de pagina.</div>
 
   <!-- MONTEUR -->
-  <section id="v-monteur" class="grid2">
+  <section id="v-monteur">
+  <div class="msub" role="tablist" aria-label="Monteur">
+    <button type="button" role="tab" id="ms-in" aria-selected="true">Uren invullen</button>
+    <button type="button" role="tab" id="ms-ov" aria-selected="false">Mijn overzicht</button>
+  </div>
+  <div id="m-in" class="mcol">
+    <div class="card dagkies">
+      <div class="dknav"><button class="btn ghost sm" id="dk-prev" type="button" aria-label="Vorige week">‹</button><div class="dkmid"><b id="dk-wk">Week</b><small id="dk-tot"></small></div><button class="btn ghost sm" id="dk-next" type="button" aria-label="Volgende week">›</button></div>
+      <div class="dkdays" id="dk-days"></div>
+      <div class="gbar"><div class="gfill" id="dk-fill"></div></div>
+      <button class="linkbtn" id="dk-now" type="button" hidden>Naar vandaag</button>
+    </div>
     <form class="card" id="f-uren" autocomplete="off">
-      <div class="toolbar"><h2 id="f-title" style="margin-right:auto">Uren invullen</h2><button class="btn ghost sm" type="button" id="b-editx" hidden>Annuleren</button></div>
+      <div class="toolbar"><h2 id="f-title" style="margin-right:auto">Uren invullen</h2><button class="btn ghost sm" type="button" id="b-editx" hidden>Terugdraaien</button></div>
       <p class="hint" id="f-lock" hidden></p>
-      <div class="form">
+      <div class="form" id="f-top" hidden>
         <label class="full">Naam monteur<input id="i-naam" list="dl-namen" placeholder="Voor- en achternaam" required></label>
         <datalist id="dl-namen"></datalist>
         <label>Datum<input id="i-datum" type="date" required></label>
@@ -325,7 +364,9 @@ details.fold[open]>*+*{margin-top:14px}
       <button class="btn" id="b-save" type="submit">Uren opslaan</button>
       <div class="msg" id="m-save" role="status"></div>
     </form>
-
+  </div>
+  <div id="m-ov" class="mgrid" hidden>
+    <div class="mcol">
     <div class="card game" id="game">
       <div class="gtop">
         <div class="streak"><span class="flame" aria-hidden="true"></span><div><b id="g-streak">0</b><span id="g-streaklbl">weken op rij compleet</span></div></div>
@@ -334,6 +375,16 @@ details.fold[open]>*+*{margin-top:14px}
       <div class="gbar"><div class="gfill" id="g-fill"></div></div>
       <p class="gmsg" id="g-msg"></p>
       <div class="badges" id="g-badges"></div>
+    </div>
+    
+    <div class="card" id="mo-card">
+      <div class="dknav"><button class="btn ghost sm" id="mo-prev" type="button" aria-label="Vorige maand">‹</button><div class="dkmid"><b id="mo-lbl">Maand</b><small>maandoverzicht</small></div><button class="btn ghost sm" id="mo-next" type="button" aria-label="Volgende maand">›</button></div>
+      <div class="sum" id="mo-sum"></div>
+      <h3>Per week</h3>
+      <div class="tablewrap"><table class="mini"><thead><tr><th>Week</th><th class="num">Uren</th><th class="num">Norm</th></tr></thead><tbody id="mo-wk"></tbody></table></div>
+      <h3>Per werk</h3>
+      <div class="tablewrap"><table class="mini"><thead><tr><th>Werk</th><th class="num">Uren</th></tr></thead><tbody id="mo-werk"></tbody></table></div>
+    </div>
     </div>
     <div class="card mijnweek">
       <div class="wknav">
@@ -345,7 +396,8 @@ details.fold[open]>*+*{margin-top:14px}
       <div class="toolbar"><button class="btn ghost sm" type="button" id="b-kopie">Vorige week kopiëren naar deze week</button><span class="msg" id="m-kopie" role="status"></span></div>
       <div class="days" id="days"></div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- KANTOOR -->
   <section id="v-kantoor" hidden style="display:flex;flex-direction:column;gap:20px">
@@ -767,7 +819,7 @@ $("#f-uren").addEventListener("submit",async e=>{
       for(const id of state.editDag.ids)if(!keep.has(id)){const r=state.uren.find(x=>x.id===id);if(r&&r.status!=="ok")await state.db.doc(r._path).delete()}}
     else{for(const r of recs){await itemsOf(state.uid).add(r);n++}}
     ls("alw-naam",naam);const lw=recs.find(r=>r.werkId);if(lw)ls("alw-werk",lw.werkId);try{localStorage.removeItem("alw-concept")}catch(e){}
-    stopDag();m.className="msg ok";m.textContent=(wasEdit?"Aangepast: ":"Opgeslagen: ")+nl(tot)+" uur op "+fmtD(datum)+".";
+    loadDag(datum,true);m.className="msg ok";m.textContent=(wasEdit?"Aangepast: ":"Opgeslagen: ")+nl(tot)+" uur op "+fmtD(datum)+".";
     if(!wasEdit){const wk=iso(monday(parse(datum))),voor=state.uren.filter(r=>r.monteur===naam&&iso(monday(parse(r.datum)))===wk).reduce((s,r)=>s+(r.uren||0),0),nn=normVan(naam);if(voor<nn-0.001&&voor+tot+0.001>=nn){feest();m.textContent+=" Je week is compleet!"}}state.weekStart=monday(parse(datum))}
   catch(err){if(n&&!wasEdit){state.regels=state.regels.slice(n);renderRegels()}m.className="msg err";m.textContent=err&&err.code==="no_uid"?"Log in met je Claude-account om uren op te slaan.":err&&err.code==="invalid_argument"?"Je hebt geen schrijfrechten op deze app. Vraag kantoor je als bijdrager toe te voegen.":(n?n+" regels opgeslagen, de rest niet. Probeer opnieuw.":"Opslaan mislukt, probeer het opnieuw.")}
   finally{$("#b-save").disabled=false}
@@ -814,16 +866,16 @@ function renderSpel(){
 function feest(){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const c=document.createElement("div");c.className="feest";const kl=["var(--red)","var(--warn)","var(--ok)","var(--c-binnen)"];
   for(let i=0;i<60;i++){const p=document.createElement("span");p.style.left=Math.random()*100+"%";p.style.background=kl[i%4];p.style.animationDelay=Math.random()*.5+"s";p.style.transform=`rotate(${Math.random()*180}deg)`;c.appendChild(p)}document.body.appendChild(c);setTimeout(()=>c.remove(),2400)}
 function eigenDag(ds){return state.uren.filter(r=>r.datum===ds&&mine(r))}
-function loadDag(ds){const all=eigenDag(ds),open=all.filter(r=>r.status!=="ok"),locked=all.length-open.length;fi.datum.value=ds;
+function loadDag(ds,stil){const all=eigenDag(ds),open=all.filter(r=>r.status!=="ok"),locked=all.length-open.length;fi.datum.value=ds;
   if(open.length){state.editDag={datum:ds,ids:open.map(r=>r.id)};state.regels=open.map(r=>({id:r.id,_path:r._path,type:tp(r),werk:r.werkId||(r.werkVrij?"__vrij":""),vrij:r.werkVrij||"",soort:r.soort||"buiten",uren:String(r.uren),oms:r.omschrijving||""}));fi.reis.value=open.reduce((s,r)=>s+(r.reis||0),0)}
   else{state.editDag=null;state.regels=[nieuweRegel()];fi.reis.value=0}
-  const dag=DAGLANG[parse(ds).getDay()]+" "+fmtD(ds).split(" ")[1];
-  $("#f-title").textContent=state.editDag?"Dag aanpassen · "+dag:"Uren invullen · "+dag;$("#b-editx").hidden=!state.editDag;
+  const dd0=parse(ds),dag=DAGLANG[dd0.getDay()].replace(/^./,c=>c.toUpperCase())+" "+dd0.getDate()+" "+MNDL[dd0.getMonth()];
+  $("#f-title").textContent=dag;$("#b-editx").hidden=!state.editDag;
   $("#f-lock").hidden=!locked;$("#f-lock").textContent=locked?locked+(locked===1?" regel is":" regels zijn")+" al goedgekeurd door kantoor en staan hier niet bij; die kun je niet meer aanpassen.":"";
   $("#b-save").textContent=state.editDag?"Wijzigingen opslaan":"Uren opslaan";$("#m-save").className="msg";$("#m-save").textContent="";
-  renderRegels();saveConcept();$("#f-uren").scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>{const x=document.querySelector('#regels [data-f="uren"]');if(x)x.focus({preventScroll:true})},350)}
+  renderRegels();saveConcept();state.selDag=ds;renderDagstrip();if(stil)return;$("#f-uren").scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>{const x=document.querySelector('#regels [data-f="uren"]');if(x)x.focus({preventScroll:true})},350)}
 function stopDag(){state.editDag=null;state.regels=[nieuweRegel()];fi.reis.value=0;$("#f-title").textContent="Uren invullen";$("#b-editx").hidden=true;$("#f-lock").hidden=true;$("#b-save").textContent="Uren opslaan";renderRegels();saveConcept()}
-$("#b-editx").onclick=()=>{stopDag();$("#m-save").textContent=""};
+$("#b-editx").onclick=()=>{loadDag(state.selDag||fi.datum.value,true)};
 $("#b-kopie").addEventListener("click",async e=>{const b=e.target,m=$("#m-kopie"),naam=fi.naam.value.trim();m.className="msg";
   if(!naam||!state.uid||!state.db){m.className="msg err";m.textContent="Vul eerst je naam in.";return}
   const ws=state.weekStart,src=state.uren.filter(r=>mine(r)&&r.datum>=iso(addDays(ws,-7))&&r.datum<=iso(addDays(ws,-1))&&!["ziek","dokter","tandarts"].includes(tp(r)));
@@ -851,11 +903,62 @@ function renderWeek(){
       (dr.length?dr.map(r=>{const t=tp(r),wn=r.werkId?(r.werkNr+" "+(r.werkNaam||"")):(r.werkVrij||TYPES[t]);return `<div class="entry t-${t} ${afw(t)?"e-afw":"e-"+(r.soort||"buiten")}${r.status==="ok"?"":" klik"}" data-edag="${r.status==="ok"?"":ds}" title="${r.status==="ok"?"Goedgekeurd — niet meer aan te passen":"Tik om deze dag aan te passen"}"><div class="ew"><b>${esc(wn)}</b><span class="em">${afw(t)?"":(r.soort==="binnen"?"kantoor":"buiten")}${t!=="normaal"?`${afw(t)?"":" · "}<span class="pill t t-${t}" style="padding:0 6px;font-size:10px">${TYPES[t]}</span>`:""}${r.omschrijving?" · "+esc(r.omschrijving):""}</span></div><div class="eu">${nl(r.uren)}</div><div class="ea">${r.status==="ok"?'<span class="pill ok" title="Goedgekeurd door kantoor">✓</span>':`<button class="x" data-del="${esc(r.id)}" type="button" aria-label="Regel verwijderen" title="Verwijderen">×</button>`}</div></div>`}).join(""):'<div class="empty">Geen uren</div>')+
       `<button class="dagadd" type="button" data-dag="${ds}">${dr.some(r=>r.status!=="ok")?"Dag aanpassen":dr.length?"+ uren toevoegen":"+ invullen"}</button></div><div class="tot">${dt?nl(dt):"–"}</div></div>`;
   }
-  $("#days").innerHTML=h;renderSpel();
+  $("#days").innerHTML=h;renderSpel();renderDagstrip();renderMaand();
 }
-$("#days").addEventListener("click",async e=>{const dg=(e.target.dataset&&e.target.dataset.dag)||((e.target.closest(".entry.klik")&&!e.target.closest("button"))?e.target.closest(".entry.klik").dataset.edag:"");if(dg){loadDag(dg);return}const id=e.target.dataset&&e.target.dataset.del;if(!id||!state.db||state.preview)return;
+$("#days").addEventListener("click",async e=>{const dg=(e.target.dataset&&e.target.dataset.dag)||((e.target.closest(".entry.klik")&&!e.target.closest("button"))?e.target.closest(".entry.klik").dataset.edag:"");if(dg){msub("in");kiesDag(dg,true);return}const id=e.target.dataset&&e.target.dataset.del;if(!id||!state.db||state.preview)return;
   const b=e.target;if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="?";b.title="Klik nogmaals om te verwijderen";setTimeout(()=>{b.dataset.confirm="";b.textContent="×"},3000);return}
   try{const r=state.uren.find(x=>x.id===id);await state.db.doc(r._path).delete()}catch(err){$("#m-save").className="msg err";$("#m-save").textContent="Verwijderen mislukt."}});
+
+/* ---------- monteur: dag kiezen & overzicht ---------- */
+state.selDag=null;const nu0=new Date();state.mJ=nu0.getFullYear();state.mM=nu0.getMonth();
+function msub(t){$("#ms-in").setAttribute("aria-selected",t==="in");$("#ms-ov").setAttribute("aria-selected",t==="ov");$("#m-in").hidden=t!=="in";$("#m-ov").hidden=t!=="ov";if(t==="ov")renderMaand();window.scrollTo({top:0})}
+$("#ms-in").onclick=()=>msub("in");$("#ms-ov").onclick=()=>msub("ov");
+function kiesDag(ds,focus){state.weekStart=monday(parse(ds));loadDag(ds,!focus);renderWeek()}
+function nu2(n){return nl(n).replace(",00","")}
+function dagTitel(ds){const d=parse(ds);return DAGLANG[d.getDay()].replace(/^./,c=>c.toUpperCase())+" "+d.getDate()+" "+MNDL[d.getMonth()]}
+function renderDagstrip(){const box=$("#dk-days");if(!box)return;const ws=state.weekStart,we=addDays(ws,6),today=iso(new Date());
+  const rows=state.uren.filter(r=>mine(r)&&r.datum>=iso(ws)&&r.datum<=iso(we)),tot=rows.reduce((s,r)=>s+(r.uren||0),0),n=normVan(fi.naam.value.trim())||38;
+  $("#dk-wk").textContent="Week "+isoWeek(ws);
+  $("#dk-tot").textContent=ws.getDate()+" "+MND[ws.getMonth()]+" – "+we.getDate()+" "+MND[we.getMonth()]+" · "+nu2(tot)+" van "+nu2(n)+" uur";
+  const f=$("#dk-fill");f.style.width=Math.min(100,tot/n*100)+"%";f.classList.toggle("vol",tot+0.001>=n);
+  let h="";
+  for(let i=0;i<7;i++){const d=addDays(ws,i),ds=iso(d),dr=rows.filter(r=>r.datum===ds),dt=dr.reduce((s,r)=>s+(r.uren||0),0),ok=dr.length&&dr.every(r=>r.status==="ok");
+    h+=`<button type="button" class="dk${ds===state.selDag?" sel":""}${ds===today?" vandaag":""}${i>=5?" wknd":""}${dt?" heeft":""}" data-dk="${ds}" aria-pressed="${ds===state.selDag}" aria-label="${DAGLANG[d.getDay()]} ${d.getDate()} ${MNDL[d.getMonth()]}: ${dt?nu2(dt)+" uur":"nog niets ingevuld"}"><span class="dn">${DAGEN[d.getDay()]}</span><span class="dd">${d.getDate()}</span><span class="du">${dt?nu2(dt)+"u":"–"}${ok?" ✓":""}</span></button>`}
+  box.innerHTML=h;$("#dk-now").hidden=state.selDag===today}
+$("#dk-days").addEventListener("click",e=>{const b=e.target.closest("[data-dk]");if(b)kiesDag(b.dataset.dk)});
+$("#dk-prev").onclick=()=>kiesDag(iso(addDays(parse(state.selDag||iso(new Date())),-7)));
+$("#dk-next").onclick=()=>kiesDag(iso(addDays(parse(state.selDag||iso(new Date())),7)));
+$("#dk-now").onclick=()=>kiesDag(iso(new Date()));
+function startDag(){let c=null;try{c=JSON.parse(ls("alw-concept")||"null")}catch(e){}
+  const concept=c&&c.datum&&Array.isArray(c.regels)&&c.regels.some(r=>Number(String(r.uren||"").replace(",","."))>0)&&!eigenDag(c.datum).length;
+  if(concept){state.selDag=c.datum;state.weekStart=monday(parse(c.datum));$("#f-title").textContent=dagTitel(c.datum);renderWeek()}
+  else kiesDag(iso(new Date()))}
+function renderMaand(){if(!$("#mo-sum")||$("#m-ov").hidden)return;const y=state.mJ,mo=state.mM,a=iso(new Date(y,mo,1)),bE=new Date(y,mo+1,0),b=iso(bE);
+  $("#mo-lbl").textContent=MNDL[mo]+" "+y;const rows=state.uren.filter(r=>mine(r)&&r.datum>=a&&r.datum<=b);
+  const som=f=>rows.filter(f).reduce((s,r)=>s+(r.uren||0),0);
+  const tot=som(()=>true),gew=som(r=>!afw(tp(r))),ow=som(r=>tp(r)==="overwerk"),zk=som(r=>["ziek","dokter","tandarts"].includes(tp(r))),vr=som(r=>tp(r)==="vrij"),reis=rows.reduce((s,r)=>s+(r.reis||0),0);
+  $("#mo-sum").innerHTML=`<div class="t"><span>Totaal</span><b>${nu2(tot)}</b></div><div class="u"><span>Gewerkt</span><b>${nu2(gew)}</b></div>`+
+    (ow?`<div><span>w.v. overwerk</span><b>${nu2(ow)}</b></div>`:"")+(zk?`<div><span>Ziek / dokter</span><b>${nu2(zk)}</b></div>`:"")+(vr?`<div><span>Vrij</span><b>${nu2(vr)}</b></div>`:"")+(reis?`<div><span>Reistijd</span><b>${nu2(reis)}</b></div>`:"");
+  const n=normVan(fi.naam.value.trim())||38,cm=iso(monday(new Date()));let wh="";
+  for(let d=monday(new Date(y,mo,1));d<=bE;d=addDays(d,7)){const we=addDays(d,6),k=iso(d),wr=state.uren.filter(r=>mine(r)&&r.datum>=k&&r.datum<=iso(we)),t=wr.reduce((s,r)=>s+(r.uren||0),0),[c,sym]=wkClass(t,k===cm,n);
+    wh+=`<tr data-mowk="${k}" title="Bekijk deze week"><td>Wk ${isoWeek(d)} <small style="color:var(--muted)">${d.getDate()} ${MND[d.getMonth()]} – ${we.getDate()} ${MND[we.getMonth()]}</small></td><td class="num"><span class="wc ${c}">${sym}${nl(t)}</span></td><td class="num">${nu2(n)}</td></tr>`}
+  $("#mo-wk").innerHTML=wh;
+  const pw=new Map();rows.filter(r=>!afw(tp(r))).forEach(r=>{const k=r.werkId?(r.werkNr+" – "+(r.werkNaam||"")):(r.werkVrij||"Onbekend werk");pw.set(k,(pw.get(k)||0)+(r.uren||0))});
+  $("#mo-werk").innerHTML=[...pw].sort((x,z)=>z[1]-x[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num">${nl(v)}</td></tr>`).join("")||'<tr><td colspan="2" class="empty">Geen gewerkte uren in deze maand.</td></tr>'}
+$("#mo-prev").onclick=()=>{state.mM--;if(state.mM<0){state.mM=11;state.mJ--}renderMaand()};
+$("#mo-next").onclick=()=>{state.mM++;if(state.mM>11){state.mM=0;state.mJ++}renderMaand()};
+$("#mo-wk").addEventListener("click",e=>{const tr=e.target.closest("[data-mowk]"),k=tr&&tr.dataset.mowk;if(!k)return;state.weekStart=parse(k);renderWeek();document.querySelector("#m-ov .mijnweek").scrollIntoView({behavior:"smooth",block:"start"})});
+
+/* ---------- kantoor: monteur blokkeren / verwijderen ---------- */
+function kActies(mon){if(mon.id===state.uid)return"";
+  return `<div class="kact">${mon.geblokkeerd?`<span class="pill blok">Geblokkeerd</span><small style="color:var(--muted)">Geef hierboven een nieuwe pincode om te deblokkeren.</small>`:`<button class="btn ghost sm" type="button" id="k-blok">Blokkeren</button>`}<button class="btn danger sm" type="button" id="k-del">Verwijderen</button></div><small style="color:var(--muted)">Geblokkeerd of verwijderd: kan niet meer inloggen. Ingevulde uren blijven bewaard.</small>`}
+async function kActie(b){const mon=(state.monteurs||[]).find(x=>x.id===kSel),m=$("#k-msg");if(!mon)return;const del=b.id==="k-del",lbl=del?"Verwijderen":"Blokkeren";
+  if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent=lbl+"? Klik nogmaals";setTimeout(()=>{if(b.isConnected){b.dataset.confirm="";b.textContent=lbl}},4000);return}
+  b.disabled=true;
+  try{const r=await Store.call("setPin",{mid:mon.id,naam:mon.monteur,nieuwePin:""});Store.monteurs=r.monteurs;const nu=new Date().toISOString();
+    await state.db.doc(UREN_COL+"/"+mon.id).update(del?{verwijderd:true,verwijderdOp:nu}:{geblokkeerd:true,geblokkeerdOp:nu});
+    if(del)kSel=null;renderKoppel();const km=del?$("#k-newmsg"):$("#k-msg");km.className="msg ok";km.textContent=mon.monteur+(del?" is verwijderd.":" is geblokkeerd.")+" Zijn uren blijven bewaard."}
+  catch(err){m.className="msg err";m.textContent=lbl+" mislukt: "+err.message;b.disabled=false}}
 
 /* ---------- kantoor ---------- */
 const fl={per:$("#fl-per"),van:$("#fl-van"),tot:$("#fl-tot"),mon:$("#fl-mon"),werk:$("#fl-werk"),soort:$("#fl-soort"),st:$("#fl-st"),type:$("#fl-type")};
@@ -1108,6 +1211,7 @@ function renderKoppel(){
   const keep=document.activeElement&&document.activeElement.id==="k-zoek";
   p.innerHTML=`<label class="allw" style="cursor:default">Standaard week<input type="number" id="k-norm" min="1" max="80" step="0.5" value="${mon.weekUren||""}" placeholder="${nl(norm()).replace(",00","")}" style="width:90px;height:auto"> uur <small style="color:var(--muted)">leeg = standaard (${nl(norm()).replace(",00","")} u)</small></label>
    ${pinRij(mon)}
+   ${kActies(mon)}
    <div class="toolbar"><button class="btn sm" type="button" id="k-preview">Bekijk als ${esc(mon.monteur)}</button></div>
    <div class="toolbar"><b style="margin-right:auto">${esc(mon.monteur)} · ${n?n+" werken verborgen":"ziet alle werken"}</b><button class="btn ghost sm" type="button" id="k-all">${kZoek?"Gevonden werken aanvinken":"Alle werken aanvinken"}</button><button class="btn ghost sm" type="button" id="k-none">${kZoek?"Gevonden werken uitvinken":"Alles uitvinken"}</button></div>
    <input type="search" id="k-zoek" placeholder="Zoek werk (nummer, naam, plaats)" value="${esc(kZoek)}">
@@ -1118,15 +1222,15 @@ function renderKoppel(){
 }
 let pinFocus=false;
 function pinInfo(id){return (Store.monteurs||[]).find(y=>y.id===id)}
-function pinLbl(id){const m=pinInfo(id);return !m||!m.heeftPin?' <small>· geen pincode</small>':m.rol==="kantoor"?' <small>· kantoor</small>':""}
+function pinLbl(id){const mm=(state.monteurs||[]).find(x=>x.id===id);if(mm&&mm.geblokkeerd)return ' <span class="pill blok">geblokkeerd</span>';const m=pinInfo(id);return !m||!m.heeftPin?' <small>· geen pincode</small>':m.rol==="kantoor"?' <small>· kantoor</small>':""}
 function pinRij(mon){const m=pinInfo(mon.id),heeft=!!(m&&m.heeftPin);const cur=$("#k-pin");const val=cur&&cur.dataset.mid===mon.id?cur.value:"";pinFocus=!!(cur&&document.activeElement===cur&&cur.dataset.mid===mon.id);
   return `<div class="allw" style="cursor:default;flex-wrap:wrap">Pincode<input id="k-pin" data-mid="${esc(mon.id)}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" value="${esc(val)}" placeholder="${heeft?"nieuw":"4 cijfers"}" style="width:110px;height:auto"><button class="btn sm" type="button" id="k-pinsave">Opslaan</button><small style="color:var(--muted)">${heeft?(m.rol==="kantoor"?"ingesteld · rol kantoor":"ingesteld · kan inloggen"):"nog geen pincode · kan nog niet inloggen"}</small></div>`}
 async function pinOpslaan(){const mon=(state.monteurs||[]).find(x=>x.id===kSel),inp=$("#k-pin"),m=$("#k-msg");if(!mon||!inp)return;const pin=inp.value.trim();
   if(!/^\d{4,6}$/.test(pin)){m.className="msg err";m.textContent="Een pincode is 4 tot 6 cijfers.";return}
   const b=$("#k-pinsave");b.disabled=true;
-  try{const r=await Store.call("setPin",{mid:mon.id,naam:mon.monteur,nieuwePin:pin});Store.monteurs=r.monteurs;inp.value="";renderKoppel();const mm=$("#k-msg");mm.className="msg ok";mm.textContent="Pincode opgeslagen. "+mon.monteur+" logt in met naam + pincode "+pin+"."}
+  try{const r=await Store.call("setPin",{mid:mon.id,naam:mon.monteur,nieuwePin:pin});Store.monteurs=r.monteurs;if(mon.geblokkeerd)await state.db.doc(UREN_COL+"/"+mon.id).update({geblokkeerd:false});inp.value="";renderKoppel();const mm=$("#k-msg");mm.className="msg ok";mm.textContent="Pincode opgeslagen. "+mon.monteur+" logt in met naam + pincode "+pin+"."}
   catch(err){m.className="msg err";m.textContent="Opslaan mislukt: "+err.message;b.disabled=false}}
-$("#k-panel").addEventListener("click",e=>{if(e.target.id==="k-pinsave")pinOpslaan()});
+$("#k-panel").addEventListener("click",e=>{if(e.target.id==="k-pinsave")pinOpslaan();else if(e.target.id==="k-blok"||e.target.id==="k-del")kActie(e.target)});
 $("#k-panel").addEventListener("keydown",e=>{if(e.target.id==="k-pin"&&e.key==="Enter"){e.preventDefault();pinOpslaan()}});
 $("#k-mon").addEventListener("click",e=>{const b=e.target.closest("button[data-mid]");if(!b)return;kSel=b.dataset.mid;kZoek="";renderKoppel()});
 $("#k-panel").addEventListener("input",e=>{if(e.target.id==="k-zoek"){kZoek=e.target.value;renderKoppel()}});
@@ -1393,12 +1497,13 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   const watchIn=(root,uid)=>{const key=root+"/"+uid;if(subs.has(key))return;subs.set(key,db.doc(root+"/"+uid).collection("items").onSnapshot(s=>{per.set(key,s.docs.map(d=>({id:d.id,_path:root+"/"+uid+"/items/"+d.id,...d.data()})));merge()},()=>{}))};
   const watch=uid=>{watchIn(UREN_COL,uid);watchIn("goedgekeurd",uid)};
   if(state.office){
-    db.collection(UREN_COL).onSnapshot(s=>{state.monteurs=s.docs.map(d=>({id:d.id,...d.data()}));renderKoppel();renderWerken();renderWeekcontrole();renderAanlevering();s.docs.forEach(d=>watch(d.id));merge()},()=>{});
+    db.collection(UREN_COL).onSnapshot(s=>{state.monteurs=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!x.verwijderd);renderKoppel();renderWerken();renderWeekcontrole();renderAanlevering();s.docs.forEach(d=>watch(d.id));merge()},()=>{});
     db.collection("goedgekeurd").onSnapshot(s=>{s.docs.forEach(d=>watchIn("goedgekeurd",d.id))},()=>{});
     db.collection("archief/weekstaten/items").onSnapshot(s=>{state.archief=s.docs.map(d=>({id:d.id,...d.data()}));renderArchief();if(!$("#ed-ovl").hidden)renderEdWeek()},()=>{});
   }else if(state.uid){watch(state.uid);registreer();db.doc(UREN_COL+"/"+state.uid).onSnapshot(d=>{state.mijnNorm=d.exists?(d.data().weekUren||0):0;renderWeek()},()=>{})}
   try{await Store.start()}catch(e){$("#offline").textContent=e.code==="net"?"Geen verbinding met de opslag. Controleer je internet en ververs de pagina.":e.message;$("#offline").hidden=false;state.db=null;return}
   renderWeek();fillWerkSelects();
+  startDag();
 })();
 })();
 </script>
