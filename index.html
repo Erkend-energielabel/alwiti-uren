@@ -388,6 +388,17 @@ details.fold[open]>*+*{margin-top:14px}
 @media (max-width:560px){.lcrow{grid-template-columns:44px minmax(0,1fr)}.lcrow small{grid-column:1/-1}}
 .vgt td.plus{color:var(--ok);font-weight:600}.vgt td.min{color:var(--red);font-weight:600}.vgt .totr td{border-top:2px solid var(--fg)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:-1px}
+.gevaar{border:1px solid var(--red);border-radius:6px;padding:10px 14px;margin-top:6px}
+.gevaar summary{cursor:pointer;color:var(--red);font-weight:700;font-size:14px}
+.lmin{display:flex;flex-direction:column;gap:10px;margin-top:10px}.lmin p{margin:0}
+#lm-stappen{display:flex;flex-direction:column;gap:12px}
+.lmset{border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:0;display:flex;flex-direction:column;gap:6px}
+.lmset legend{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lmc{flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font:500 14px var(--f-body);color:var(--fg)}
+.lmc input{width:18px;height:18px;accent-color:var(--red)}
+.lmstap{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
+.lmstap code{background:var(--bg);padding:1px 6px;border-radius:3px;font-weight:700}
+.lmgo{background:var(--red);align-self:flex-start}.lmgo:disabled{background:var(--line);color:var(--muted)}
 .notice{background:var(--red-soft);border-radius:6px;padding:12px 14px;font-size:14px}
 @media (max-width:520px){.form{grid-template-columns:1fr 1fr}.day{grid-template-columns:70px minmax(0,1fr) 50px}.logo{height:38px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -668,6 +679,25 @@ details.fold[open]>*+*{margin-top:14px}
       <h2>Instellingen</h2>
       <label class="schak"><input type="checkbox" id="set-reis" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Reistijd voor alle monteurs</b><small>Aan: iedereen vult per dag reistijd in. Uit: alleen monteurs bij wie je het zelf aanzet (tabblad Monteurs → kies monteur).</small></span></label>
       <div class="msg" id="set-msg" role="status"></div>
+      <details class="gevaar" id="lm-box">
+        <summary>Gevarenzone: administratie leegmaken</summary>
+        <div class="lmin">
+          <p><b>Hiermee wis je de administratie definitief.</b> Dit kan niet ongedaan worden gemaakt. Gebruik dit alleen als je echt met een lege administratie wilt beginnen.</p>
+          <p class="hint" id="lm-alleen" hidden>Alleen de eigenaar van de app kan de administratie leegmaken.</p>
+          <div id="lm-stappen">
+            <fieldset class="lmset"><legend>Wat wil je wissen?</legend>
+              <label class="lmc"><input type="checkbox" checked disabled> Alle urenregels, weekstaten (ook goedgekeurde) en "te laat"-aantekeningen</label>
+              <label class="lmc"><input type="checkbox" id="lm-bon" checked> Alle bonnetjes en foto's</label>
+              <label class="lmc"><input type="checkbox" id="lm-proj"> Ook alle projecten</label>
+              <label class="lmc"><input type="checkbox" id="lm-mon"> Ook alle monteurs (inclusief instellingen per monteur)</label>
+            </fieldset>
+            <div class="lmstap"><b>Stap 1.</b> Download eerst een backup. <button class="btn ghost sm" type="button" id="lm-backup">Backup downloaden</button> <span id="lm-bok" class="hint"></span></div>
+            <div class="lmstap"><b>Stap 2.</b> Typ <code>LEEGMAKEN</code> om te bevestigen. <input id="lm-woord" autocomplete="off" autocapitalize="characters" style="max-width:180px" aria-label="Typ LEEGMAKEN"></div>
+            <button class="btn lmgo" type="button" id="lm-go" disabled>Administratie leegmaken</button>
+            <div class="msg" id="lm-msg" role="status"></div>
+          </div>
+        </div>
+      </details>
     </div>
     <div class="card">
       <h2>Monteurs &amp; projecten</h2>
@@ -962,6 +992,27 @@ function pasInstellingenToe(){const c=state.cfg||{};let r;
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
+/* ---------- administratie leegmaken ---------- */
+state.lmBackup=false;
+function lmCheck(){$("#lm-go").disabled=!(state.lmBackup&&$("#lm-woord").value.trim()==="LEEGMAKEN"&&state.isOwner)}
+$("#lm-woord").addEventListener("input",lmCheck);
+$("#lm-backup").onclick=async()=>{const ok=await maakBackup($("#lm-msg"));if(ok){state.lmBackup=true;$("#lm-bok").textContent="✓ backup gemaakt"}lmCheck()};
+$("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwner)return;
+  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked;
+  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`);if(proj)wat.push(`${state.werken.length} projecten`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
+  if(!await vraag("Administratie definitief leegmaken?",`Je staat op het punt dit te wissen: ${wat.join(", ")}. Dit kan NIET ongedaan worden gemaakt. Weet je het echt zeker?`,"Ja, alles wissen"))return;
+  b.disabled=true;$("#lm-woord").value="";let n=0;const del=async p=>{try{await state.db.doc(p).delete();n++;if(n%20===0)m.textContent=`Bezig… ${n} items gewist`}catch(e){}};m.className="msg";m.textContent="Bezig met wissen…";
+  try{for(const r of state.uren.slice())await del(r._path);
+    for(const a of (state.archief||[]).slice())await del("archief/weekstaten/items/"+a.id);
+    for(const id of Object.keys(state.telaat||{}))await del("archief/telaat/items/"+id);
+    for(const x of (state.imports||[]).slice())await del("kantoor/config/imports/"+x.id);
+    if(bon){for(const x of (state.bonnen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bonStatus||{}))await del("kantoor/config/bonstatus/"+id)}
+    if(proj)for(const w of state.werken.slice())await del(WERK_COL+"/"+w.id);
+    if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
+      const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
+    else{for(const x of (state.monteurs||[]))await del("goedgekeurd/"+x.id)}
+    state.lmBackup=false;$("#lm-bok").textContent="";m.className="msg ok";m.textContent=`Klaar: ${n} items gewist. Je begint met een lege administratie. Herlaad de pagina als er nog iets zichtbaar is.`}
+  catch(err){m.className="msg err";m.textContent=`Er ging iets mis na ${n} items. Probeer het opnieuw.`}finally{lmCheck()}};
 /* ---------- spelelement ---------- */
 const BADGES=[[1,"Eerste week","1"],[4,"Maand-topper","4"],[8,"Twee maanden","8"],[13,"Kwartaalkanjer","13"],[26,"Halfjaar-held","26"],[52,"Jaarkampioen","52"]];
 function weekStats(rows,n){const m=new Map();rows.forEach(r=>{const k=iso(monday(parse(r.datum)));const o=m.get(k)||{tot:0,last:"",dagen:new Set()};o.tot+=r.uren||0;if((r.aangemaakt||"")>o.last)o.last=r.aangemaakt||"";m.set(k,o)});return m}
@@ -1395,12 +1446,13 @@ $("#ws-xlsx").addEventListener("click",async()=>{const m=$("#ws-msg"),L=state.ws
   const ws=met.map(x=>x.ws).sort(),van=ws[0],tot=iso(addDays(parse(ws[ws.length-1]),6));
   try{await state.dl.save({filename:`Alwiti weekstaten ${van} tm ${tot}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent=`Excel opgeslagen: ${met.length} weekstaten.`}
   catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet in deze weergave."}}});
-$("#b-backup").addEventListener("click",async()=>{const m=$("#m-xlsx");m.className="msg";
-  if(!state.dl){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return}
+$("#b-backup").addEventListener("click",()=>maakBackup($("#m-xlsx")));
+async function maakBackup(m){m.className="msg";
+  if(!state.dl){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return false}
   const strip=o=>{const c={...o};delete c._path;return c};
-  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[]};
-  try{await state.dl.save({filename:`Alwiti uren backup ${iso(new Date())}.json`,data:JSON.stringify(data,null,1)});m.className="msg ok";m.textContent=`Backup opgeslagen: ${data.werken.length} projecten, ${data.monteurs.length} monteurs, ${data.uren.length} urenregels, ${data.weekstaten.length} weekstaten.`}
-  catch(err){if(err&&err.code==="declined")return;m.className="msg err";m.textContent="Backup downloaden lukte niet in deze weergave."}});
+  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),telaat:Object.values(state.telaat||{})};
+  try{await state.dl.save({filename:`Alwiti uren backup ${iso(new Date())}.json`,data:JSON.stringify(data,null,1)});m.className="msg ok";m.textContent=`Backup opgeslagen: ${data.werken.length} projecten, ${data.monteurs.length} monteurs, ${data.uren.length} urenregels, ${data.weekstaten.length} weekstaten, ${data.bonnen.length} bonnetjes.`;return true}
+  catch(err){if(err&&err.code==="declined"){m.className="msg err";m.textContent="Backup niet opgeslagen.";return false}m.className="msg err";m.textContent="Backup downloaden lukte niet in deze weergave.";return false}}
 $("#fl-werkq").addEventListener("input",e=>{const v=e.target.value.trim().toLowerCase();let w=null;
   if(v){w=state.werken.find(x=>(x.nr+" – "+x.naam).toLowerCase()===v)||state.werken.find(x=>String(x.nr).toLowerCase()===v);if(!w){const c=state.werken.filter(x=>(x.nr+" "+x.naam+" "+(x.plaats||"")).toLowerCase().includes(v));if(c.length===1)w=c[0]}}
   const nv=w?w.id:"";if(!v||w){if(fl.werk.value!==nv){fl.werk.value=nv;renderOffice()}}});
@@ -1709,7 +1761,8 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   state.dl=dl;$("#b-xlsx").hidden=!dl;$("#b-backup").hidden=!dl;$("#ws-xlsx").hidden=!dl;$("#ws-backup").hidden=!dl;
   if(smp){state.ai=smp;document.querySelectorAll(".netbtn").forEach(b=>b.hidden=false);try{const lim=await smp.limits();if(lim&&lim.images){state.sample=smp;$("#scan-card").hidden=false}}catch(e){}}
   if(user){state.user=user;try{state.uid=await user.id()}catch(e){}
-    try{state.office=(await user.canEdit())===true}catch(e){}}
+    try{state.office=(await user.canEdit())===true}catch(e){}try{state.isOwner=!!(await user.isOwner())}catch(e){}}
+  $("#lm-alleen").hidden=!!state.isOwner;$("#lm-stappen").hidden=!state.isOwner;
   pasInstellingenToe();
   if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
   else{$("#who").textContent="Monteurs"}
