@@ -830,7 +830,7 @@ const Store=(()=>{
     let j;try{j=await res.json()}catch(e){throw Object.assign(new Error("Geen geldig antwoord van de Sheet."),{code:"net"})}
     if(!j.ok){
       // Pincode gewijzigd, account geblokkeerd of verwijderd: opnieuw inloggen (wachtrij blijft bewaard)
-      if(j.code==="auth"&&action!=="login"&&sess){lss(SKEY,null);lss("alw-loginmsg",j.error||"");location.reload()}
+      if((j.code==="auth"||j.code==="slot")&&action!=="login"&&sess){lss(SKEY,null);lss("alw-loginmsg",j.error||"");location.reload()}
       throw Object.assign(new Error(j.error||"Er ging iets mis."),{code:j.code||"fout"});
     }
     return j;
@@ -861,7 +861,7 @@ const Store=(()=>{
       if(r.geweigerd&&r.geweigerd.length){toast("Niet alles is opgeslagen: je mag dit niet (meer) wijzigen.",true);await sync(true)}}
     catch(e){
       if(e.code==="net"){backoff=Math.min(60000,(backoff||2500)*2);schedule(backoff)}
-      else if(e.code==="auth"||e.code==="blok"){toast(e.message,true)}
+      else if(e.code==="auth"||e.code==="slot"){toast(e.message,true)}
       else{queue=queue.slice(batch.length);saveQueue();toast("Opslaan mislukt: "+e.message,true);await sync(true)}}
     finally{inflight=false;status();if(queue.length&&!backoff)schedule(50)}}
 
@@ -984,16 +984,21 @@ const ALW=(()=>{
   /* --- pincodes beheren (tabblad Monteurs) --- */
   const info=id=>(Store.monteurs||[]).find(m=>m.id===id);
   function heeftLogin(id){const m=info(id);return !!(m&&m.heeftPin)}
+  function slotLabel(id){const m=info(id);return m&&m.vergrendeld?' <span class="pill over" style="padding:0 6px;font-size:10px">vergrendeld</span>':""}
   function pinRij(mon){const m=info(mon.id),heeft=!!(m&&m.heeftPin);
-    return `<div class="allw pinrij" style="cursor:default">Pincode<input id="k-pin" data-mid="${esc(mon.id)}" data-naam="${esc(mon.monteur||"")}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="${heeft?"nieuwe pincode":"4 tot 6 cijfers"}"><button class="btn sm" type="button" id="k-pinsave">Opslaan</button><small style="color:var(--muted)">${heeft?(m.eigenaar?"ingesteld · eigenaar":m.rol==="kantoor"?"ingesteld · kantoor":"ingesteld · kan inloggen"):"nog geen pincode · kan nog niet inloggen"}</small></div>`}
+    const slot=m&&m.vergrendeld?`<div class="mstat isb"><div><b>Vergrendeld</b><small>${esc(mon.monteur||"Deze monteur")} heeft 5 keer een foute pincode ingevuld en kan niet inloggen tot je het account vrijgeeft.</small></div><div class="toolbar"><button class="btn sm" type="button" id="k-vrij" data-mid="${esc(mon.id)}" data-naam="${esc(mon.monteur||"")}">Vrijgeven</button></div></div>`:"";
+    return slot+`<div class="allw pinrij" style="cursor:default">Pincode<input id="k-pin" data-mid="${esc(mon.id)}" data-naam="${esc(mon.monteur||"")}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="${heeft?"nieuwe pincode":"4 tot 6 cijfers"}"><button class="btn sm" type="button" id="k-pinsave">Opslaan</button><small style="color:var(--muted)">${heeft?(m.eigenaar?"ingesteld · eigenaar":m.rol==="kantoor"?"ingesteld · kantoor":"ingesteld · kan inloggen"):"nog geen pincode · kan nog niet inloggen"}</small></div>`}
   document.addEventListener("click",async e=>{if(!e.target||e.target.id!=="k-pinsave")return;const inp=q("#k-pin"),m=q("#k-msg");if(!inp)return;const pin=inp.value.trim(),mid=inp.dataset.mid;
     const naam=inp.dataset.naam||(info(mid)||{}).naam||"";
     if(!/^\d{4,6}$/.test(pin)){m.className="msg err";m.textContent="Een pincode is 4 tot 6 cijfers.";return}
     e.target.disabled=true;
     try{const r=await Store.call("setPin",{mid,naam,nieuwePin:pin});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"));const mm=q("#k-msg");if(mm){mm.className="msg ok";mm.textContent=`Pincode opgeslagen. ${naam} logt in met zijn naam en pincode ${pin}.`}}
     catch(err){m.className="msg err";m.textContent=err.message;e.target.disabled=false}});
+  document.addEventListener("click",async e=>{if(!e.target||e.target.id!=="k-vrij")return;const b=e.target,m=q("#k-msg");b.disabled=true;
+    try{const r=await Store.call("vrijgeven",{mid:b.dataset.mid});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"));const mm=q("#k-msg");if(mm){mm.className="msg ok";mm.textContent=b.dataset.naam+" kan weer inloggen."}}
+    catch(err){if(m){m.className="msg err";m.textContent=err.message}b.disabled=false}});
   async function verwijderLogin(mid){try{const r=await Store.call("verwijderMonteur",{mid});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}catch(e){Store.toast("Inlog niet verwijderd: "+e.message,true)}}
-  return{heeftLogin,pinRij,verwijderLogin};
+  return{heeftLogin,slotLabel,pinRij,verwijderLogin};
 })();
 </script>
 
@@ -1580,7 +1585,7 @@ let kSel=null,kZoek="";
 function renderKoppel(){
   const B=blokIds();const mons=(state.monteurs||[]).slice().sort((a,b)=>(B.has(a.id)-B.has(b.id))||String(a.monteur).localeCompare(b.monteur,"nl"));
   const hid=(w,id)=>Array.isArray(w.verborgen)&&w.verborgen.includes(id);const cnt=id=>state.werken.filter(w=>w.actief!==false&&hid(w,id)).length;
-  $("#k-mon").innerHTML=mons.length?mons.map(x=>`<button type="button" data-mid="${esc(x.id)}" aria-pressed="${x.id===kSel}"${B.has(x.id)?' class="blok"':""}><span>${B.has(x.id)?'<span class="pill over" style="padding:0 6px;font-size:10px">geblokkeerd</span> ':""}${esc(x.monteur||"Naam onbekend")}${!ALW.heeftLogin(x.id)?' <small>· nog geen pincode</small>':""}</span><small>${kantoorAan(x.id)?"kantoor · ":""}${!(state.cfg&&state.cfg.reistijd)&&(state.cfg&&state.cfg.reisMonteurs||[]).includes(x.id)?"reistijd · ":""}${(()=>{const sp=spelVoor(x.monteur||"");return sp.streak?`<span class="gstreak">${sp.streak} wk op rij</span> · `:""})()}${x.weekUren?nl(x.weekUren).replace(",00","")+" u/wk · ":""}${cnt(x.id)?cnt(x.id)+" verborgen":"ziet alles"}</small></button>`).join(""):'<div class="empty">Nog geen monteurs. Voeg ze hierboven toe en geef ze een pincode.</div>';
+  $("#k-mon").innerHTML=mons.length?mons.map(x=>`<button type="button" data-mid="${esc(x.id)}" aria-pressed="${x.id===kSel}"${B.has(x.id)?' class="blok"':""}><span>${B.has(x.id)?'<span class="pill over" style="padding:0 6px;font-size:10px">geblokkeerd</span> ':""}${esc(x.monteur||"Naam onbekend")}${(!ALW.heeftLogin(x.id)?' <small>· nog geen pincode</small>':"")+ALW.slotLabel(x.id)}</span><small>${kantoorAan(x.id)?"kantoor · ":""}${!(state.cfg&&state.cfg.reistijd)&&(state.cfg&&state.cfg.reisMonteurs||[]).includes(x.id)?"reistijd · ":""}${(()=>{const sp=spelVoor(x.monteur||"");return sp.streak?`<span class="gstreak">${sp.streak} wk op rij</span> · `:""})()}${x.weekUren?nl(x.weekUren).replace(",00","")+" u/wk · ":""}${cnt(x.id)?cnt(x.id)+" verborgen":"ziet alles"}</small></button>`).join(""):'<div class="empty">Nog geen monteurs. Voeg ze hierboven toe en geef ze een pincode.</div>';
   const p=$("#k-panel");const mon=mons.find(x=>x.id===kSel);
   if(!mon){p.innerHTML='<div class="empty">Kies links een monteur.</div>';return}
   const act=state.werken.filter(w=>w.actief!==false).sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true}));

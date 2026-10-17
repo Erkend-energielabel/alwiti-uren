@@ -2,7 +2,9 @@
  * Alwiti Urenregistratie — opslag in deze Google Sheet.
  *
  * Tabbladen:
- *  - Monteurs : Naam | Pincode | Rol | ID   (hier beheer je wie mag inloggen)
+ *  - Monteurs : Naam | Pincode | Rol | ID | Vergrendeld   (hier beheer je wie mag inloggen)
+ *               Na 5 foute pincodes komt er in Vergrendeld een datum te staan: het account is dan op slot.
+ *               Vrijgeven: in de app (tabblad Monteurs) of hier de cel Vergrendeld leegmaken.
  *               Rol = monteur, kantoor of eigenaar (eigenaar = kantoor + mag de administratie leegmaken)
  *  - Uren     : leesbaar overzicht van alle urenregels (wordt automatisch ververst)
  *  - Werken   : leesbaar overzicht van alle projecten (wordt automatisch ververst)
@@ -19,7 +21,7 @@
 
 var SH_DATA = 'Data', SH_MON = 'Monteurs', SH_UREN = 'Uren', SH_WERK = 'Werken', SH_BON = 'Bonnen', SH_FOTO = 'Fotos';
 var SEG = /^[A-Za-z0-9_\-.~:@+]{1,200}$/;
-var MAX_FOUT = 5, BLOK_SEC = 600;
+var MAX_FOUT = 5;
 var DEEL = 45000;            // tekens per cel (Google Sheets: max 50.000)
 var MAX_DOC = 400000;        // maximale grootte van één document
 var MAX_FOTO = 3000000;      // maximale grootte van één foto (base64)
@@ -41,6 +43,7 @@ function doPost(e) {
       case 'write':            return out_(write_(body));
       case 'setPin':           return out_(setPin_(body));
       case 'verwijderMonteur': return out_(verwijderMonteur_(body));
+      case 'vrijgeven':        return out_(vrijgeven_(body));
       case 'fotoUp':           return out_(fotoUp_(body));
       case 'foto':             return out_(foto_(body));
       case 'fotoDel':          return out_(fotoDel_(body));
@@ -82,7 +85,7 @@ function monteurs_() {
   var sh = sheet_(SH_MON);
   var last = sh.getLastRow();
   if (last < 2) return [];
-  var vals = sh.getRange(2, 1, last - 1, 4).getValues();
+  var vals = sh.getRange(2, 1, last - 1, 5).getValues();
   var lijst = [], gebruikt = {}, gewijzigd = false;
   vals.forEach(function (r) { if (r[3]) gebruikt[String(r[3]).trim()] = true; });
   vals.forEach(function (r, i) {
@@ -95,7 +98,7 @@ function monteurs_() {
       id = kand; gebruikt[id] = true; r[3] = id; gewijzigd = true;
     }
     var rol = rolVan_(r[2]);
-    lijst.push({ rij: i + 2, naam: naam, pin: pinStr_(r[1]), rol: rol === 'monteur' ? 'monteur' : 'kantoor', eigenaar: rol === 'eigenaar', id: id });
+    lijst.push({ rij: i + 2, naam: naam, pin: pinStr_(r[1]), rol: rol === 'monteur' ? 'monteur' : 'kantoor', eigenaar: rol === 'eigenaar', id: id, slot: r[4] !== '' && r[4] !== null });
   });
   if (gewijzigd) sh.getRange(2, 4, vals.length, 1).setValues(vals.map(function (r) { return [r[3]]; }));
   return lijst;
@@ -110,17 +113,24 @@ function namen_() {
 function auth_(body) {
   var id = String(body.id || ''), pin = pinStr_(body.pin);
   if (!id || !pin) throw fout_('Kies je naam en vul je pincode in.', 'auth');
-  var cache = CacheService.getScriptCache(), key = 'fout:' + id;
-  var fouten = Number(cache.get(key) || 0);
-  if (fouten >= MAX_FOUT) throw fout_('Te vaak een verkeerde pincode. Probeer het over 10 minuten opnieuw.', 'blok');
   var m = monteurs_().filter(function (x) { return x.id === id; })[0];
+  if (m && m.slot) throw fout_('Je account is vergrendeld na ' + MAX_FOUT + ' foute pincodes. Vraag kantoor om het vrij te geven.', 'slot');
+  var props = PropertiesService.getScriptProperties(), key = 'fout:' + id;
   // Een getal-cel verliest voorloopnullen (0123 -> 123); daarom ook numeriek vergelijken bij gelijke inhoud.
   var ok = m && m.pin && (m.pin === pin || (/^\d+$/.test(m.pin) && /^\d+$/.test(pin) && Number(m.pin) === Number(pin)));
   if (!ok) {
-    cache.put(key, String(fouten + 1), BLOK_SEC);
-    throw fout_('Naam of pincode klopt niet.', 'auth');
+    if (!m) throw fout_('Naam of pincode klopt niet.', 'auth');
+    var fouten = Number(props.getProperty(key) || 0) + 1;
+    if (fouten >= MAX_FOUT) {
+      props.deleteProperty(key);
+      sheet_(SH_MON).getRange(m.rij, 5).setValue(new Date());
+      throw fout_('Te vaak een verkeerde pincode. Je account is vergrendeld; vraag kantoor om het vrij te geven.', 'slot');
+    }
+    props.setProperty(key, String(fouten));
+    var rest = MAX_FOUT - fouten;
+    throw fout_('Pincode klopt niet. Nog ' + rest + (rest === 1 ? ' poging' : ' pogingen') + ', daarna wordt je account vergrendeld.', 'auth');
   }
-  cache.remove(key);
+  if (props.getProperty(key)) props.deleteProperty(key);
   return { id: m.id, naam: m.naam, rol: m.rol, eigenaar: m.eigenaar };
 }
 
@@ -153,6 +163,7 @@ function setPin_(body) {
     var m = monteurs_().filter(function (x) { return x.id === mid; })[0];
     if (m) {
       sh.getRange(m.rij, 2).setNumberFormat('@').setValue(pin);
+      if (pin) { sh.getRange(m.rij, 5).setValue(''); PropertiesService.getScriptProperties().deleteProperty('fout:' + mid); }
       if (naam) sh.getRange(m.rij, 1).setValue(naam);
       if (rol && !m.eigenaar) sh.getRange(m.rij, 3).setValue(rol);
     } else {
@@ -181,8 +192,19 @@ function verwijderMonteur_(body) {
   return { ok: true, monteurs: monteurLijst_() };
 }
 
+/** Geeft een vergrendeld account weer vrij (na 5 foute pincodes). */
+function vrijgeven_(body) {
+  var me = auth_(body);
+  if (!kantoor_(me)) throw fout_('Alleen kantoor kan een account vrijgeven.', 'denied');
+  var mid = String(body.mid || '').trim();
+  var m = monteurs_().filter(function (x) { return x.id === mid; })[0];
+  if (m) sheet_(SH_MON).getRange(m.rij, 5).setValue('');
+  PropertiesService.getScriptProperties().deleteProperty('fout:' + mid);
+  return { ok: true, monteurs: monteurLijst_() };
+}
+
 function monteurLijst_() {
-  return monteurs_().map(function (m) { return { id: m.id, naam: m.naam, rol: m.rol, eigenaar: m.eigenaar, heeftPin: !!m.pin }; });
+  return monteurs_().map(function (m) { return { id: m.id, naam: m.naam, rol: m.rol, eigenaar: m.eigenaar, heeftPin: !!m.pin, vergrendeld: m.slot }; });
 }
 
 /* ---------------------------------------------------------------- data */
@@ -474,6 +496,7 @@ function installeer() {
     return sh;
   }
   var mon = tab(SH_MON, ['Naam', 'Pincode', 'Rol', 'ID']);
+  if (mon.getRange(1, 5).getValue() === '') mon.getRange(1, 5).setValue('Vergrendeld').setFontWeight('bold');
   mon.getRange('B:B').setNumberFormat('@');
   var data = tab(SH_DATA, ['pad', 'json', 'ts']);
   tab(SH_UREN, ['Datum']); tab(SH_WERK, ['Projectnummer']); tab(SH_BON, ['Datum']);

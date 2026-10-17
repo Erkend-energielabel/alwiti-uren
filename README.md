@@ -45,7 +45,8 @@ De Google Sheet en `config.js` blijven hetzelfde, dus monteurs en uren blijven b
 
 - **Monteur toevoegen:** in de app, tabblad Monteurs. Voeg de naam toe, kies hem in de lijst en stel een pincode in. Het kan ook direct in de Sheet.
 - **Blokkeren:** een geblokkeerde monteur kan niet meer inloggen. Zijn uren blijven bewaard.
-- **Pincode vergeten:** stel in de app een nieuwe in. Na 5 foute pogingen wordt inloggen 10 minuten geblokkeerd.
+- **Pincode vergeten:** stel in de app een nieuwe in.
+- **5 keer een foute pincode:** het account gaat op slot tot kantoor het vrijgeeft. Dat doe je in de app (tabblad Monteurs, kies de monteur, Vrijgeven), door een nieuwe pincode in te stellen, of door in de Sheet de cel Vergrendeld leeg te maken.
 - **Overzichten in de Sheet:** de tabbladen Uren, Werken en Bonnen worden automatisch bijgewerkt. Laat de tabbladen Data en Fotos ongemoeid.
 - **Backup en Excel:** op kantoor via de knoppen **Backup downloaden** en **Exporteer naar Excel**. De Google Sheet zelf houdt ook een versiegeschiedenis bij (Bestand > Versiegeschiedenis).
 
