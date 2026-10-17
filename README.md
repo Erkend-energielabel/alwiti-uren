@@ -1,32 +1,23 @@
-# Alwiti Urenregistratie: installatie
+# Alwiti Urenregistratie
 
-## 1. Google Sheet (opslag)
-1. Ga naar sheets.new en noem de Sheet "Alwiti uren".
-2. Kies Extensies > Apps Script.
-3. Plak de inhoud van **Code.gs** over de bestaande code heen.
-4. (Optioneel) Bestaande gegevens: plak Migratie.gs als extra scriptbestand.
-5. Kies bovenaan de functie **installeer** en klik op Uitvoeren. Geef toestemming:
-   - Kies je account.
-   - Klik op Geavanceerd.
-   - Klik op "Ga naar ... (onveilig)".
-   - Klik op Toestaan.
-6. Vul in de Sheet, tabblad **Monteurs**, bij jezelf een pincode in. Je rol staat al op *kantoor*.
-7. Ga in Apps Script naar Implementeren > Nieuwe implementatie > tandwiel > **Web-app**:
-   - Uitvoeren als: **Ik**
-   - Toegang: **Iedereen**
-   - Klik op Implementeren en kopieer de **web-app-URL** (eindigt op `/exec`).
+Urenregistratie voor de monteurs van Alwiti bv (aluminium geveltechniek): monteurs vullen hun uren per project in (buiten, werkplaats of kantoor), kantoor beoordeelt weekstaten, bonnetjes en rapportages, en alles kan naar Excel.
 
-## 2. GitHub Pages (de app)
-1. Maak op github.com een nieuwe repository, bijvoorbeeld `alwiti-uren`, en zet hem op **Public**.
-2. Upload **index.html** en **config.js** (via Add file > Upload files).
-3. Open config.js op GitHub (potloodje) en plak je web-app-URL tussen de aanhalingstekens:
-   `window.ALWITI_API = "https://script.google.com/macros/s/..../exec";`
-4. Ga naar Settings > Pages en zet Source op **Deploy from a branch**: `main` / `(root)`.
-5. Na 1-2 minuten staat de app op `https://<gebruikersnaam>.github.io/alwiti-uren/`.
+## Let op: deze versie draait in Claude
 
-## Dagelijks gebruik
-- **Monteur toevoegen:** in de app, tabblad Monteurs: naam + pincode. Dit kan ook direct in de Sheet (tabblad Monteurs).
-- **Kantoormedewerker:** zet in de Sheet de Rol op `kantoor`.
-- **Pincode vergeten:** stel in de app een nieuwe in. Na 5 foute pogingen wordt de monteur 10 minuten geblokkeerd.
-- **Alle uren** staan leesbaar in het tabblad **Uren** van de Sheet. Het tabblad **Data** is van de app zelf: niet aanpassen.
-- **Code.gs aangepast?** Kies Implementeren > Implementaties beheren > potloodje > Versie: Nieuwe versie. De URL blijft dan hetzelfde.
+`index.html` in de hoofdmap is de versie die als app in Claude draait. Opslag, inloggen, rechten (monteur of kantoor), foto's van bonnetjes en "netjes maken" komen van Claude. Open je dit bestand los, bijvoorbeeld via GitHub Pages, dan verschijnt de pagina wel, maar kan er niets worden opgeslagen of geladen.
+
+De werkende app gebruik je via de gedeelde link in Claude. Toegang regel je daar via het Share-menu:
+- Monteurs: **Contributor**. Zij zien en vullen alleen hun eigen uren in.
+- Kantoor: **Editor**. Zij zien alles.
+
+## Mappen
+
+| Map | Inhoud |
+|---|---|
+| `index.html` | De Claude-versie van de app (projecten, weekstaten, bonnetjes, ranglijst, locaties, rapport) |
+| `documenten/` | Papieren urenlijst (PDF) en Excel-sjablonen voor het inlezen van monteurs en projecten |
+| `oude-versie-google-sheet/` | De eerdere losse versie met Google Sheet als opslag en inloggen met pincode. Zie de README in die map. Via GitHub Pages blijft die bereikbaar op `/oude-versie-google-sheet/`. |
+
+## Backup
+
+In Claude draait elke vrijdag om 17:56 een automatische backup naar het project "Alwiti" (map `backups`). Op kantoor kan ook altijd met de hand een backup worden gedownload via **Backup downloaden**.
