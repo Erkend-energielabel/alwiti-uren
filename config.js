@@ -1,0 +1,1 @@
+window.ALWITI_API = "";
