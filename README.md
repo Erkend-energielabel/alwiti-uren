@@ -52,7 +52,7 @@ De Google Sheet en `config.js` blijven hetzelfde, dus monteurs en uren blijven b
 - **Vraag over een bestelling:** op tabblad Bestellingen klik je op Vraag stellen en typ of spreek je je vraag in. De monteur krijgt een rood bolletje en een melding, en zijn antwoord zie je direct bij de bestelling.
 - **Monteur-app:** monteurs zien vier tabbladen: Uren invullen, Materiaal bestellen (als het aan staat), Bonnetjes en Topper van de week.
 - **Alwiti nieuws:** zet aan bij Monteurs → Instellingen. Kantoor plaatst berichten (met foto), monteurs geven een duimpje of reageren. Nieuwe berichten geven een rood bolletje.
-- **Verjaardagen:** zet aan bij Monteurs → Instellingen en stel per monteur dag en maand in. Op de dag zelf: ballonnen, een verjaardagsmuntje op kantoor en iedereen kan feliciteren.
+- **Verjaardagen:** zet aan bij Monteurs → Instellingen en stel per monteur dag en maand in. Op de dag zelf: ballonnen, een feestmutsje op het tabblad Verjaardagen en iedereen kan feliciteren.
 - **Toolbox:** zet aan bij Monteurs → Instellingen. Op het tabblad Toolbox zet je een toolbox klaar (10 standaard toolboxen voor aluminium gevelmontage, of een eigen). Monteurs krijgen een rood bolletje, kunnen hem laten voorlezen en tekenen af. Registratie naar Excel of PDF voor het VCA-dossier.
 - **Exporteren naar PDF:** op elk kantooroverzicht staat een knop die het overzicht op A3 liggend klaarzet; kies in het venster "Opslaan als PDF".
 - **Backup en Excel:** op kantoor via de knoppen **Backup downloaden** en **Exporteer naar Excel**. De Google Sheet zelf houdt ook een versiegeschiedenis bij (Bestand > Versiegeschiedenis).

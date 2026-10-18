@@ -462,9 +462,7 @@ details.fold[open]>*+*{margin-top:14px}
 .vjrow.vandaag{background:linear-gradient(90deg,#ffe1e6,var(--bg))}
 .vjfel{display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;max-width:520px;position:relative;z-index:2}
 .vjfel .nwr{background:rgba(255,255,255,.75)}
-.muntje{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:6px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a0,#e0a800 60%,#a87700);box-shadow:0 0 0 2px #fff,0 1px 3px rgba(0,0,0,.35);font-size:13px;vertical-align:-5px;animation:munt 2.4s ease-in-out infinite}
-@keyframes munt{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
-@media (prefers-reduced-motion:reduce){.muntje{animation:none}}
+.feestmuts{display:inline-block;width:22px;height:24px;margin-left:6px;vertical-align:-4px;flex:none}
 .vjmeld{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,#fff4d6,#ffe1e6);border:1px solid #e0a800;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-weight:700;color:#1b1b1c}
 .vjmeld span{margin-right:auto}.vjmeld .x{border:0;background:none;font-size:18px;cursor:pointer;color:#6a6a6d}
 /* ---------- toolbox ---------- */
@@ -498,7 +496,7 @@ details.fold[open]>*+*{margin-top:14px}
 nav.tabs button .rdot{margin-left:6px;width:12px;height:12px;animation:puls 1.6s ease-in-out infinite}
 nav.tabs button{display:inline-flex;align-items:center}
 nav.tabs button[hidden]{display:none}
-nav.tabs button .muntje{vertical-align:0}
+nav.tabs button .feestmuts{vertical-align:0}
 nav.tabs button .tdot{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--red);color:var(--red-ink);font:700 12px var(--f-body);letter-spacing:0;box-shadow:0 0 0 2px var(--surface);vertical-align:1px}
 nav.tabs button[aria-selected="true"] .tdot{background:var(--red-ink);color:var(--red);box-shadow:none}
 nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
@@ -1540,6 +1538,7 @@ $("#nw-plaats").onclick=async()=>{const m=$("#nw-msg"),titel=$("#nw-titel").valu
     $("#nw-titel").value="";$("#nw-tekst").value="";$("#nw-fx").click();m.className="msg ok";m.textContent="Geplaatst. Monteurs zien een rood bolletje bij Alwiti nieuws."}
   catch(err){m.className="msg err";m.textContent="Plaatsen mislukt."}finally{$("#nw-plaats").disabled=false}};
 /* ---------- verjaardagen ---------- */
+const FEESTMUTS='<svg class="feestmuts" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 3 3 21h16z" fill="#f4a400"/><path d="M11 3 7.4 11.2h7.2zM5.6 15.4h10.8l1.4 3.2H4.2z" fill="#e63946"/><circle cx="7.6" cy="18.6" r=".9" fill="#2a9d8f"/><circle cx="12.6" cy="13.6" r=".9" fill="#2a9d8f"/><path d="M2 21.2h18" stroke="#c0121b" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="2.6" r="2.4" fill="#2a9d8f"/></svg>';
 function vjAan(){return !!(state.cfg&&state.cfg.verjaardagen)}
 function vjVan(uid){return ((state.verj||{}).lijst||{})[uid]||{}}
 function vjLijst(){return Object.entries((state.verj||{}).lijst||{}).filter(([u,v])=>v&&v.dag&&v.maand&&!blokIds().has(u)).map(([uid,v])=>({uid,...v}))}
@@ -1554,9 +1553,9 @@ function vjHTML(){const jarig=vjJarig(),komend=vjLijst().map(v=>({...v,...vjVolg
     ${fel.length?`<div class="vjfel">${fel.map(f=>`<div class="nwr"><div><b>${esc(f.naam)}</b> ${esc(f.tekst||"Gefeliciteerd!")} <small>${tijdKort(f.op)}</small></div></div>`).join("")}</div>`:""}</div>`}).join("");
   h+=`<h3 style="margin-top:${jarig.length?16:0}px">Komende verjaardagen</h3><div class="vjlijst">${komend.length?komend.slice(0,30).map(v=>`<div class="vjrow${v.dagen===0?" vandaag":""}"><span class="dt">${v.dag}<small>${MNDL[v.maand-1].slice(0,3)}</small></span><span><b>${esc(v.naam)}</b></span><span style="color:var(--muted);font-size:14px">${v.dagen===0?"🎂 vandaag":v.dagen===1?"morgen":"over "+v.dagen+" dagen"}</span></div>`).join(""):'<div class="empty">Nog geen verjaardagen ingesteld.</div>'}</div>`;return h}
 function renderVerj(){const jarig=vjAan()?vjJarig():[];
-  if(state.office&&!state.preview){$("#tab-vj").hidden=!vjAan();const b=$("#tab-vj");if(b){b.innerHTML="Verjaardagen"+(jarig.length?`<span class="muntje" title="Vandaag jarig: ${esc(jarig.map(j=>j.naam).join(", "))}" aria-hidden="true">🎂</span>`:"");b.setAttribute("aria-label",jarig.length?`Verjaardagen, vandaag jarig: ${jarig.map(j=>j.naam).join(", ")}`:"Verjaardagen")}if(!$("#v-verjaardagen").hidden)$("#vj-k").innerHTML=vjHTML()}
+  if(state.office&&!state.preview){$("#tab-vj").hidden=!vjAan();const b=$("#tab-vj");if(b){b.innerHTML="Verjaardagen"+(jarig.length?FEESTMUTS:"");b.title=jarig.length?"Vandaag jarig: "+jarig.map(j=>j.naam).join(", "):"";b.setAttribute("aria-label",jarig.length?`Verjaardagen, vandaag jarig: ${jarig.map(j=>j.naam).join(", ")}`:"Verjaardagen")}if(!$("#v-verjaardagen").hidden)$("#vj-k").innerHTML=vjHTML()}
   if($("#v-monteur").dataset.sub==="verj")$("#vj-m").innerHTML=vjHTML();
-  const mb=$("#ms-verj");if(mb){const d=mb.querySelector(".muntje");if(jarig.length&&!d)mb.insertAdjacentHTML("beforeend",'<span class="muntje" aria-hidden="true">🎂</span>');if(!jarig.length&&d)d.remove()}
+  const mb=$("#ms-verj");if(mb){const d=mb.querySelector(".feestmuts");if(jarig.length&&!d)mb.insertAdjacentHTML("beforeend",FEESTMUTS);if(!jarig.length&&d)d.remove()}
   const weg=lsg("alw-vj-weg")===iso(new Date());$("#vj-meld").hidden=!jarig.length||weg||(state.office&&!state.preview?!$("#v-verjaardagen").hidden:$("#v-monteur").dataset.sub==="verj");
   if(jarig.length){const ik=state.preview?state.preview.id:state.uid,zelf=jarig.some(j=>j.uid===ik);$("#vj-meldtxt").textContent=zelf?"🎈 Gefeliciteerd met je verjaardag!":`🎈 Vandaag jarig: ${jarig.map(j=>j.naam).join(" en ")}`;$("#vj-naar").textContent=zelf?"Bekijken":"Feliciteren"}}
 $("#vj-weg").onclick=()=>{try{localStorage.setItem("alw-vj-weg",iso(new Date()))}catch(e){}$("#vj-meld").hidden=true};
