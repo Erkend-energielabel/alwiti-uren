@@ -9,6 +9,7 @@
  *  - Uren     : leesbaar overzicht van alle urenregels (wordt automatisch ververst)
  *  - Werken   : leesbaar overzicht van alle projecten (wordt automatisch ververst)
  *  - Bonnen   : leesbaar overzicht van alle bonnetjes (wordt automatisch ververst)
+ *  - Bestellingen : leesbaar overzicht van alle materiaalbestellingen (wordt automatisch ververst)
  *  - Data     : de opslag van de app zelf. Niet handmatig aanpassen.
  *  - Fotos    : foto's van bonnetjes. Niet handmatig aanpassen.
  *
@@ -19,7 +20,7 @@
  *            potloodje > Versie: Nieuwe versie > Implementeren. De link blijft gelijk.
  */
 
-var SH_DATA = 'Data', SH_MON = 'Monteurs', SH_UREN = 'Uren', SH_WERK = 'Werken', SH_BON = 'Bonnen', SH_FOTO = 'Fotos';
+var SH_DATA = 'Data', SH_MON = 'Monteurs', SH_UREN = 'Uren', SH_WERK = 'Werken', SH_BON = 'Bonnen', SH_BEST = 'Bestellingen', SH_FOTO = 'Fotos';
 var SEG = /^[A-Za-z0-9_\-.~:@+]{1,200}$/;
 var MAX_FOUT = 5;
 var DEEL = 45000;            // tekens per cel (Google Sheets: max 50.000)
@@ -242,9 +243,9 @@ function magLezen_(me, p) {
   var u = me.id, s = p.split('/');
   if (p === 'kantoor/config') return true;
   if (/^kantoor\/config\/werken\/[^\/]+$/.test(p)) return true;
-  if (s.length === 4 && s[0] === 'kantoor' && s[2] === 'bonstatus') return s[3].indexOf(u + '__') === 0;
+  if (s.length === 4 && s[0] === 'kantoor' && (s[2] === 'bonstatus' || s[2] === 'bestelstatus')) return s[3].indexOf(u + '__') === 0;
   if (p === 'uren/' + u || p === 'goedgekeurd/' + u) return true;
-  if (s.length === 4 && s[1] === u && ((s[0] === 'uren' && (s[2] === 'items' || s[2] === 'bonnen')) || (s[0] === 'goedgekeurd' && s[2] === 'items'))) return true;
+  if (s.length === 4 && s[1] === u && ((s[0] === 'uren' && (s[2] === 'items' || s[2] === 'bonnen' || s[2] === 'bestellingen')) || (s[0] === 'goedgekeurd' && s[2] === 'items'))) return true;
   return false;
 }
 
@@ -262,6 +263,16 @@ function magSchrijven_(me, op, huidig, docs) {
     var st = docs['kantoor/config/bonstatus/' + u + '__' + s[3]];
     if (st && st.d && st.d.status && st.d.status !== 'ingediend') return false; // beoordeeld: niet meer wijzigen
     if (op.op !== 'delete' && op.d && op.d.uid && op.d.uid !== u) return false;
+    return true;
+  }
+  if (s.length === 4 && s[0] === 'uren' && s[1] === u && s[2] === 'bestellingen') {
+    var bs = docs['kantoor/config/bestelstatus/' + u + '__' + s[3]];
+    if (bs && bs.d && bs.d.status && bs.d.status !== 'aangevraagd') return false; // al in behandeling
+    if (op.op !== 'delete') {
+      var cfg = docs['kantoor/config'] && docs['kantoor/config'].d;
+      if (!cfg || !Array.isArray(cfg.bestelMonteurs) || cfg.bestelMonteurs.indexOf(u) < 0) return false; // bestellen staat uit
+      if (op.d && op.d.uid && op.d.uid !== u) return false;
+    }
     return true;
   }
   return false;
@@ -301,7 +312,7 @@ function write_(body) {
   if (!ops.length) return { ok: true, geweigerd: [] };
   if (ops.length > 200) throw fout_('Te veel wijzigingen in één keer.');
   var lock = LockService.getScriptLock(); lock.waitLock(25000);
-  var geweigerd = [], overzicht = false, werken = false, bonnen = false;
+  var geweigerd = [], overzicht = false, werken = false, bonnen = false, best = false;
   try {
     var data = leesData_(), props = PropertiesService.getScriptProperties();
     checkBlok_(me, data.docs);
@@ -327,6 +338,7 @@ function write_(body) {
       if (/^(uren|goedgekeurd)\/[^\/]+\/items\//.test(op.p) || /^(uren|goedgekeurd)\/[^\/]+$/.test(op.p)) overzicht = true;
       if (/^kantoor\/config\/werken\//.test(op.p)) { werken = true; overzicht = true; }
       if (/^uren\/[^\/]+\/bonnen\//.test(op.p) || /^kantoor\/config\/bonstatus\//.test(op.p)) bonnen = true;
+      if (/^uren\/[^\/]+\/bestellingen\//.test(op.p) || /^kantoor\/config\/bestelstatus\//.test(op.p)) best = true;
     });
     if (breed > data.sh.getMaxColumns()) data.sh.insertColumnsAfter(data.sh.getMaxColumns(), breed - data.sh.getMaxColumns());
     bestaand.forEach(function (x) { data.sh.getRange(x.rij, 1, 1, breed).setValues([rij_(x.p, x.json, x.ts, breed)]); });
@@ -336,6 +348,7 @@ function write_(body) {
     if (werken) bouwWerken_(data.docs);
     if (overzicht) bouwUren_(data.docs);
     if (bonnen) bouwBonnen_(data.docs);
+    if (best) bouwBestellingen_(data.docs);
   } finally { lock.releaseLock(); }
   return { ok: true, geweigerd: geweigerd };
 }
@@ -467,6 +480,22 @@ function bouwBonnen_(docs) {
   schrijfTab_(SH_BON, ['Datum', 'Monteur', 'Soort', 'Bedrag', 'Kenteken', 'Km-stand', 'Project', 'Omschrijving', 'Status'], rijen);
 }
 
+var BS_ST = { aangevraagd: 'Nieuw', besteld: 'Besteld', geleverd: 'Geleverd', afgewezen: 'Afgewezen' };
+
+function bouwBestellingen_(docs) {
+  var rijen = [];
+  Object.keys(docs).forEach(function (p) {
+    var m = p.match(/^uren\/([^\/]+)\/bestellingen\/([^\/]+)$/), b = docs[p].d;
+    if (!m || !b) return;
+    var st = docs['kantoor/config/bestelstatus/' + m[1] + '__' + m[2]];
+    var s = st && st.d || {};
+    rijen.push([b.datum || '', b.monteur || '', b.wat || '', Number(b.aantal) || 0, b.eenheid || '', b.maat || '', b.categorie || '',
+      [b.projectNr, b.projectNaam].filter(Boolean).join(' '), b.nodig || '', b.opmerking || '', BS_ST[s.status || 'aangevraagd'] || s.status, (s.op || '').slice(0, 10)]);
+  });
+  rijen.sort(function (a, b) { return String(b[0]).localeCompare(String(a[0])); });
+  schrijfTab_(SH_BEST, ['Datum', 'Monteur', 'Wat', 'Aantal', 'Eenheid', 'Maat', 'Soort', 'Project', 'Nodig vóór', 'Opmerking', 'Status', 'Status gewijzigd'], rijen);
+}
+
 function schrijfTab_(naam, kop, rijen) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(naam) || ss.insertSheet(naam);
   sh.clearContents();
@@ -482,7 +511,7 @@ function onOpen() {
 
 function ververs() {
   var d = leesData_().docs;
-  bouwWerken_(d); bouwUren_(d); bouwBonnen_(d);
+  bouwWerken_(d); bouwUren_(d); bouwBonnen_(d); bouwBestellingen_(d);
 }
 
 /* ------------------------------------------------------------ installatie */
@@ -499,7 +528,7 @@ function installeer() {
   if (mon.getRange(1, 5).getValue() === '') mon.getRange(1, 5).setValue('Vergrendeld').setFontWeight('bold');
   mon.getRange('B:B').setNumberFormat('@');
   var data = tab(SH_DATA, ['pad', 'json', 'ts']);
-  tab(SH_UREN, ['Datum']); tab(SH_WERK, ['Projectnummer']); tab(SH_BON, ['Datum']);
+  tab(SH_UREN, ['Datum']); tab(SH_WERK, ['Projectnummer']); tab(SH_BON, ['Datum']); tab(SH_BEST, ['Datum']);
   fotoSheet_();
 
   // Bestaande gegevens uit de oude app overnemen (eenmalig)
