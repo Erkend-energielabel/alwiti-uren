@@ -49,6 +49,8 @@ De Google Sheet en `config.js` blijven hetzelfde, dus monteurs en uren blijven b
 - **5 keer een foute pincode:** het account gaat op slot tot kantoor het vrijgeeft. Dat doe je in de app (tabblad Monteurs, kies de monteur, Vrijgeven), door een nieuwe pincode in te stellen, of door in de Sheet de cel Vergrendeld leeg te maken.
 - **Overzichten in de Sheet:** de tabbladen Uren, Werken en Bonnen worden automatisch bijgewerkt. Laat de tabbladen Data en Fotos ongemoeid.
 - **Materiaal bestellen:** zet per monteur aan in tabblad Monteurs (Mag materiaal bestellen). De monteur maakt een foto, vult in wat en hoeveel, en het komt binnen op tabblad Bestellingen. Daar zet kantoor de status op Besteld, Geleverd of Afgewezen en zie je per monteur wie wat besteld heeft (ook schoenen en kleding).
+- **Vraag over een bestelling:** op tabblad Bestellingen klik je op Vraag stellen en typ of spreek je je vraag in. De monteur krijgt een rood bolletje en een melding, en zijn antwoord zie je direct bij de bestelling.
+- **Monteur-app:** monteurs zien vier tabbladen: Uren invullen, Materiaal bestellen (als het aan staat), Bonnetjes en Topper van de week.
 - **Exporteren naar PDF:** op elk kantooroverzicht staat een knop die het overzicht op A3 liggend klaarzet; kies in het venster "Opslaan als PDF".
 - **Backup en Excel:** op kantoor via de knoppen **Backup downloaden** en **Exporteer naar Excel**. De Google Sheet zelf houdt ook een versiegeschiedenis bij (Bestand > Versiegeschiedenis).
 

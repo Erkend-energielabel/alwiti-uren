@@ -243,9 +243,10 @@ function magLezen_(me, p) {
   var u = me.id, s = p.split('/');
   if (p === 'kantoor/config') return true;
   if (/^kantoor\/config\/werken\/[^\/]+$/.test(p)) return true;
+  if (p === 'kantoor/config/topper/huidig') return true;
   if (s.length === 4 && s[0] === 'kantoor' && (s[2] === 'bonstatus' || s[2] === 'bestelstatus')) return s[3].indexOf(u + '__') === 0;
   if (p === 'uren/' + u || p === 'goedgekeurd/' + u) return true;
-  if (s.length === 4 && s[1] === u && ((s[0] === 'uren' && (s[2] === 'items' || s[2] === 'bonnen' || s[2] === 'bestellingen')) || (s[0] === 'goedgekeurd' && s[2] === 'items'))) return true;
+  if (s.length === 4 && s[1] === u && ((s[0] === 'uren' && (s[2] === 'items' || s[2] === 'bonnen' || s[2] === 'bestellingen' || s[2] === 'antwoorden')) || (s[0] === 'goedgekeurd' && s[2] === 'items'))) return true;
   return false;
 }
 
@@ -265,6 +266,7 @@ function magSchrijven_(me, op, huidig, docs) {
     if (op.op !== 'delete' && op.d && op.d.uid && op.d.uid !== u) return false;
     return true;
   }
+  if (s.length === 4 && s[0] === 'uren' && s[1] === u && s[2] === 'antwoorden') return op.op !== 'delete' && !!op.d && String(op.d.tekst || '').length <= 2000;
   if (s.length === 4 && s[0] === 'uren' && s[1] === u && s[2] === 'bestellingen') {
     var bs = docs['kantoor/config/bestelstatus/' + u + '__' + s[3]];
     if (bs && bs.d && bs.d.status && bs.d.status !== 'aangevraagd') return false; // al in behandeling
@@ -338,7 +340,7 @@ function write_(body) {
       if (/^(uren|goedgekeurd)\/[^\/]+\/items\//.test(op.p) || /^(uren|goedgekeurd)\/[^\/]+$/.test(op.p)) overzicht = true;
       if (/^kantoor\/config\/werken\//.test(op.p)) { werken = true; overzicht = true; }
       if (/^uren\/[^\/]+\/bonnen\//.test(op.p) || /^kantoor\/config\/bonstatus\//.test(op.p)) bonnen = true;
-      if (/^uren\/[^\/]+\/bestellingen\//.test(op.p) || /^kantoor\/config\/bestelstatus\//.test(op.p)) best = true;
+      if (/^uren\/[^\/]+\/(bestellingen|antwoorden)\//.test(op.p) || /^kantoor\/config\/bestelstatus\//.test(op.p)) best = true;
     });
     if (breed > data.sh.getMaxColumns()) data.sh.insertColumnsAfter(data.sh.getMaxColumns(), breed - data.sh.getMaxColumns());
     bestaand.forEach(function (x) { data.sh.getRange(x.rij, 1, 1, breed).setValues([rij_(x.p, x.json, x.ts, breed)]); });
@@ -490,10 +492,11 @@ function bouwBestellingen_(docs) {
     var st = docs['kantoor/config/bestelstatus/' + m[1] + '__' + m[2]];
     var s = st && st.d || {};
     rijen.push([b.datum || '', b.monteur || '', b.wat || '', Number(b.aantal) || 0, b.eenheid || '', b.maat || '', b.categorie || '',
-      [b.projectNr, b.projectNaam].filter(Boolean).join(' '), b.nodig || '', b.opmerking || '', BS_ST[s.status || 'aangevraagd'] || s.status, (s.op || '').slice(0, 10)]);
+      [b.projectNr, b.projectNaam].filter(Boolean).join(' '), b.nodig || '', b.opmerking || '', BS_ST[s.status || 'aangevraagd'] || s.status, (s.op || '').slice(0, 10),
+      (s.vragen || []).map(function (v) { var a = docs['uren/' + m[1] + '/antwoorden/' + v.id]; return 'Vraag: ' + v.tekst + (a && a.d ? ' | Antwoord: ' + a.d.tekst : ' | (nog geen antwoord)'); }).join('\n')]);
   });
   rijen.sort(function (a, b) { return String(b[0]).localeCompare(String(a[0])); });
-  schrijfTab_(SH_BEST, ['Datum', 'Monteur', 'Wat', 'Aantal', 'Eenheid', 'Maat', 'Soort', 'Project', 'Nodig vóór', 'Opmerking', 'Status', 'Status gewijzigd'], rijen);
+  schrijfTab_(SH_BEST, ['Datum', 'Monteur', 'Wat', 'Aantal', 'Eenheid', 'Maat', 'Soort', 'Project', 'Nodig vóór', 'Opmerking', 'Status', 'Status gewijzigd', 'Vragen en antwoorden'], rijen);
 }
 
 function schrijfTab_(naam, kop, rijen) {

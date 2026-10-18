@@ -415,6 +415,39 @@ details.fold[open]>*+*{margin-top:14px}
 #bs-pm td.nul{color:var(--muted)}
 .bsf{display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:10px}
 @media (max-width:760px){.bsf{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bsf input{grid-column:1/-1}}
+/* ---------- monteur: tabbladen ---------- */
+.msub2{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.msub2 button{position:relative;display:inline-flex;align-items:center;gap:8px;font:600 16px var(--f-display);text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:12px 16px;border-radius:6px;cursor:pointer;flex:1 1 auto;justify-content:center;min-height:48px}
+.msub2 button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.msub2 button .rdot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;animation:puls 1.6s ease-in-out infinite}
+@media (max-width:560px){.msub2 button{font-size:14px;padding:10px 8px;flex:1 1 40%}}
+#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]){display:none!important}
+#v-monteur[data-sub]:not([data-sub="uren"]):not([hidden]){display:flex;flex-direction:column;gap:16px;max-width:760px}
+.tw{display:flex;flex-direction:column;gap:6px}
+.twrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:6px;background:var(--bg)}
+.twrow.ik{outline:2px solid var(--red)}
+.twrow .rk{font-size:20px;text-align:center}.twrow b{font-variant-numeric:tabular-nums}
+.twrow.p1{background:linear-gradient(90deg,var(--warn-soft),var(--bg))}
+/* ---------- vragen over bestellingen ---------- */
+.rdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--surface);flex:none;vertical-align:middle}
+nav.tabs button .rdot{margin-left:6px;width:12px;height:12px;animation:puls 1.6s ease-in-out infinite}
+nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
+@keyframes puls{50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){nav.tabs button .rdot{animation:none}}
+.vrmeld{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--red-soft);border:1px solid var(--red);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-weight:600}
+.vrmeld .rdot{width:14px;height:14px}.vrmeld span{margin-right:auto}
+.vrbox{display:flex;flex-direction:column;gap:6px;margin-top:6px;padding:8px 10px;border-radius:6px;background:var(--bg);border-left:3px solid var(--red);font-size:14px}
+.vrbox.klaar{border-left-color:var(--ok)}
+.vrbox p{margin:0}.vrbox small{color:var(--muted)}
+.vrq b{color:var(--red)}.vra b{color:var(--ok)}
+.vrin{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.vrin textarea{flex:1 1 100%}
+.vrin textarea{min-height:44px;font-size:15px}
+.micbtn{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:4px;min-width:44px;height:44px;cursor:pointer;font:600 13px var(--f-body);display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:0 10px}
+.micbtn.aan{background:var(--red);color:var(--red-ink);border-color:var(--red)}
+.bonrow.vr{grid-template-columns:48px minmax(0,1fr) auto 32px}
+.bonrow .vrbox{grid-column:1/-1}
+.vstat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;white-space:nowrap}
+.vstat.open{color:var(--red)}.vstat.ant{color:var(--ok)}
 /* ---------- afdrukken op A3 ---------- */
 .printkop{display:none}
 #b-print{margin-left:auto;align-self:center}
@@ -424,7 +457,7 @@ details.fold[open]>*+*{margin-top:14px}
   html,body{background:#fff!important}
   body{font-size:12.5px}
   body::before{display:none!important}
-  header.top,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
+  header.top,#msub,#vr-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
   label:has(select),label:has(input[type=search]){display:none!important}
   input[type=checkbox]{visibility:hidden}
   .edday label.tl:not(.aan){display:none!important}
@@ -476,9 +509,17 @@ details.fold[open]>*+*{margin-top:14px}
   <div id="blok-msg" class="notice" hidden>Je account is geblokkeerd voor het invullen van uren. Neem contact op met kantoor.</div>
   <div id="offline" class="notice" hidden>Geen verbinding met de opslag. Controleer je internet en ververs de pagina.</div>
 
+  <div class="msub2" id="msub" role="tablist" aria-label="Onderdelen" hidden>
+    <button type="button" role="tab" data-ms="uren" id="ms-uren">Uren invullen</button>
+    <button type="button" role="tab" data-ms="bestellen" id="ms-bestellen" hidden>Materiaal bestellen</button>
+    <button type="button" role="tab" data-ms="bonnen" id="ms-bonnen">Bonnetjes</button>
+    <button type="button" role="tab" data-ms="topper" id="ms-topper" hidden>Topper van de week</button>
+  </div>
+  <div id="vr-meld" class="vrmeld" hidden role="status"><i class="rdot" aria-hidden="true"></i><span id="vr-meldtxt">Kantoor heeft een vraag over je bestelling</span><button class="btn sm" type="button" id="vr-naar">Bekijken en antwoorden</button></div>
+
   <!-- MONTEUR -->
-  <section id="v-monteur" class="grid2">
-    <form class="card" id="f-uren" autocomplete="off">
+  <section id="v-monteur" class="grid2" data-sub="uren">
+    <form class="card" id="f-uren" autocomplete="off" data-msub="uren">
       <div class="toolbar"><h2 id="f-title" style="margin-right:auto">Uren invullen</h2><button class="btn ghost sm" type="button" id="b-editx" hidden>Annuleren</button></div>
       <p class="hint" id="f-lock" hidden></p>
       <div class="form">
@@ -504,7 +545,12 @@ details.fold[open]>*+*{margin-top:14px}
       <div class="msg" id="m-save" role="status"></div>
     </form>
 
-    <div class="card game" id="game">
+    <div class="card" id="topper-card" data-msub="topper">
+      <h2>Topper van de week</h2>
+      <p class="hint" style="margin:0">Punten verdien je met weken die compleet én op tijd zijn ingevuld (uiterlijk maandag 12:00): 10 per week, +5 als je week al vóór zaterdag klaar was, plus een bonus voor je reeks.</p>
+      <div id="tw-lijst" class="tw"></div>
+    </div>
+    <div class="card game" id="game" data-msub="topper">
       <div class="gtop">
         <div class="streak"><span class="flame" aria-hidden="true"></span><div><b id="g-streak">0</b><span id="g-streaklbl">weken op rij compleet</span></div></div>
         <div class="pts"><b id="g-pts">0</b><span>punten</span></div>
@@ -513,7 +559,7 @@ details.fold[open]>*+*{margin-top:14px}
       <p class="gmsg" id="g-msg"></p>
       <div class="badges" id="g-badges"></div>
     </div>
-    <div class="card mijnweek">
+    <div class="card mijnweek" data-msub="uren">
       <div class="wknav">
         <button class="btn ghost" id="wk-prev" type="button" aria-label="Vorige week">‹ Vorige week</button>
         <div class="wkmid"><span class="wk" id="wk-label">Week</span><button class="linkbtn" id="wk-now" type="button">naar deze week</button></div>
@@ -523,7 +569,7 @@ details.fold[open]>*+*{margin-top:14px}
       <div class="toolbar"><button class="btn ghost sm" type="button" id="b-kopie">Vorige week kopiëren naar deze week</button><span class="msg" id="m-kopie" role="status"></span></div>
       <div class="days" id="days"></div>
     </div>
-    <div class="card bonkaart" id="bon-card">
+    <div class="card bonkaart" id="bon-card" data-msub="bonnen">
       <h2>Bonnetjes &amp; declaraties</h2>
       <p class="hint" id="bon-na" hidden>Bonnetjes toevoegen kan in deze weergave niet. Lever ze in bij kantoor.</p>
       <div id="bon-add">
@@ -543,7 +589,7 @@ details.fold[open]>*+*{margin-top:14px}
       <div class="msg" id="bon-msg" role="status"></div>
       <div class="bonlist" id="bon-list"></div>
     </div>
-    <div class="card" id="best-card" hidden>
+    <div class="card" id="best-card" hidden data-msub="bestellen">
       <h2>Materiaal bestellen</h2>
       <p class="hint" style="margin:0">Schroeven, kit, gereedschap, kleding of schoenen nodig? Maak een foto, vul in hoeveel je nodig hebt en verstuur. Kantoor ziet het direct.</p>
       <label class="bonfoto" id="best-fotowrap"><input type="file" id="best-file" accept="image/*" capture="environment"><span class="btn ghost">Foto maken</span></label>
@@ -831,6 +877,17 @@ details.fold[open]>*+*{margin-top:14px}
   </section>
 </main>
 <div class="ovl" id="lb-ovl" hidden style="z-index:45"><figure class="lb"><img id="lb-img" alt="Bonnetje"><figcaption id="lb-cap"></figcaption><button class="btn" type="button" id="lb-x">Sluiten</button></figure></div>
+<div class="ovl" id="vr-ovl" hidden style="z-index:35">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="vr-t" style="width:min(560px,100%)">
+    <h2 id="vr-t">Vraag aan monteur</h2>
+    <p class="hint" id="vr-over" style="margin:0"></p>
+    <div id="vr-draad"></div>
+    <label>Je vraag<textarea id="vr-tekst" rows="3" placeholder="Typ of spreek je vraag in, bijv. welke lengte schroeven heb je precies nodig?"></textarea></label>
+    <div class="toolbar"><button class="micbtn" type="button" id="vr-mic" hidden aria-label="Vraag inspreken">🎤 Inspreken</button><span class="hint dict" id="vr-dicthint">Inspreken: tik in het tekstvak en gebruik de microfoon van je toetsenbord (Windows: Windows-toets + H).</span></div>
+    <div class="msg" id="vr-msg" role="status"></div>
+    <div class="toolbar" style="justify-content:flex-end"><button class="btn ghost" type="button" id="vr-x">Sluiten</button><button class="btn" type="button" id="vr-send">Vraag versturen</button></div>
+  </div>
+</div>
 <div class="ovl" id="cf-ovl" hidden style="z-index:40">
   <div class="card modal" role="alertdialog" aria-modal="true" aria-labelledby="cf-t" aria-describedby="cf-x" style="width:min(420px,100%)">
     <h2 id="cf-t">Weet je het zeker?</h2><p id="cf-x" style="margin:0"></p>
@@ -1122,7 +1179,7 @@ function werkLabel(id){const w=state.werken.find(x=>x.id===id);return w?(w.nr+" 
 /* ---------- tabs ---------- */
 function showTab(t,keep){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["monteur","weekstaten","kantoor","bonnen","bestellingen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();
+  ["monteur","weekstaten","kantoor","bonnen","bestellingen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();
 }
 /* ---------- afdrukken op A3 (via het printvenster: kies "Opslaan als PDF") ---------- */
 const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
@@ -1230,7 +1287,7 @@ document.addEventListener("focusin",e=>{const x=e.target;if(!x.matches||!x.match
 document.addEventListener("focusout",e=>{const x=e.target;if(!x.matches||!x.matches(UREN_SEL)||x.dataset.oud==null)return;if(x.value===""){x.value=x.dataset.oud;x.dispatchEvent(new Event("input",{bubbles:true}))}x.placeholder=x.dataset.ph||"";delete x.dataset.oud;delete x.dataset.ph});
 /* ---------- bekijk als monteur ---------- */
 function startPreview(m){state.preview={id:m.id,naam:m.monteur};setTimeout(pasInstellingenToe,0);setTimeout(updPrint,0);state.pvNaam=fi.naam.value;fi.naam.value=m.monteur;fi.naam.disabled=true;
-  document.querySelectorAll("nav.tabs button").forEach(b=>b.hidden=b.dataset.tab!=="monteur");$("#pv-naam").textContent=m.monteur;$("#pv-bar").hidden=false;
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.hidden=b.dataset.tab!=="monteur");setTimeout(()=>{subZichtbaar();bestVis()},0);$("#pv-naam").textContent=m.monteur;$("#pv-bar").hidden=false;
   $("#b-save").disabled=true;$("#b-kopie").disabled=true;state.weekStart=monday(new Date());stopDag();fillWerkSelects();showTab("monteur");renderWeek();window.scrollTo({top:0})}
 function stopPreview(){if(!state.preview)return;state.preview=null;setTimeout(pasInstellingenToe,0);setTimeout(updPrint,0);fi.naam.value=state.pvNaam||"";fi.naam.disabled=false;$("#pv-bar").hidden=true;$("#b-save").disabled=false;$("#b-kopie").disabled=false;
   document.querySelectorAll("nav.tabs button").forEach(b=>b.hidden=false);fillWerkSelects();renderWeek();showTab("monteurs")}
@@ -1320,8 +1377,27 @@ const BS_ST={aangevraagd:"Nieuw",besteld:"Besteld",geleverd:"Geleverd",afgewezen
 const BS_CAT=["Schroeven & bevestiging","Kit & lijm","Gereedschap","Kleding","Schoenen","Veiligheid (PBM)","Overig"];
 function bestelAan(id){return (state.cfg&&state.cfg.bestelMonteurs||[]).includes(id)}
 function bsStatus(b){return ((state.bestelStatus||{})[b._sid]||{}).status||"aangevraagd"}
-function bestVis(){const c=$("#best-card");if(!c)return;const toon=state.preview?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));c.hidden=!toon;$("#best-fotowrap").hidden=!state.assets;
+function bestVis(){const c=$("#best-card");if(!c)return;setTimeout(subZichtbaar,0);const toon=state.preview?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));c.hidden=!toon;$("#best-fotowrap").hidden=!state.assets;
   if(toon){const ps=state.werken.filter(w=>w.actief!==false),cur=$("#best-proj").value;$("#best-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#best-proj").value=cur;renderMijnBest()}}
+/* ---------- monteur: tabbladen ---------- */
+function subZichtbaar(){const pv=!!state.preview,mon=!state.office||pv;const bAan=pv?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));
+  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#msub").hidden=$("#v-monteur").hidden;
+  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon))kiesSub("uren",true)}
+function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.querySelectorAll("#msub [data-ms]").forEach(b=>b.setAttribute("aria-selected",b.dataset.ms===t));if(!stil)ls("alw-msub",t);
+  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();if(!stil)window.scrollTo({top:0})}
+$("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
+/* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
+function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+  const perW=k=>[...names].map(n=>{const sp=spelVoor(n),p=(sp.perWeek.find(([x])=>x===k)||[])[1]||0;return{naam:n,punten:p,reeks:sp.streak}}).filter(x=>x.punten>0).sort((a,b)=>b.punten-a.punten||b.reeks-a.reeks||a.naam.localeCompare(b.naam,"nl"));
+  return{deze:{week:isoWeek(wk),lijst:perW(iso(wk))},vorige:{week:isoWeek(vw),lijst:perW(iso(vw))}}}
+let topperT=null,topperLaatst="";
+function publiceerTopper(){if(!state.office||!state.db)return;clearTimeout(topperT);topperT=setTimeout(async()=>{const d=topperData(),j=JSON.stringify(d);if(j===topperLaatst)return;
+  const cur=state.topper?JSON.stringify({deze:state.topper.deze,vorige:state.topper.vorige}):"";topperLaatst=j;if(cur===j)return;
+  try{await state.db.doc("kantoor/config/topper/huidig").set({...d,bijgewerkt:new Date().toISOString()})}catch(e){topperLaatst=""}},4000)}
+function renderTopperWeek(){const el=$("#tw-lijst");if(!el)return;const t=state.office&&!state.preview?topperData():state.topper;const ik=state.preview?state.preview.naam:fi.naam.value.trim();
+  if(!t){el.innerHTML='<div class="empty">Het overzicht wordt bijgewerkt zodra kantoor de app opent.</div>';return}
+  const blok=(titel,o)=>`<h3>${titel} · week ${o.week}</h3>`+(o.lijst&&o.lijst.length?o.lijst.slice(0,10).map((x,i)=>`<div class="twrow${i===0?" p1":""}${x.naam===ik?" ik":""}"><span class="rk">${i===0?"🏆":i+1}</span><span>${esc(x.naam)}${x.naam===ik?" (jij)":""}${x.reeks>1?` <span class="gstreak">${x.reeks} wk op rij</span>`:""}</span><b>${x.punten} pnt</b></div>`).join(""):'<div class="empty">Nog niemand met een complete week.</div>');
+  el.innerHTML=blok("Deze week",t.deze||{})+blok("Vorige week",t.vorige||{})}
 function maatVis(){const c=$("#best-cat").value;document.querySelectorAll(".maatveld").forEach(x=>x.hidden=!(c==="Kleding"||c==="Schoenen"));if(c==="Schoenen")$("#best-eenh").value="paar"}
 $("#best-cat").addEventListener("change",maatVis);
 let bestBlob=null;
@@ -1347,8 +1423,11 @@ $("#best-save").onclick=async()=>{const m=$("#best-msg"),b=$("#best-save");m.cla
   catch(err){m.className="msg err";m.textContent="Versturen mislukt. Probeer het opnieuw."}finally{b.disabled=false}};
 function bsRegel(b){return `${esc(b.wat)}${b.maat?" · maat "+esc(b.maat):""}`}
 function bsAantal(b){return `${Number(b.aantal)||0} ${esc(b.eenheid||"stuks")}`}
-function renderMijnBest(){const card=$("#best-card");if(!card||card.hidden)return;const id=mijnId();const L=(state.bestellingen||[]).filter(b=>state.preview?(b.uid===id||b.monteur===state.preview.naam):true).sort((a,b)=>(b.aangemaakt||"").localeCompare(a.aangemaakt||"")).slice(0,15);
-  $("#best-list").innerHTML=L.length?`<h3>Mijn bestellingen</h3>`+L.map(b=>{const st=bsStatus(b);return `<div class="bonrow">${b.foto?`<img ${fotoSrc(b.foto)} alt="" loading="lazy" data-bslb="${esc(b._sid)}">`:'<span class="bnof">geen foto</span>'}<div><b>${bsAantal(b)} · ${bsRegel(b)}</b><small>${fmtD(b.datum)} · ${esc(b.categorie)}${b.projectNr?" · "+esc(b.projectNr):""}${((state.bestelStatus||{})[b._sid]||{}).notitie?" · kantoor: "+esc(state.bestelStatus[b._sid].notitie):""}</small></div><span class="bs ${st}">${BS_ST[st]}</span>${st==="aangevraagd"&&!state.preview?`<button class="x" type="button" data-bsdel="${esc(b._sid)}" aria-label="Bestelling intrekken">×</button>`:"<span></span>"}</div>`}).join(""):""}
+function renderMijnBest(){const card=$("#best-card");if(!card||card.hidden){renderVraagMelding();return}const id=mijnId();const L=(state.bestellingen||[]).filter(b=>state.preview?(b.uid===id||b.monteur===state.preview.naam):true).sort((a,b)=>(bsOpenVragen(b).length-bsOpenVragen(a).length)||(b.aangemaakt||"").localeCompare(a.aangemaakt||"")).slice(0,15);
+  const foc=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.vrant,concept={};document.querySelectorAll("#best-list [data-vrant]").forEach(t=>{if(t.value)concept[t.dataset.vrant]=t.value});
+  $("#best-list").innerHTML=L.length?`<h3>Mijn bestellingen</h3>`+L.map(b=>{const st=bsStatus(b);return `<div class="bonrow">${b.foto?`<img ${fotoSrc(b.foto)} alt="" loading="lazy" data-bslb="${esc(b._sid)}">`:'<span class="bnof">geen foto</span>'}<div><b>${bsAantal(b)} · ${bsRegel(b)}</b><small>${fmtD(b.datum)} · ${esc(b.categorie)}${b.projectNr?" · "+esc(b.projectNr):""}${((state.bestelStatus||{})[b._sid]||{}).notitie?" · kantoor: "+esc(state.bestelStatus[b._sid].notitie):""}</small></div><span class="bs ${st}">${bsOpenVragen(b).length?'<i class="rdot" aria-hidden="true"></i> ':""}${BS_ST[st]}</span>${st==="aangevraagd"&&!state.preview?`<button class="x" type="button" data-bsdel="${esc(b._sid)}" aria-label="Bestelling intrekken">×</button>`:"<span></span>"}${draadHTML(b,true)}</div>`}).join(""):"";
+  Object.entries(concept).forEach(([k,v])=>{const t=$(`#best-list [data-vrant="${CSS.escape(k)}"]`);if(t)t.value=v});if(foc){const t=$(`#best-list [data-vrant="${CSS.escape(foc)}"]`);if(t)t.focus()}
+  renderVraagMelding()}
 $("#best-list").addEventListener("click",async e=>{const t=e.target;if(t.dataset.bslb){toonBest(t.dataset.bslb);return}const id=t.dataset.bsdel;if(!id)return;const b=(state.bestellingen||[]).find(x=>x._sid===id);if(!b)return;
   if(!await vraag("Bestelling intrekken?",`${bsAantal(b)} ${b.wat} intrekken?`,"Ja, intrekken"))return;
   try{await state.db.doc(b._path).delete();if(b.foto&&state.assets){try{await state.assets.delete(b.foto)}catch(x){}}}catch(err){$("#best-msg").className="msg err";$("#best-msg").textContent="Intrekken mislukt."}});
@@ -1361,9 +1440,9 @@ function bsFilter(){const st=$("#bs-st").value,mon=$("#bs-mon").value;return bsB
 function renderBestellingenKantoor(){if(!state.office)return;const alle=state.bestellingen||[];const nieuw=alle.filter(b=>bsStatus(b)==="aangevraagd").length;$("#tab-bs").textContent=nieuw?`Bestellingen (${nieuw})`:"Bestellingen";
   const ms=[...new Set(alle.map(b=>b.monteur))].sort((a,b)=>a.localeCompare(b,"nl")),cm=$("#bs-mon").value;$("#bs-mon").innerHTML='<option value="">Alle monteurs</option>'+ms.map(n=>`<option>${esc(n)}</option>`).join("");$("#bs-mon").value=ms.includes(cm)?cm:"";
   const L=bsFilter(),basis=bsBasis(),tel=s=>basis.filter(b=>bsStatus(b)===s).length;
-  $("#bs-sum").innerHTML=`<div class="t"><span>Nieuw</span><b>${tel("aangevraagd")}</b></div><div class="u"><span>Besteld, onderweg</span><b>${tel("besteld")}</b></div><div class="b"><span>Geleverd</span><b>${tel("geleverd")}</b></div><div><span>In deze lijst</span><b>${L.length}</b></div>`;
-  $("#bs-tab tbody").innerHTML=L.length?L.map(b=>{const st=bsStatus(b),info=(state.bestelStatus||{})[b._sid]||{};return `<tr><td>${b.foto?`<img class="bthumb" ${fotoSrc(b.foto)} alt="Foto bestelling" loading="lazy" data-bslb="${esc(b._sid)}">`:'<span class="bnof">–</span>'}</td><td>${fmtD(b.datum)}</td><td><button type="button" class="linkbtn" data-bsmon="${esc(b.monteur)}">${esc(b.monteur)}</button></td><td class="wat"><b>${bsRegel(b)}</b>${b.opmerking?`<br><small class="opm">${esc(b.opmerking)}</small>`:""}${info.notitie?`<br><small>Kantoor: ${esc(info.notitie)}</small>`:""}</td><td class="num"><b>${bsAantal(b)}</b></td><td>${esc(b.categorie)}</td><td>${b.projectNr?esc(b.projectNr+" "+(b.projectNaam||"")):""}</td><td>${b.nodig?fmtD(b.nodig):""}</td><td><span class="bs ${st}">${BS_ST[st]}</span>${info.op&&st!=="aangevraagd"?`<br><small style="color:var(--muted)">${fmtD(info.op.slice(0,10))}</small>`:""}</td>
-    <td class="act">${st==="aangevraagd"?`<button class="btn sm" type="button" data-bsst="besteld" data-bsid="${esc(b._sid)}">Besteld</button>`:""}${st==="aangevraagd"||st==="besteld"?`<button class="btn sm ok-btn" type="button" data-bsst="geleverd" data-bsid="${esc(b._sid)}">Geleverd</button>`:""}${st==="aangevraagd"?`<button class="btn ghost sm" type="button" data-bsst="afgewezen" data-bsid="${esc(b._sid)}">Afwijzen</button>`:""}${st!=="aangevraagd"?`<button class="btn ghost sm" type="button" data-bsst="aangevraagd" data-bsid="${esc(b._sid)}">Terugzetten</button>`:""}</td></tr>`}).join(""):`<tr><td colspan="10" class="empty">${alle.length?"Geen bestellingen in deze selectie.":"Nog geen bestellingen. Zet bestellen per monteur aan in het tabblad Monteurs."}</td></tr>`;
+  $("#bs-sum").innerHTML=`<div class="t"><span>Nieuw</span><b>${tel("aangevraagd")}</b></div><div class="u"><span>Besteld, onderweg</span><b>${tel("besteld")}</b></div><div class="b"><span>Geleverd</span><b>${tel("geleverd")}</b></div><div><span>Vragen zonder antwoord</span><b>${alle.reduce((t,b)=>t+bsOpenVragen(b).length,0)}</b></div><div><span>In deze lijst</span><b>${L.length}</b></div>`;
+  $("#bs-tab tbody").innerHTML=L.length?L.map(b=>{const st=bsStatus(b),info=(state.bestelStatus||{})[b._sid]||{};return `<tr><td>${b.foto?`<img class="bthumb" ${fotoSrc(b.foto)} alt="Foto bestelling" loading="lazy" data-bslb="${esc(b._sid)}">`:'<span class="bnof">–</span>'}</td><td>${fmtD(b.datum)}</td><td><button type="button" class="linkbtn" data-bsmon="${esc(b.monteur)}">${esc(b.monteur)}</button></td><td class="wat"><b>${bsRegel(b)}</b>${b.opmerking?`<br><small class="opm">${esc(b.opmerking)}</small>`:""}${info.notitie?`<br><small>Kantoor: ${esc(info.notitie)}</small>`:""}${draadHTML(b,false)}</td><td class="num"><b>${bsAantal(b)}</b></td><td>${esc(b.categorie)}</td><td>${b.projectNr?esc(b.projectNr+" "+(b.projectNaam||"")):""}</td><td>${b.nodig?fmtD(b.nodig):""}</td><td><span class="bs ${st}">${BS_ST[st]}</span>${bsVragen(b).length?`<br><span class="vstat ${bsOpenVragen(b).length?"open":"ant"}">${bsOpenVragen(b).length?"● vraag open":"✓ beantwoord"}</span>`:""}${info.op&&st!=="aangevraagd"?`<br><small style="color:var(--muted)">${fmtD(info.op.slice(0,10))}</small>`:""}</td>
+    <td class="act">${st==="aangevraagd"?`<button class="btn sm" type="button" data-bsst="besteld" data-bsid="${esc(b._sid)}">Besteld</button>`:""}${st==="aangevraagd"||st==="besteld"?`<button class="btn sm ok-btn" type="button" data-bsst="geleverd" data-bsid="${esc(b._sid)}">Geleverd</button>`:""}${st==="aangevraagd"?`<button class="btn ghost sm" type="button" data-bsst="afgewezen" data-bsid="${esc(b._sid)}">Afwijzen</button>`:""}${st!=="aangevraagd"?`<button class="btn ghost sm" type="button" data-bsst="aangevraagd" data-bsid="${esc(b._sid)}">Terugzetten</button>`:""}<button class="btn ghost sm" type="button" data-bsvr="${esc(b._sid)}">Vraag stellen</button></td></tr>`}).join(""):`<tr><td colspan="10" class="empty">${alle.length?"Geen bestellingen in deze selectie.":"Nog geen bestellingen. Zet bestellen per monteur aan in het tabblad Monteurs."}</td></tr>`;
   // wie heeft wat besteld
   const tellen=basis.filter(b=>bsStatus(b)!=="afgewezen"),per=new Map();tellen.forEach(b=>{const o=per.get(b.monteur)||{};o[b.categorie]=(o[b.categorie]||0)+1;if(b.categorie==="Schoenen"&&(!o._sch||b.datum>o._sch))o._sch=b.datum;per.set(b.monteur,o)});
   const cats=BS_CAT.filter(c=>tellen.some(b=>b.categorie===c));
@@ -1371,11 +1450,11 @@ function renderBestellingenKantoor(){if(!state.office)return;const alle=state.be
   $("#bs-pm tbody").innerHTML=per.size?[...per.entries()].sort((a,b)=>a[0].localeCompare(b[0],"nl")).map(([n,o])=>`<tr><td><button type="button" class="linkbtn" data-bsmon="${esc(n)}">${esc(n)}</button></td>${cats.map(c=>`<td class="${o[c]?"":"nul"}">${o[c]||"–"}</td>`).join("")}<td><b>${cats.reduce((t,c)=>t+(o[c]||0),0)}</b></td><td>${o._sch?fmtD(o._sch):"–"}</td></tr>`).join(""):`<tr><td class="empty">Nog geen bestellingen in deze periode.</td></tr>`;
   $("#bs-perhint").textContent=$("#bs-per").selectedOptions[0]?$("#bs-per").selectedOptions[0].textContent:""}
 ["bs-zoek","bs-mon","bs-cat","bs-st","bs-per"].forEach(id=>$("#"+id).addEventListener(id==="bs-zoek"?"input":"change",renderBestellingenKantoor));
-$("#v-bestellingen").addEventListener("click",async e=>{const t=e.target;if(t.dataset.bslb){toonBest(t.dataset.bslb);return}
+$("#v-bestellingen").addEventListener("click",async e=>{const t=e.target;if(t.dataset.bslb){toonBest(t.dataset.bslb);return}if(t.dataset.bsvr){openVraag(t.dataset.bsvr);return}
   if(t.dataset.bsmon!=null){$("#bs-mon").value=t.dataset.bsmon;$("#bs-st").value="";renderBestellingenKantoor();window.scrollTo({top:0,behavior:"smooth"});return}
   if(!t.dataset.bsst)return;const b=(state.bestellingen||[]).find(x=>x._sid===t.dataset.bsid);if(!b)return;const nieuw=t.dataset.bsst;
   if(nieuw==="afgewezen"&&!await vraag("Bestelling afwijzen?",`${bsAantal(b)} ${b.wat} van ${b.monteur} afwijzen?`,"Ja, afwijzen"))return;
-  t.disabled=true;try{await state.db.collection("kantoor/config/bestelstatus").doc(b._sid).set({status:nieuw,op:new Date().toISOString(),notitie:((state.bestelStatus||{})[b._sid]||{}).notitie||""});const m=$("#bs-msg");m.className="msg ok";m.textContent=`${b.monteur}: ${b.wat} → ${BS_ST[nieuw]}.`}catch(err){t.disabled=false;$("#bs-msg").className="msg err";$("#bs-msg").textContent="Opslaan mislukt."}});
+  t.disabled=true;try{await state.db.collection("kantoor/config/bestelstatus").doc(b._sid).set({...((state.bestelStatus||{})[b._sid]||{}),status:nieuw,op:new Date().toISOString()});const m=$("#bs-msg");m.className="msg ok";m.textContent=`${b.monteur}: ${b.wat} → ${BS_ST[nieuw]}.`}catch(err){t.disabled=false;$("#bs-msg").className="msg err";$("#bs-msg").textContent="Opslaan mislukt."}});
 $("#bs-xlsx").addEventListener("click",async()=>{const m=$("#bs-msg"),L=bsFilter();m.className="msg";if(!state.dl||typeof XLSX==="undefined"){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return}if(!L.length){m.className="msg err";m.textContent="Geen bestellingen in deze selectie.";return}
   const a=[["Datum","Monteur","Wat","Aantal","Eenheid","Maat","Soort","Projectnummer","Project","Nodig vóór","Opmerking","Status","Status gewijzigd op"]];L.forEach(b=>{const i=(state.bestelStatus||{})[b._sid]||{};a.push([parse(b.datum),b.monteur,b.wat,Number(b.aantal)||0,b.eenheid||"",b.maat||"",b.categorie,b.projectNr||"",b.projectNaam||"",b.nodig?parse(b.nodig):"",b.opmerking||"",BS_ST[bsStatus(b)],(i.op||"").slice(0,10)])});
   const ws=XLSX.utils.aoa_to_sheet(a,{cellDates:true});for(let i=2;i<=a.length;i++){["A","J"].forEach(c=>{if(ws[c+i]&&ws[c+i].t==="d")ws[c+i].z="dd-mm-yyyy"})}ws["!cols"]=[11,22,40,8,9,8,22,13,30,11,36,11,14].map(w=>({wch:w}));ws["!autofilter"]={ref:`A1:M${a.length}`};
@@ -1383,6 +1462,48 @@ $("#bs-xlsx").addEventListener("click",async()=>{const m=$("#bs-msg"),L=bsFilter
   const s2a=[["Monteur",...BS_CAT,"Totaal"]];[...per.entries()].sort().forEach(([n,o])=>s2a.push([n,...BS_CAT.map(c=>o[c]||0),BS_CAT.reduce((t,c)=>t+(o[c]||0),0)]));const s2=XLSX.utils.aoa_to_sheet(s2a);s2["!cols"]=[{wch:22},...BS_CAT.map(()=>({wch:14})),{wch:9}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Bestellingen");XLSX.utils.book_append_sheet(wb,s2,"Per monteur");
   try{await state.dl.save({filename:`Alwiti bestellingen ${iso(new Date())}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent="Excel opgeslagen. De foto's zelf staan niet in Excel; open ze in de app."}catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet."}}});
+/* ---------- vragen over bestellingen ---------- */
+function bsVragen(b){return ((state.bestelStatus||{})[b._sid]||{}).vragen||[]}
+function bsAntw(v){return (state.antwoorden||{})[v.id]}
+function bsOpenVragen(b){return bsVragen(b).filter(v=>!bsAntw(v))}
+function tijdKort(t){if(!t)return"";const d=new Date(t);return fmtD(iso(d))+" "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}
+function draadHTML(b,metInvoer){const vs=bsVragen(b);if(!vs.length)return"";return vs.map(v=>{const a=bsAntw(v);return `<div class="vrbox${a?" klaar":""}"><p class="vrq"><b>Vraag kantoor:</b> ${esc(v.tekst)} <small>${tijdKort(v.op)}</small></p>${a?`<p class="vra"><b>Antwoord ${esc(a.monteur||"")}:</b> ${esc(a.tekst)} <small>${tijdKort(a.op)}</small></p>`:metInvoer?`<div class="vrin"><textarea data-vrant="${esc(v.id)}" rows="2" placeholder="Typ of spreek je antwoord in"></textarea><button class="micbtn" type="button" data-vrmic="${esc(v.id)}" aria-label="Antwoord inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vrsend="${esc(v.id)}" data-vrbs="${esc(b._sid)}">Versturen</button></div>`:'<p><small>Nog geen antwoord van de monteur.</small></p>'}</div>`}).join("")}
+/* inspreken via de browser (Chrome/Edge/Safari); anders het microfoontje van het toetsenbord */
+function spraakKan(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
+let spraak=null;
+function spreekIn(knop,veld){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){veld.focus();return}
+  if(spraak){try{spraak.stop()}catch(e){}return}
+  const r=new SR();r.lang="nl-NL";r.interimResults=true;r.continuous=true;const basis=veld.value?veld.value.replace(/\s*$/," "):"";let vast="";
+  r.onresult=e=>{let tus="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)vast+=t;else tus+=t}veld.value=(basis+vast+tus).replace(/^\s+/,"");veld.dispatchEvent(new Event("input",{bubbles:true}))};
+  r.onend=()=>{spraak=null;knop.classList.remove("aan");if(veld.value){const v=veld.value.trim();veld.value=v.charAt(0).toUpperCase()+v.slice(1)}};
+  r.onerror=e=>{spraak=null;knop.classList.remove("aan");if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed")){knop.hidden=true;veld.focus()}};
+  try{r.start();spraak=r;knop.classList.add("aan")}catch(e){spraak=null;veld.focus()}}
+/* monteur: rood bolletje + melding */
+function renderVraagMelding(){const tab=$("#ms-bestellen");if(!tab)return;const mijn=state.office&&!state.preview?[]:(state.bestellingen||[]).filter(b=>state.preview?b.monteur===state.preview.naam:true);
+  const n=mijn.reduce((t,b)=>t+bsOpenVragen(b).length,0);const dot=tab.querySelector(".rdot");
+  if(n&&!dot)tab.insertAdjacentHTML("beforeend",'<i class="rdot" aria-hidden="true"></i>');if(!n&&dot)dot.remove();tab.setAttribute("aria-label",n?`Materiaal bestellen, ${n} open ${n===1?"vraag":"vragen"} van kantoor`:"Materiaal bestellen");
+  $("#vr-meld").hidden=!n||$("#v-monteur").dataset.sub==="bestellen";if(n)$("#vr-meldtxt").textContent=n===1?"Kantoor heeft een vraag over je bestelling":`Kantoor heeft ${n} vragen over je bestellingen`}
+$("#vr-naar").onclick=()=>{showTab("monteur");kiesSub("bestellen");const c=$("#best-card");if(c&&!c.hidden){c.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>{const t=c.querySelector("[data-vrant]");if(t)t.focus({preventScroll:true})},500)}};
+$("#best-list").addEventListener("click",async e=>{const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.vrmic){const v=$(`#best-list [data-vrant="${CSS.escape(t.dataset.vrmic)}"]`);if(v)spreekIn(t,v);return}
+  if(!t.dataset.vrsend)return;const vid=t.dataset.vrsend,veld=$(`#best-list [data-vrant="${CSS.escape(vid)}"]`),tekst=(veld&&veld.value||"").trim(),m=$("#best-msg");
+  if(state.preview){m.className="msg err";m.textContent="Je bekijkt de app als monteur; versturen is uitgeschakeld.";return}
+  if(!tekst){m.className="msg err";m.textContent="Typ of spreek eerst je antwoord in.";if(veld)veld.focus();return}
+  t.disabled=true;try{await state.db.doc(UREN_COL+"/"+state.uid).collection("antwoorden").doc(vid).set({tekst,op:new Date().toISOString(),monteur:fi.naam.value.trim(),bestelling:t.dataset.vrbs||""});m.className="msg ok";m.textContent="Antwoord verstuurd naar kantoor."}
+  catch(err){t.disabled=false;m.className="msg err";m.textContent="Versturen mislukt. Probeer het opnieuw."}});
+/* kantoor: vraag stellen */
+let vrBs=null;
+function openVraag(sid){const b=(state.bestellingen||[]).find(x=>x._sid===sid);if(!b)return;vrBs=sid;$("#vr-t").textContent="Vraag aan "+b.monteur;$("#vr-over").textContent=`Over: ${Number(b.aantal)||0} ${b.eenheid||""} ${b.wat}${b.maat?" · maat "+b.maat:""} (${fmtD(b.datum)})`;
+  $("#vr-draad").innerHTML=draadHTML(b,false);$("#vr-tekst").value="";$("#vr-msg").textContent="";$("#vr-mic").hidden=!spraakKan();$("#vr-dicthint").hidden=spraakKan();$("#vr-ovl").hidden=false;setTimeout(()=>$("#vr-tekst").focus(),50)}
+function sluitVraag(){if(spraak){try{spraak.stop()}catch(e){}}$("#vr-ovl").hidden=true;vrBs=null}
+$("#vr-x").onclick=sluitVraag;$("#vr-ovl").addEventListener("click",e=>{if(e.target.id==="vr-ovl")sluitVraag()});
+$("#vr-mic").onclick=()=>spreekIn($("#vr-mic"),$("#vr-tekst"));
+$("#vr-send").onclick=async()=>{const b=(state.bestellingen||[]).find(x=>x._sid===vrBs),m=$("#vr-msg"),tekst=$("#vr-tekst").value.trim();if(!b)return;
+  if(!tekst){m.className="msg err";m.textContent="Typ of spreek eerst je vraag in.";return}if(spraak){try{spraak.stop()}catch(e){}}
+  const cur=(state.bestelStatus||{})[b._sid]||{},v={id:"v"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),tekst,op:new Date().toISOString()};
+  $("#vr-send").disabled=true;try{await state.db.collection("kantoor/config/bestelstatus").doc(b._sid).set({...cur,status:cur.status||"aangevraagd",vragen:[...(cur.vragen||[]),v]});
+    sluitVraag();const mm=$("#bs-msg");mm.className="msg ok";mm.textContent=`Vraag verstuurd naar ${b.monteur}. Hij ziet een rood bolletje in de app.`}
+  catch(err){m.className="msg err";m.textContent="Versturen mislukt."}finally{$("#vr-send").disabled=false}};
 /* ---------- instellingen ---------- */
 function kantoorAan(id){return (state.cfg&&state.cfg.kantoorMonteurs||[]).includes(id)}
 function mijnId(){return state.preview?state.preview.id:state.uid}
@@ -1408,7 +1529,8 @@ $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwn
     for(const id of Object.keys(state.telaat||{}))await del("archief/telaat/items/"+id);
     for(const x of (state.imports||[]).slice())await del("kantoor/config/imports/"+x.id);
     if(bon){for(const x of (state.bonnen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bonStatus||{}))await del("kantoor/config/bonstatus/"+id);
-      for(const x of (state.bestellingen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bestelStatus||{}))await del("kantoor/config/bestelstatus/"+id)}
+      for(const x of (state.bestellingen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bestelStatus||{}))await del("kantoor/config/bestelstatus/"+id);
+      for(const a of Object.values(state.antwoorden||{}))if(a._path)await del(a._path);await del("kantoor/config/topper/huidig")}
     if(proj)for(const w of state.werken.slice())await del(WERK_COL+"/"+w.id);
     if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
       const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs","bestelMonteurs"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
@@ -2172,22 +2294,26 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   $("#lm-alleen").hidden=!!state.isOwner;$("#lm-stappen").hidden=!state.isOwner;
   pasInstellingenToe();
   if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
-  else{$("#who").textContent=fi.naam.value||"Monteurs"}
+  else{$("#who").textContent=fi.naam.value||"Monteurs";document.querySelector("nav.tabs").hidden=true}
+  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","topper"].includes(s)?s:"uren",true);subZichtbaar()}
   if(!db){$("#offline").hidden=false;return}
   state.db=db;
   if(state.office)db.doc("kantoor/config").collection("imports").onSnapshot(s=>{state.imports=s.docs.map(d=>({id:d.id,...d.data()}));renderImports()},()=>{});
   db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
-  const merge=()=>{state.uren=[].concat(...per.values());renderWeek();renderOffice();if(!$("#ed-ovl").hidden)renderEdWeek()};
+  db.doc("kantoor/config/topper/huidig").onSnapshot(d=>{state.topper=d.exists?d.data():null;if($("#v-monteur").dataset.sub==="topper")renderTopperWeek()},()=>{});
+  const merge=()=>{state.uren=[].concat(...per.values());renderWeek();renderOffice();publiceerTopper();if($("#v-monteur").dataset.sub==="topper")renderTopperWeek();if(!$("#ed-ovl").hidden)renderEdWeek()};
   const watchIn=(root,uid)=>{const key=root+"/"+uid;if(subs.has(key))return;subs.set(key,db.doc(root+"/"+uid).collection("items").onSnapshot(s=>{per.set(key,s.docs.map(d=>({id:d.id,_path:root+"/"+uid+"/items/"+d.id,...d.data()})));merge()},()=>{}))};
   const bonPer=new Map();const bonMerge=()=>{state.bonnen=[].concat(...bonPer.values());renderMijnBonnen();renderBonnenKantoor()};
   const watchBon=uid=>{const key="bon/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("bonnen").onSnapshot(s=>{bonPer.set(uid,s.docs.map(d=>({id:d.id,_sid:uid+"__"+d.id,_path:UREN_COL+"/"+uid+"/bonnen/"+d.id,...d.data()})));bonMerge()},()=>{}))};
   const bsPer=new Map();const bsMerge=()=>{state.bestellingen=[].concat(...bsPer.values());renderMijnBest();renderBestellingenKantoor()};
   const watchBest=uid=>{const key="bs/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("bestellingen").onSnapshot(s=>{bsPer.set(uid,s.docs.map(d=>({id:d.id,_sid:uid+"__"+d.id,_path:UREN_COL+"/"+uid+"/bestellingen/"+d.id,...d.data()})));bsMerge()},()=>{}))};
+  const antPer=new Map();const antMerge=()=>{state.antwoorden=Object.assign({},...antPer.values());renderMijnBest();renderBestellingenKantoor();if(!$("#vr-ovl").hidden&&vrBs){const b=(state.bestellingen||[]).find(x=>x._sid===vrBs);if(b)$("#vr-draad").innerHTML=draadHTML(b,false)}};
+  const watchAnt=uid=>{const key="ant/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("antwoorden").onSnapshot(s=>{antPer.set(uid,Object.fromEntries(s.docs.map(d=>[d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/antwoorden/"+d.id}])));antMerge()},()=>{}))};
   db.collection("kantoor/config/bestelstatus").onSnapshot(s=>{state.bestelStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBest();renderBestellingenKantoor()},()=>{});
   db.collection("kantoor/config/bonstatus").onSnapshot(s=>{state.bonStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBonnen();renderBonnenKantoor()},()=>{});
-  const watch=uid=>{watchIn(UREN_COL,uid);watchIn("goedgekeurd",uid);watchBest(uid);watchBon(uid)};
+  const watch=uid=>{watchIn(UREN_COL,uid);watchIn("goedgekeurd",uid);watchBest(uid);watchAnt(uid);watchBon(uid)};
   if(state.office){
     db.collection(UREN_COL).onSnapshot(s=>{state.monteurs=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!x.verwijderd);renderKoppel();renderWerken();renderWeekcontrole();renderAanlevering();s.docs.forEach(d=>watch(d.id));merge()},()=>{});
     db.collection("goedgekeurd").onSnapshot(s=>{s.docs.forEach(d=>watchIn("goedgekeurd",d.id))},()=>{});
