@@ -643,7 +643,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     </div>
     <div class="card" id="topper-card" data-msub="topper">
       <h2>Topper van de week</h2>
-      <p class="hint" style="margin:0">Punten verdien je met weken die compleet én op tijd zijn ingevuld (uiterlijk maandag 12:00): 10 per week, +5 als je week al vóór zaterdag klaar was, plus een bonus voor je reeks.</p>
+      <p class="hint" style="margin:0">Punten verdien je met weken die compleet én op tijd zijn ingevuld (uiterlijk maandag 12:00): 10 per week, +5 als je week al vóór zaterdag klaar was, plus een bonus voor je reeks. Een toolbox aftekenen levert 10 punten op (5 als je te laat bent).</p>
       <div id="tw-lijst" class="tw"></div>
     </div>
     <div class="card game" id="game" data-msub="topper">
@@ -876,7 +876,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   <section id="v-ranglijst" hidden style="display:flex;flex-direction:column;gap:20px">
     <div class="card">
       <div class="toolbar"><h2 style="margin-right:auto" id="rl-title">Topper van de maand</h2><button class="btn ghost sm" id="rl-prev" type="button">‹</button><select id="rl-maand" style="width:auto"></select><button class="btn ghost sm" id="rl-next" type="button">›</button></div>
-      <p class="hint">Punten verdien je met weken die compleet én op tijd (uiterlijk maandag 12:00) zijn ingevuld: 10 per week, +5 als de week al vóór zaterdag klaar was, plus een reeksbonus tot 10. Een week telt mee in de maand waarin de maandag valt.</p>
+      <p class="hint">Punten verdien je met weken die compleet én op tijd (uiterlijk maandag 12:00) zijn ingevuld: 10 per week, +5 als de week al vóór zaterdag klaar was, plus een reeksbonus tot 10. Een week telt mee in de maand waarin de maandag valt. Een toolbox aftekenen telt ook mee: 10 punten, of 5 als het na de uiterste datum is (alleen als Toolbox aan staat).</p>
       <div class="podium" id="rl-podium"></div>
     </div>
     <div class="card">
@@ -1319,7 +1319,7 @@ function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.queryS
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
 /* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
 function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
-  const perW=k=>[...names].map(n=>{const sp=spelVoor(n),p=(sp.perWeek.find(([x])=>x===k)||[])[1]||0;return{naam:n,punten:p,reeks:sp.streak}}).filter(x=>x.punten>0).sort((a,b)=>b.punten-a.punten||b.reeks-a.reeks||a.naam.localeCompare(b.naam,"nl"));
+  const perW=k=>[...names].map(n=>{const sp=spelVoor(n),p=sp.perWeek.filter(([x])=>x===k).reduce((t,[,v])=>t+v,0);return{naam:n,punten:p,reeks:sp.streak}}).filter(x=>x.punten>0).sort((a,b)=>b.punten-a.punten||b.reeks-a.reeks||a.naam.localeCompare(b.naam,"nl"));
   return{deze:{week:isoWeek(wk),lijst:perW(iso(wk))},vorige:{week:isoWeek(vw),lijst:perW(iso(vw))}}}
 let topperT=null,topperLaatst="";
 function publiceerTopper(){if(!state.office||!state.db)return;clearTimeout(topperT);topperT=setTimeout(async()=>{const d=topperData(),j=JSON.stringify(d);if(j===topperLaatst)return;
@@ -1691,7 +1691,12 @@ function spelVoor(name){
     if(optijd){run++;weken++;const p=10+(o.last<=vrij?5:0)+Math.min(run,10);pts+=p;perWeek.push([k,p])}else run=0;best=Math.max(best,run)}
   streak=run;const cur=st.get(iso(thisMon));const curTot=cur?cur.tot:0;
   if(cur&&curTot+0.001>=n){streak+=1;best=Math.max(best,streak);weken++;const p=10+Math.min(streak,10);pts+=p;perWeek.push([iso(thisMon),p])}
-  return{streak,best,pts,weken,curTot,n,perWeek}}
+  const tb=tbPunten(name);tb.forEach(([k,p])=>{pts+=p;perWeek.push([k,p])});
+  return{streak,best,pts,weken,curTot,n,perWeek,tbPts:tb.reduce((t,[,p])=>t+p,0)}}
+/* toolbox telt mee: 10 punten als je op tijd aftekent, 5 als je te laat bent */
+function tbPunten(name){if(!(state.cfg&&state.cfg.toolbox))return[];const ses=new Map((state.tbSessies||[]).map(x=>[x.id,x]));const r=[];
+  Object.entries(state.tbAf||{}).forEach(([key,a])=>{if(!a||a.naam!==name||!a.op)return;const x=ses.get(key.split("__").slice(1).join("__"));if(!x)return;
+    const opTijd=!x.uiterlijk||a.op.slice(0,10)<=x.uiterlijk;r.push([iso(monday(new Date(a.op))),opTijd?10:5])});return r}
 function renderSpel(){
   if(state.office&&!state.preview){$("#game").hidden=true;return}const name=state.preview?state.preview.naam:fi.naam.value.trim();const g=$("#game");if(!name){g.hidden=true;return}g.hidden=false;
   const sp=spelVoor(name);$("#g-streak").textContent=sp.streak;$("#g-streaklbl").textContent=sp.streak===1?"week op rij compleet":"weken op rij compleet";
@@ -2465,7 +2470,7 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   const bsPer=new Map();const bsMerge=()=>{state.bestellingen=[].concat(...bsPer.values());renderMijnBest();renderBestellingenKantoor()};
   const watchBest=uid=>{const key="bs/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("bestellingen").onSnapshot(s=>{bsPer.set(uid,s.docs.map(d=>({id:d.id,_sid:uid+"__"+d.id,_path:UREN_COL+"/"+uid+"/bestellingen/"+d.id,...d.data()})));bsMerge()},()=>{}))};
   const antPer=new Map();const antMerge=()=>{state.antwoorden=Object.assign({},...antPer.values());renderMijnBest();renderBestellingenKantoor();if(!$("#vr-ovl").hidden&&vrBs){const b=(state.bestellingen||[]).find(x=>x._sid===vrBs);if(b)$("#vr-draad").innerHTML=draadHTML(b,false)}};
-  const tbPer=new Map();const watchTb=uid=>{const key="tb/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("toolbox").onSnapshot(s=>{tbPer.set(uid,Object.fromEntries(s.docs.map(d=>[uid+"__"+d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/toolbox/"+d.id}])));state.tbAf=Object.assign({},...tbPer.values());renderTbMonteur();renderToolboxKantoor()},()=>{}))};
+  const tbPer=new Map();const watchTb=uid=>{const key="tb/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("toolbox").onSnapshot(s=>{tbPer.set(uid,Object.fromEntries(s.docs.map(d=>[uid+"__"+d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/toolbox/"+d.id}])));state.tbAf=Object.assign({},...tbPer.values());renderTbMonteur();renderToolboxKantoor();if(state.office){publiceerTopper();renderRanglijst()}if($("#v-monteur").dataset.sub==="topper"){renderSpel();renderTopperWeek()}},()=>{}))};
   const watchAnt=uid=>{const key="ant/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("antwoorden").onSnapshot(s=>{antPer.set(uid,Object.fromEntries(s.docs.map(d=>[d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/antwoorden/"+d.id}])));antMerge()},()=>{}))};
   db.collection("kantoor/config/bestelstatus").onSnapshot(s=>{state.bestelStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBest();renderBestellingenKantoor()},()=>{});
   db.collection("kantoor/config/bonstatus").onSnapshot(s=>{state.bonStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBonnen();renderBonnenKantoor()},()=>{});
