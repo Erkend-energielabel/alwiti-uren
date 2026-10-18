@@ -431,6 +431,8 @@ details.fold[open]>*+*{margin-top:14px}
 /* ---------- vragen over bestellingen ---------- */
 .rdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--surface);flex:none;vertical-align:middle}
 nav.tabs button .rdot{margin-left:6px;width:12px;height:12px;animation:puls 1.6s ease-in-out infinite}
+nav.tabs button .tdot{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--red);color:var(--red-ink);font:700 12px var(--f-body);letter-spacing:0;box-shadow:0 0 0 2px var(--surface);vertical-align:1px}
+nav.tabs button[aria-selected="true"] .tdot{background:var(--red-ink);color:var(--red);box-shadow:none}
 nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 @keyframes puls{50%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){nav.tabs button .rdot{animation:none}}
@@ -1355,7 +1357,7 @@ function bkFilter(){const per=$("#bk-per").value,q=$("#bk-zoek").value.trim().to
   if(per==="maand"){van=iso(new Date(t.getFullYear(),t.getMonth(),1));tot=iso(new Date(t.getFullYear(),t.getMonth()+1,0))}else if(per==="vmaand"){van=iso(new Date(t.getFullYear(),t.getMonth()-1,1));tot=iso(new Date(t.getFullYear(),t.getMonth(),0))}else if(per==="jaar"){van=t.getFullYear()+"-01-01";tot=t.getFullYear()+"-12-31"}
   return (state.bonnen||[]).filter(b=>(!van||b.datum>=van)&&(!tot||b.datum<=tot)&&(!st||bonStatus(b)===st)&&(!q||(b.monteur+" "+b.soort+" "+(b.omschrijving||"")+" "+(b.projectNr||"")+" "+(b.kenteken||"")).toLowerCase().includes(q))).sort((a,b)=>b.datum.localeCompare(a.datum)||a.monteur.localeCompare(b.monteur,"nl"))}
 function renderBonnenKantoor(){if(!state.office)return;const L=bkFilter(),som=s=>L.filter(b=>!s||bonStatus(b)===s).reduce((t,b)=>t+(b.bedrag||0),0);
-  const open=(state.bonnen||[]).filter(b=>bonStatus(b)==="ingediend").length;$("#tab-bn").textContent=open?`Bonnen (${open})`:"Bonnen";
+  const open=(state.bonnen||[]).filter(b=>bonStatus(b)==="ingediend").length;tabTel("#tab-bn","Bonnen",open,open===1?"bonnetje te beoordelen":"bonnetjes te beoordelen");
   $("#bk-sum").innerHTML=`<div class="t"><span>Totaal selectie</span><b>${euro(som())}</b></div><div><span>Te beoordelen</span><b>${euro(som("ingediend"))}</b></div><div class="u"><span>Akkoord</span><b>${euro(som("akkoord"))}</b></div><div><span>Aantal bonnen</span><b>${L.length}</b></div>`;
   $("#bk-list").innerHTML=L.length?L.map(b=>{const st=bonStatus(b);return `<div class="boncard"><img data-blob="${esc(b.foto)}" alt="Bonnetje ${esc(b.soort)}" loading="lazy" data-lb="${esc(b._sid)}"><div class="bci"><div class="toolbar" style="justify-content:space-between"><b>${esc(b.monteur)}</b><span class="bst ${st}">${BON_ST[st]}</span></div>
      <div class="bcb">${euro(b.bedrag)}</div><small>${esc(b.soort)} · ${fmtD(b.datum)}${b.projectNr?" · "+esc(b.projectNr+" "+(b.projectNaam||"")):""}</small>${b.kenteken?`<small class="kent"><b>${esc(b.kenteken)}</b> · ${Number(b.kmStand||0).toLocaleString("nl-NL")} km</small>`:""}${b.omschrijving?`<small>${esc(b.omschrijving)}</small>`:""}
@@ -1437,7 +1439,7 @@ function bsPeriode(){const per=$("#bs-per").value,y=new Date().getFullYear(),t=n
 function bsBasis(){const[van,tot]=bsPeriode(),q=$("#bs-zoek").value.trim().toLowerCase(),cat=$("#bs-cat").value;
   return (state.bestellingen||[]).filter(b=>(!van||b.datum>=van)&&(!tot||b.datum<=tot)&&(!cat||b.categorie===cat)&&(!q||(b.wat+" "+b.monteur+" "+(b.projectNr||"")+" "+(b.projectNaam||"")+" "+(b.opmerking||"")+" "+(b.maat||"")).toLowerCase().includes(q)))}
 function bsFilter(){const st=$("#bs-st").value,mon=$("#bs-mon").value;return bsBasis().filter(b=>(!mon||b.monteur===mon)&&(!st||(st==="open"?["aangevraagd","besteld"].includes(bsStatus(b)):bsStatus(b)===st))).sort((a,b)=>{const o={aangevraagd:0,besteld:1,geleverd:2,afgewezen:3};return (o[bsStatus(a)]-o[bsStatus(b)])||(b.aangemaakt||"").localeCompare(a.aangemaakt||"")})}
-function renderBestellingenKantoor(){if(!state.office)return;const alle=state.bestellingen||[];const nieuw=alle.filter(b=>bsStatus(b)==="aangevraagd").length;$("#tab-bs").textContent=nieuw?`Bestellingen (${nieuw})`:"Bestellingen";
+function renderBestellingenKantoor(){if(!state.office)return;const alle=state.bestellingen||[];const nieuw=alle.filter(b=>bsStatus(b)==="aangevraagd").length;tabTel("#tab-bs","Bestellingen",nieuw,nieuw===1?"nieuwe bestelling":"nieuwe bestellingen");
   const ms=[...new Set(alle.map(b=>b.monteur))].sort((a,b)=>a.localeCompare(b,"nl")),cm=$("#bs-mon").value;$("#bs-mon").innerHTML='<option value="">Alle monteurs</option>'+ms.map(n=>`<option>${esc(n)}</option>`).join("");$("#bs-mon").value=ms.includes(cm)?cm:"";
   const L=bsFilter(),basis=bsBasis(),tel=s=>basis.filter(b=>bsStatus(b)===s).length;
   $("#bs-sum").innerHTML=`<div class="t"><span>Nieuw</span><b>${tel("aangevraagd")}</b></div><div class="u"><span>Besteld, onderweg</span><b>${tel("besteld")}</b></div><div class="b"><span>Geleverd</span><b>${tel("geleverd")}</b></div><div><span>Vragen zonder antwoord</span><b>${alle.reduce((t,b)=>t+bsOpenVragen(b).length,0)}</b></div><div><span>In deze lijst</span><b>${L.length}</b></div>`;
@@ -2077,6 +2079,12 @@ $("#fo-save").onclick=async()=>{const m=$("#fo-msg"),b=$("#fo-save"),todo=foRows
 /* ---------- weekstaten (lijst) ---------- */
 const wsSel=new Set();
 const ST={akkoord:"Akkoord",gewijzigd:"Gewijzigd na akkoord",compleet:"Compleet",onvolledig:"Onvolledig",bezig:"Bezig",leeg:"Niet ingevuld"};
+/* rood rondje met aantal op kantoor-tabbladen */
+function tabTel(sel,naam,n,uitleg){const b=$(sel);if(!b)return;b.innerHTML=esc(naam)+(n?`<span class="tdot">${n>99?"99+":n}</span>`:"");b.setAttribute("aria-label",n?`${naam}, ${n} ${uitleg}`:naam);b.title=n?`${n} ${uitleg}`:""}
+function teVerwerkenWeken(){const cur=iso(monday(new Date())),g=new Map();
+  state.uren.forEach(r=>{if(isBlok(r.monteur))return;const k=r.monteur+"|"+iso(monday(parse(r.datum)));const o=g.get(k)||{naam:r.monteur,ws:k.split("|")[1],tot:0,open:0};o.tot+=r.uren||0;if((r.status||"open")!=="ok")o.open++;g.set(k,o)});
+  return [...g.values()].filter(o=>o.open&&(o.ws<cur||o.tot+0.001>=normVan(o.naam))).length}
+function updWsTel(){if(!state.office)return;const n=teVerwerkenWeken();tabTel("#tab-ws","Weekstaten",n,n===1?"weekstaat te verwerken":"weekstaten te verwerken")}
 function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let from="";
   if(per==="8"||per==="4")from=iso(addDays(thisMon,-7*(+per-1)));else if(per==="jaar")from=new Date().getFullYear()+"-01-01";
   const m=new Map();state.uren.forEach(r=>{if(from&&r.datum<from)return;const ws=iso(monday(parse(r.datum))),k=r.monteur+"|"+ws;if(!m.has(k))m.set(k,{naam:r.monteur,ws,rows:[]});m.get(k).rows.push(r)});
@@ -2092,7 +2100,7 @@ function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let f
     const opm=x.rows.filter(r=>r.opmerking).sort((a,b)=>a.datum.localeCompare(b.datum)).map(r=>DAGLANG[parse(r.datum).getDay()].slice(0,2)+": "+r.opmerking);
     return{...x,opm,tlN,key:x.naam+"|"+x.ws,tot,nor,and:tot-nor,norm,st,werken,kan:x.rows.length>0&&st!=="akkoord"}})
    .sort((a,b)=>b.ws.localeCompare(a.ws)||a.naam.localeCompare(b.naam,"nl"))}
-function renderWeekstaten(){if(!state.office)return;const q=$("#ws-zoek").value.trim().toLowerCase(),fs=$("#ws-st").value;
+function renderWeekstaten(){if(!state.office)return;updWsTel();const q=$("#ws-zoek").value.trim().toLowerCase(),fs=$("#ws-st").value;
   const L=wsRijen().filter(x=>(!q||x.naam.toLowerCase().includes(q))&&(!fs||(fs==="todo"?["compleet","gewijzigd","onvolledig"].includes(x.st):fs==="onvolledig"?["onvolledig","leeg"].includes(x.st):fs==="opm"?x.opm.length>0:x.st===fs)));
   state.wsVis=L;[...wsSel].forEach(k=>{if(!L.some(x=>x.key===k&&x.kan))wsSel.delete(k)});
   const sel=L.filter(x=>x.kan),allOn=sel.length&&sel.every(x=>wsSel.has(x.key));
@@ -2303,7 +2311,7 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
   db.doc("kantoor/config/topper/huidig").onSnapshot(d=>{state.topper=d.exists?d.data():null;if($("#v-monteur").dataset.sub==="topper")renderTopperWeek()},()=>{});
-  const merge=()=>{state.uren=[].concat(...per.values());renderWeek();renderOffice();publiceerTopper();if($("#v-monteur").dataset.sub==="topper")renderTopperWeek();if(!$("#ed-ovl").hidden)renderEdWeek()};
+  const merge=()=>{state.uren=[].concat(...per.values());renderWeek();renderOffice();updWsTel();publiceerTopper();if($("#v-monteur").dataset.sub==="topper")renderTopperWeek();if(!$("#ed-ovl").hidden)renderEdWeek()};
   const watchIn=(root,uid)=>{const key=root+"/"+uid;if(subs.has(key))return;subs.set(key,db.doc(root+"/"+uid).collection("items").onSnapshot(s=>{per.set(key,s.docs.map(d=>({id:d.id,_path:root+"/"+uid+"/items/"+d.id,...d.data()})));merge()},()=>{}))};
   const bonPer=new Map();const bonMerge=()=>{state.bonnen=[].concat(...bonPer.values());renderMijnBonnen();renderBonnenKantoor()};
   const watchBon=uid=>{const key="bon/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("bonnen").onSnapshot(s=>{bonPer.set(uid,s.docs.map(d=>({id:d.id,_sid:uid+"__"+d.id,_path:UREN_COL+"/"+uid+"/bonnen/"+d.id,...d.data()})));bonMerge()},()=>{}))};
