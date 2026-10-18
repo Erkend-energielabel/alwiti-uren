@@ -420,13 +420,39 @@ details.fold[open]>*+*{margin-top:14px}
 .msub2 button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .msub2 button .rdot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;animation:puls 1.6s ease-in-out infinite}
 @media (max-width:560px){.msub2 button{font-size:14px;padding:10px 8px;flex:1 1 40%}}
-#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]){display:none!important}
+#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]),#v-monteur[data-sub="toolbox"] [data-msub]:not([data-msub="toolbox"]){display:none!important}
 #v-monteur[data-sub]:not([data-sub="uren"]):not([hidden]){display:flex;flex-direction:column;gap:16px;max-width:760px}
 .tw{display:flex;flex-direction:column;gap:6px}
 .twrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:6px;background:var(--bg)}
 .twrow.ik{outline:2px solid var(--red)}
 .twrow .rk{font-size:20px;text-align:center}.twrow b{font-variant-numeric:tabular-nums}
 .twrow.p1{background:linear-gradient(90deg,var(--warn-soft),var(--bg))}
+/* ---------- toolbox ---------- */
+.tbkaart{border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.tbkaart h3{color:var(--fg);font-size:18px;margin:0}
+.tbkaart ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.tbkaart .afs{background:var(--warn-soft);border-radius:6px;padding:10px 12px}
+.tbkaart .afs b{color:var(--warn)}
+.tbopen{border:2px solid var(--red)}
+.tbsign{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.tbsign label.chk{flex-direction:row;align-items:flex-start;gap:10px;text-transform:none;letter-spacing:0;font:600 15px var(--f-body);color:var(--fg)}
+.tbsign label.chk input{width:22px;height:22px;flex:none;accent-color:var(--ok)}
+.tbok{color:var(--ok);font-weight:700}
+.tbses{border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden}
+.tbses summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px}
+.tbses summary small{color:var(--muted)}
+.tbses[open] summary{border-bottom:1px solid var(--line)}
+.tbbar{height:10px;border-radius:99px;background:var(--bg);overflow:hidden;min-width:120px}.tbbar i{display:block;height:100%;background:var(--ok)}
+.tbses .tbin{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.tbmon{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.tbmon div{padding:6px 10px;border-radius:6px;background:var(--bg);font-size:14px}
+.tbmon div.ja{background:var(--ok-soft)}.tbmon div.nee{background:var(--red-soft)}
+.tbmon small{display:block;color:var(--muted)}
+.tbvoor{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px}
+.tbvoor label{flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font:500 14px var(--f-body);color:var(--fg)}
+.tbvoor input{width:18px;height:18px;accent-color:var(--red)}
+.tblib{display:flex;flex-direction:column;gap:6px}
+.tblib .werk .nm b{font-weight:600}
 /* ---------- vragen over bestellingen ---------- */
 .rdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--surface);flex:none;vertical-align:middle}
 nav.tabs button .rdot{margin-left:6px;width:12px;height:12px;animation:puls 1.6s ease-in-out infinite}
@@ -445,6 +471,8 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 .vrin textarea{min-height:44px;font-size:15px}
 .micbtn{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:4px;min-width:44px;height:44px;cursor:pointer;font:600 13px var(--f-body);display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:0 10px}
 .micbtn.aan{background:var(--red);color:var(--red-ink);border-color:var(--red)}
+.micbtn.sm{height:32px;min-width:0;font-size:12px;padding:0 8px}
+.tbkop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
 .bonrow.vr{grid-template-columns:48px minmax(0,1fr) auto 32px}
 .bonrow .vrbox{grid-column:1/-1}
 .vstat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;white-space:nowrap}
@@ -458,7 +486,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   html,body{background:#fff!important}
   body{font-size:12.5px}
   body::before{display:none!important}
-  header.top,#msub,#vr-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
+  header.top,[data-lees],#msub,#vr-meld,#tb-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
   label:has(select),label:has(input[type=search]){display:none!important}
   input[type=checkbox]{visibility:hidden}
   .edday label.tl:not(.aan){display:none!important}
@@ -473,7 +501,9 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   .tablewrap,.wslist,.mlist,.klist,.zklist{overflow:visible!important;max-height:none!important}
   table{width:100%}
   thead{display:table-header-group}
-  tr,.wsrow,.boncard,.bonrow,svg,.edday{break-inside:avoid}
+  tr,.wsrow,.boncard,.bonrow,svg,.edday,.tbses,.tbkaart{break-inside:avoid}
+  .tbses:not([open]) .tbin{display:block!important}
+  #tb-maak,#tb-lib-card{display:none!important}
   .bthumb,.bnof{width:44px;height:44px}
   h2{break-after:avoid}
   .grid2:not([hidden]){display:block!important}
@@ -496,6 +526,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button role="tab" id="tab-r" aria-selected="false" data-tab="rapport" hidden>Rapport</button>
     <button role="tab" id="tab-bn" aria-selected="false" data-tab="bonnen" hidden>Bonnen</button>
     <button role="tab" id="tab-bs" aria-selected="false" data-tab="bestellingen" hidden>Bestellingen</button>
+    <button role="tab" id="tab-tb" aria-selected="false" data-tab="toolbox" hidden>Toolbox</button>
     <button role="tab" id="tab-lc" aria-selected="false" data-tab="locaties" hidden>Locaties</button>
     <button role="tab" id="tab-rl" aria-selected="false" data-tab="ranglijst" hidden>Ranglijst</button>
     <button role="tab" id="tab-mo" aria-selected="false" data-tab="monteurs" hidden>Monteurs</button>
@@ -514,8 +545,10 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button type="button" role="tab" data-ms="uren" id="ms-uren">Uren invullen</button>
     <button type="button" role="tab" data-ms="bestellen" id="ms-bestellen" hidden>Materiaal bestellen</button>
     <button type="button" role="tab" data-ms="bonnen" id="ms-bonnen">Bonnetjes</button>
+    <button type="button" role="tab" data-ms="toolbox" id="ms-toolbox" hidden>Toolbox</button>
     <button type="button" role="tab" data-ms="topper" id="ms-topper" hidden>Topper van de week</button>
   </div>
+  <div id="tb-meld" class="vrmeld" hidden role="status"><i class="rdot" aria-hidden="true"></i><span id="tb-meldtxt">Er staat een toolbox voor je klaar</span><button class="btn sm" type="button" id="tb-naar">Lezen en aftekenen</button></div>
   <div id="vr-meld" class="vrmeld" hidden role="status"><i class="rdot" aria-hidden="true"></i><span id="vr-meldtxt">Kantoor heeft een vraag over je bestelling</span><button class="btn sm" type="button" id="vr-naar">Bekijken en antwoorden</button></div>
 
   <!-- MONTEUR -->
@@ -546,6 +579,12 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="msg" id="m-save" role="status"></div>
     </form>
 
+    <div class="card" id="tb-card" data-msub="toolbox">
+      <h2>Toolbox</h2>
+      <p class="hint" style="margin:0">Lees de toolbox goed door. Bespreek vragen met je uitvoerder of kantoor en teken daarna af.</p>
+      <div id="tb-mijn" style="display:flex;flex-direction:column;gap:14px"></div>
+      <div class="msg" id="tb-mmsg" role="status"></div>
+    </div>
     <div class="card" id="topper-card" data-msub="topper">
       <h2>Topper van de week</h2>
       <p class="hint" style="margin:0">Punten verdien je met weken die compleet én op tijd zijn ingevuld (uiterlijk maandag 12:00): 10 per week, +5 als je week al vóór zaterdag klaar was, plus een bonus voor je reeks.</p>
@@ -795,6 +834,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="card">
       <h2>Instellingen</h2>
       <label class="schak"><input type="checkbox" id="set-reis" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Reistijd voor alle monteurs</b><small>Aan: iedereen vult per dag reistijd in. Uit: alleen monteurs bij wie je het zelf aanzet (tabblad Monteurs → kies monteur).</small></span></label>
+      <label class="schak"><input type="checkbox" id="set-tb" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Toolbox</b><small>Aan: kantoor krijgt het tabblad Toolbox en monteurs zien hun toolboxen in de app om af te tekenen.</small></span></label>
       <div class="msg" id="set-msg" role="status"></div>
       <details class="gevaar" id="lm-box">
         <summary>Gevarenzone: administratie leegmaken</summary>
@@ -806,6 +846,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
               <label class="lmc"><input type="checkbox" checked disabled> Alle urenregels, weekstaten (ook goedgekeurde) en "te laat"-aantekeningen</label>
               <label class="lmc"><input type="checkbox" id="lm-bon" checked> Alle bonnetjes, bestellingen en foto's</label>
               <label class="lmc"><input type="checkbox" id="lm-proj"> Ook alle projecten</label>
+              <label class="lmc"><input type="checkbox" id="lm-tb"> Ook alle toolbox-registraties (wie wat heeft afgetekend)</label>
               <label class="lmc"><input type="checkbox" id="lm-mon"> Ook alle monteurs (inclusief instellingen per monteur)</label>
             </fieldset>
             <div class="lmstap"><b>Stap 1.</b> Download eerst een backup. <button class="btn ghost sm" type="button" id="lm-backup">Backup downloaden</button> <span id="lm-bok" class="hint"></span></div>
@@ -850,6 +891,46 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="toolbar"><h2 style="margin-right:auto">Wie heeft wat besteld</h2><span class="hint" id="bs-perhint"></span></div>
       <p class="hint" style="margin:0">Aantal bestellingen per monteur en soort in de gekozen periode (afgewezen telt niet mee). Klik op een naam om alleen zijn bestellingen te zien.</p>
       <div class="tablewrap"><table id="bs-pm"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="v-toolbox" hidden style="display:flex;flex-direction:column;gap:20px">
+    <div class="card" id="tb-maak">
+      <h2>Toolbox klaarzetten</h2>
+      <p class="hint" style="margin:0">Kies een toolbox en voor wie hij is. De monteurs zien hem in hun app met een rood bolletje en tekenen af als ze hem gelezen hebben.</p>
+      <div class="form">
+        <label class="full">Toolbox<select id="tb-kies"></select></label>
+        <label>Datum toolbox<input type="date" id="tb-datum"></label>
+        <label>Aftekenen uiterlijk<input type="date" id="tb-uiterlijk"></label>
+        <label class="full">Project / locatie (optioneel)<input id="tb-locatie" placeholder="bijv. 26-101 Stadswerven of werkplaats" autocomplete="off"></label>
+      </div>
+      <fieldset class="lmset"><legend>Voor wie</legend>
+        <label class="lmc"><input type="radio" name="tb-voor" value="alle" checked> Alle monteurs (ook nieuwe)</label>
+        <label class="lmc"><input type="radio" name="tb-voor" value="keuze"> Alleen deze monteurs:</label>
+        <div class="tbvoor" id="tb-monlijst" hidden></div>
+      </fieldset>
+      <details class="more"><summary>Inhoud bekijken</summary><div id="tb-voorbeeld" style="margin-top:10px"></div></details>
+      <div class="toolbar"><button class="btn" type="button" id="tb-zet">Toolbox klaarzetten</button></div>
+      <div class="msg" id="tb-msg" role="status"></div>
+    </div>
+    <div class="card">
+      <div class="toolbar"><h2 style="margin-right:auto">Uitgezette toolboxen</h2><button class="btn ghost sm" id="tb-xlsx" type="button">Registratie naar Excel</button></div>
+      <p class="hint" style="margin:0">Per toolbox zie je wie heeft afgetekend en wanneer. Handig voor je VCA-dossier: exporteer naar Excel of PDF.</p>
+      <div id="tb-lijst" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="msg" id="tb-lmsg" role="status"></div>
+    </div>
+    <div class="card" id="tb-lib-card">
+      <div class="toolbar"><h2 style="margin-right:auto">Bibliotheek</h2><button class="btn ghost sm" type="button" id="tb-nieuw">Eigen toolbox maken</button></div>
+      <p class="hint" style="margin:0">Standaard toolboxen voor aluminium gevelmontage. Controleer of ze passen bij jullie RI&amp;E en werkwijze, en pas ze aan waar nodig.</p>
+      <form id="tb-form" class="form" hidden autocomplete="off">
+        <input type="hidden" id="tb-fid">
+        <label class="full">Titel<input id="tb-ftitel" required></label>
+        <label class="full">Inleiding<textarea id="tb-fond" rows="2"></textarea></label>
+        <label class="full">Kernpunten (één per regel)<textarea id="tb-fpunt" rows="6"></textarea></label>
+        <label class="full">Afspraken (één per regel)<textarea id="tb-fafs" rows="3"></textarea></label>
+        <div class="full toolbar"><button class="btn" type="submit">Opslaan</button><button class="btn ghost" type="button" id="tb-fx">Annuleren</button><button class="btn ghost" type="button" id="tb-fdel" hidden>Verwijderen</button></div>
+      </form>
+      <div class="tblib" id="tb-lib"></div>
     </div>
   </section>
 
@@ -953,10 +1034,10 @@ function werkLabel(id){const w=state.werken.find(x=>x.id===id);return w?(w.nr+" 
 /* ---------- tabs ---------- */
 function showTab(t,keep){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["monteur","weekstaten","kantoor","bonnen","bestellingen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();
+  ["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();
 }
 /* ---------- afdrukken op A3 (via het printvenster: kies "Opslaan als PDF") ---------- */
-const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
+const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",toolbox:"Toolbox-registratie",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
 function actieveTab(){const b=document.querySelector('nav.tabs button[aria-selected="true"]');return b?b.dataset.tab:""}
 function updPrint(){const b=document.getElementById("b-print");if(b)b.hidden=!state.office||!!state.preview||!PRINTBAAR[actieveTab()]}
 function filterTekst(sec){const p=[];
@@ -1155,10 +1236,10 @@ function bestVis(){const c=$("#best-card");if(!c)return;setTimeout(subZichtbaar,
   if(toon){const ps=state.werken.filter(w=>w.actief!==false),cur=$("#best-proj").value;$("#best-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#best-proj").value=cur;renderMijnBest()}}
 /* ---------- monteur: tabbladen ---------- */
 function subZichtbaar(){const pv=!!state.preview,mon=!state.office||pv;const bAan=pv?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));
-  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#msub").hidden=$("#v-monteur").hidden;
-  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon))kiesSub("uren",true)}
+  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#msub").hidden=$("#v-monteur").hidden;
+  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan())))kiesSub("uren",true);renderTbMonteur()}
 function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.querySelectorAll("#msub [data-ms]").forEach(b=>b.setAttribute("aria-selected",b.dataset.ms===t));if(!stil)ls("alw-msub",t);
-  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();if(!stil)window.scrollTo({top:0})}
+  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(!stil)window.scrollTo({top:0})}
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
 /* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
 function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
@@ -1241,7 +1322,7 @@ function bsVragen(b){return ((state.bestelStatus||{})[b._sid]||{}).vragen||[]}
 function bsAntw(v){return (state.antwoorden||{})[v.id]}
 function bsOpenVragen(b){return bsVragen(b).filter(v=>!bsAntw(v))}
 function tijdKort(t){if(!t)return"";const d=new Date(t);return fmtD(iso(d))+" "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}
-function draadHTML(b,metInvoer){const vs=bsVragen(b);if(!vs.length)return"";return vs.map(v=>{const a=bsAntw(v);return `<div class="vrbox${a?" klaar":""}"><p class="vrq"><b>Vraag kantoor:</b> ${esc(v.tekst)} <small>${tijdKort(v.op)}</small></p>${a?`<p class="vra"><b>Antwoord ${esc(a.monteur||"")}:</b> ${esc(a.tekst)} <small>${tijdKort(a.op)}</small></p>`:metInvoer?`<div class="vrin"><textarea data-vrant="${esc(v.id)}" rows="2" placeholder="Typ of spreek je antwoord in"></textarea><button class="micbtn" type="button" data-vrmic="${esc(v.id)}" aria-label="Antwoord inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vrsend="${esc(v.id)}" data-vrbs="${esc(b._sid)}">Versturen</button></div>`:'<p><small>Nog geen antwoord van de monteur.</small></p>'}</div>`}).join("")}
+function draadHTML(b,metInvoer){const vs=bsVragen(b);if(!vs.length)return"";return vs.map(v=>{const a=bsAntw(v);return `<div class="vrbox${a?" klaar":""}"><p class="vrq"><b>Vraag kantoor:</b> ${esc(v.tekst)} <small>${tijdKort(v.op)}</small> ${metInvoer?leesKnopHTML("vr:"+b._sid+":"+v.id,true):""}</p>${a?`<p class="vra"><b>Antwoord ${esc(a.monteur||"")}:</b> ${esc(a.tekst)} <small>${tijdKort(a.op)}</small></p>`:metInvoer?`<div class="vrin"><textarea data-vrant="${esc(v.id)}" rows="2" placeholder="Typ of spreek je antwoord in"></textarea><button class="micbtn" type="button" data-vrmic="${esc(v.id)}" aria-label="Antwoord inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vrsend="${esc(v.id)}" data-vrbs="${esc(b._sid)}">Versturen</button></div>`:'<p><small>Nog geen antwoord van de monteur.</small></p>'}</div>`}).join("")}
 /* inspreken via de browser (Chrome/Edge/Safari); anders het microfoontje van het toetsenbord */
 function spraakKan(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
 let spraak=null;
@@ -1278,13 +1359,137 @@ $("#vr-send").onclick=async()=>{const b=(state.bestellingen||[]).find(x=>x._sid=
   $("#vr-send").disabled=true;try{await state.db.collection("kantoor/config/bestelstatus").doc(b._sid).set({...cur,status:cur.status||"aangevraagd",vragen:[...(cur.vragen||[]),v]});
     sluitVraag();const mm=$("#bs-msg");mm.className="msg ok";mm.textContent=`Vraag verstuurd naar ${b.monteur}. Hij ziet een rood bolletje in de app.`}
   catch(err){m.className="msg err";m.textContent="Versturen mislukt."}finally{$("#vr-send").disabled=false}};
+const TB_STANDAARD=[
+{id:"std-hoogte",titel:"Werken op hoogte en valbeveiliging",onderwerp:"Vallen van hoogte is de grootste oorzaak van ernstige ongevallen in de gevelbouw. Vanaf 2,5 meter werkhoogte is valbeveiliging verplicht.",
+ punten:["Werk vanaf 2,5 meter hoogte altijd met collectieve beveiliging (leuning, randbeveiliging) of, als dat niet kan, met een harnas en vast aanslagpunt.","Controleer je harnas, vanglijn en valdemper vóór gebruik op beschadigingen, roest en slijtage. Kapot of na een val gebruikt? Direct uit gebruik nemen.","Haak aan op een goedgekeurd ankerpunt boven je, nooit aan leuningen of gevelprofielen die daar niet voor bedoeld zijn.","Laat gereedschap en materiaal niet los op hoogte liggen: gebruik gereedschapslijnen en zet een afzetting onder de werkplek.","Open gevelvakken, sparingen en vloerranden altijd afzetten of afdekken voordat je wegloopt.","Werk nooit alleen op hoogte: er moet altijd iemand zijn die alarm kan slaan en kan helpen."],
+ afspraken:["Geen harnas of randbeveiliging = niet werken op hoogte.","Defect valbeveiligingsmateriaal meld je meteen bij kantoor of de uitvoerder.","Onder de werkplek wordt afgezet als er boven gewerkt wordt."]},
+{id:"std-hoogwerker",titel:"Hoogwerker en schaarlift",onderwerp:"Bij het monteren van gevelelementen werken we veel met hoogwerkers en schaarliften. Veilig werken begint bij een goede controle vooraf.",
+ punten:["Bedien alleen een hoogwerker als je daarvoor bent opgeleid en geïnstrueerd (bijvoorbeeld IPAF of een interne instructie).","Doe vóór gebruik de dagelijkse controle: keuringssticker, noodstop, noodbediening, banden, hydrauliek en lekkage.","Draag in een knikarmhoogwerker altijd een harnas met korte vanglijn aangehaakt aan het aanslagpunt in de bak.","Let op de draagkracht van de ondergrond: stempels op schotten, niet op putdeksels, kabelsleuven of verse grond.","Houd je aan de maximale windsnelheid van de fabrikant (vaak windkracht 6 / 12,5 m/s) en stop bij onweer.","Overschrijd nooit het maximale werklastgewicht in de bak: tel personen, gereedschap en gevelelementen bij elkaar op.","Zet de werkplek rond de machine af en let op bovengrondse leidingen en overhangende delen."],
+ afspraken:["Geen dagelijkse controle = niet de lucht in.","Bij twijfel over wind of ondergrond overleg je eerst met de uitvoerder.","Schade of storing meld je direct en de machine wordt niet meer gebruikt."]},
+{id:"std-tillen",titel:"Tillen en plaatsen van glas en gevelelementen",onderwerp:"Glas, panelen en kozijnen zijn zwaar, groot en kwetsbaar. Verkeerd tillen geeft rugklachten en breukgevaar.",
+ punten:["Til met een rechte rug en gebogen knieën, houd de last dicht bij je lichaam en draai niet met je romp.","Is een last zwaarder dan ongeveer 23 kg of groot en onhandig? Til met twee personen of gebruik een hulpmiddel.","Gebruik bij glas en grote panelen een vacuümheffer of glasrobot. Controleer vooraf de vacuümindicator en de zuignappen.","Loop nooit onder een hangende last en spreek duidelijke signalen af met de machinist of collega.","Draag snijbestendige handschoenen en veiligheidsschoenen bij het verplaatsen van glas en profielen.","Zet glas en elementen altijd stabiel weg in een bok of rek, nooit los tegen een muur."],
+ afspraken:["Zware lasten nooit alleen tillen.","Vacuümheffer alleen gebruiken als de indicator in het groen staat.","Beschadigd glas direct afzetten en melden."]},
+{id:"std-gereedschap",titel:"Elektrisch gereedschap: zagen, boren en slijpen",onderwerp:"Afkortzaag, haakse slijper, boor- en schroefmachine gebruiken we dagelijks. Ongelukken ontstaan vooral door haast en ontbrekende bescherming.",
+ punten:["Controleer snoer, stekker en behuizing vóór gebruik. Gebruik alleen goedgekeurd gereedschap met keuringssticker.","Gebruik bij de haakse slijper altijd de beschermkap en de juiste schijf voor het materiaal en toerental.","Klem aluminium profielen vast bij het zagen en houd je handen buiten de zaaglijn.","Draag een veiligheidsbril en gehoorbescherming bij zagen, slijpen en boren in metaal of beton.","Haal de stekker eruit of de accu los bij het wisselen van zaagblad, schijf of bit.","Laat draaiend gereedschap nooit onbeheerd achter en leg het pas weg als het stilstaat."],
+ afspraken:["Geen beschermkap of bril = niet slijpen.","Defect gereedschap gaat direct terug naar de werkplaats met een briefje erop.","Elektrische kabels niet over scherpe randen of door water leggen."]},
+{id:"std-pbm",titel:"Persoonlijke beschermingsmiddelen (PBM)",onderwerp:"PBM zijn je laatste verdediging. Ze werken alleen als je ze draagt, ze passen en ze in orde zijn.",
+ punten:["Op de bouwplaats draag je altijd veiligheidsschoenen (S3), een helm en werkkleding met lange mouwen of zoals de bouwplaats voorschrijft.","Draag een veiligheidsbril bij zagen, boren, slijpen en werken boven je hoofd.","Gebruik gehoorbescherming bij lawaaiige werkzaamheden of als je elkaar op een meter afstand niet meer kunt verstaan.","Draag snijbestendige handschoenen bij glas en plaatwerk, en nitrilhandschoenen bij kit, primer en reinigers.","Controleer je PBM regelmatig. Kapot of versleten? Bestel nieuwe via de app (Materiaal bestellen).","Houd je aan de extra regels van de bouwplaats, bijvoorbeeld een veiligheidshesje."],
+ afspraken:["Zonder PBM begin je niet aan het werk.","Versleten PBM vervang je meteen.","Iedereen spreekt elkaar aan als PBM ontbreken."]},
+{id:"std-stoffen",titel:"Kit, primer, PU-schuim en andere gevaarlijke stoffen",onderwerp:"Bij het afkitten en afdichten van kozijnen werken we met stoffen die schadelijk kunnen zijn voor huid, ogen en longen.",
+ punten:["Lees het etiket en weet waar het veiligheidsinformatieblad (VIB) te vinden is.","Zorg voor goede ventilatie bij primers, reinigers en PU-schuim, vooral binnen.","Draag nitrilhandschoenen en een veiligheidsbril. Bij spatgevaar ook beschermende kleding.","Krijg je een stof in je ogen? Spoel minstens 15 minuten met water en meld het.","Bewaar spuitbussen en oplosmiddelen koel, gesloten en nooit in de cabine van de bus in de zon.","Gooi lege kokers, bussen en poetsdoeken weg in de juiste afvalbak; niet bij het restafval."],
+ afspraken:["Geen eten, drinken of roken tijdens het werken met deze stoffen.","Huidklachten of benauwdheid meld je direct.","Producten alleen in de originele verpakking bewaren."]},
+{id:"std-ladders",titel:"Ladders, trappen en rolsteigers",onderwerp:"Een ladder is bedoeld om te klimmen en voor kort, licht werk. Veel valongevallen gebeuren van lage hoogte.",
+ punten:["Controleer de ladder vóór gebruik op beschadigde sporten, voeten en vergrendeling.","Zet een ladder onder de juiste hoek (ongeveer 75 graden, 1 op 4) op een vlakke, stevige ondergrond en zet hem vast of laat hem vasthouden.","Laat een opstapladder minstens 1 meter boven het uitstappunt uitsteken.","Houd altijd drie contactpunten: twee voeten en een hand.","Een rolsteiger alleen opbouwen volgens de handleiding, met wielen op de rem en stabilisatoren uit.","Gebruik een steiger alleen als er een groene kaart of goedkeuring op hangt en wijzig hem niet zelf."],
+ afspraken:["Een ladder is geen werkplek voor langdurig of zwaar werk.","Rode kaart of geen kaart op de steiger = niet op.","Beschadigde ladders worden direct afgekeurd."]},
+{id:"std-weer",titel:"Werken bij wind, regen, hitte en kou",onderwerp:"Bij gevelmontage werken we buiten. Het weer bepaalt mede of we veilig kunnen werken.",
+ punten:["Grote panelen en glas vangen veel wind. Stop met plaatsen als je het element niet meer veilig kunt houden.","Volg de windgrenzen van hoogwerker, kraan en vacuümheffer.","Bij onweer stop je direct met werken op hoogte en in hoogwerkers.","Bij hitte: drink genoeg water, neem extra pauzes in de schaduw en let op elkaar.","Bij kou en regen: draag warme, droge kleding en let op gladde steigers, vloeren en ladders.","Natte profielen en glas zijn glad: gebruik handschoenen met grip en een vacuümheffer."],
+ afspraken:["Bij twijfel over het weer overleg je met de uitvoerder voordat je verdergaat.","Niemand werkt bij onweer op hoogte.","We houden elkaar in de gaten bij extreme temperaturen."]},
+{id:"std-orde",titel:"Orde en netheid op de bouwplaats en in de bus",onderwerp:"Struikelen en uitglijden komt veel voor. Een opgeruimde werkplek is een veilige werkplek.",
+ punten:["Ruim snijresten, folie, schroeven en verpakkingen direct op.","Houd looproutes, trappen en vluchtwegen vrij van materiaal en kabels.","Zet profielen en glas stabiel weg in rekken of bokken, nooit los in een looproute.","Zet materiaal in de bus vast met spanbanden. Losse lading is levensgevaarlijk bij remmen.","Laat aan het einde van de dag een veilige werkplek achter: afgezet, opgeruimd en stroom eraf."],
+ afspraken:["Wie rommel maakt, ruimt het op.","De bus wordt niet overladen en lading zit altijd vast.","Gevaarlijke situaties meld je, ook als ze niet van ons zijn."]},
+{id:"std-melden",titel:"Melden van ongevallen en gevaarlijke situaties",onderwerp:"Van bijna-ongevallen kunnen we leren voordat er echt iets gebeurt. Melden is geen verklikken.",
+ punten:["Meld elk ongeval, bijna-ongeval en elke gevaarlijke situatie bij de uitvoerder en bij kantoor.","Bij een ongeval: eerst de situatie veilig maken, dan hulp inschakelen (112 bij ernstig letsel) en BHV waarschuwen.","Weet waar de verbandtrommel, brandblusser en verzamelplaats op de bouwplaats zijn.","Leg na een melding kort vast wat er gebeurde. Een foto helpt.","Spreek collega's aan op onveilig gedrag, en accepteer het ook als jij wordt aangesproken."],
+ afspraken:["Elk (bijna-)ongeval wordt dezelfde dag gemeld.","Iedereen kent het alarmnummer en de verzamelplaats van het project.","We stoppen het werk als het niet veilig is."]}
+];
+
+/* ---------- voorlezen (spraak van de telefoon/computer) ---------- */
+function kanVoorlezen(){return typeof window.speechSynthesis!=="undefined"&&typeof window.SpeechSynthesisUtterance!=="undefined"}
+let leesKnop=null;
+function stemNL(){const v=speechSynthesis.getVoices();return v.find(x=>/^nl[-_]NL/i.test(x.lang))||v.find(x=>/^nl/i.test(x.lang))||null}
+function leesVoor(tekst,knop){if(!kanVoorlezen())return;const bezig=leesKnop===knop&&speechSynthesis.speaking;speechSynthesis.cancel();if(leesKnop){leesKnop.classList.remove("aan");leesKnop.textContent=leesKnop.dataset.lbl||"🔊 Voorlezen"}leesKnop=null;if(bezig)return;
+  const zinnen=(String(tekst).replace(/\s+/g," ").match(/[^.!?]+[.!?]*/g)||[]).map(z=>z.trim()).filter(Boolean);if(!zinnen.length)return;
+  knop.dataset.lbl=knop.dataset.lbl||knop.textContent;knop.classList.add("aan");knop.textContent="⏹ Stoppen";leesKnop=knop;const stem=stemNL();
+  zinnen.forEach((z,i)=>{const u=new SpeechSynthesisUtterance(z);u.lang="nl-NL";if(stem)u.voice=stem;u.rate=0.95;if(i===zinnen.length-1)u.onend=u.onerror=()=>{if(leesKnop===knop){knop.classList.remove("aan");knop.textContent=knop.dataset.lbl;leesKnop=null}};speechSynthesis.speak(u)})}
+if(kanVoorlezen()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
+function tbTekst(x){return [x.titel+".",x.onderwerp||"",(x.punten||[]).length?"Kernpunten.":"",...(x.punten||[]).map(p=>p.replace(/[.!?]?$/,".")),(x.afspraken||[]).length?"Afspraken.":"",...(x.afspraken||[]).map(p=>p.replace(/[.!?]?$/,"."))].filter(Boolean).join(" ")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-lees]");if(!b)return;let t="";const k=b.dataset.lees;
+  if(k.startsWith("tb:")){const x=(state.tbSessies||[]).find(y=>y.id===k.slice(3))||tbLib().find(y=>y.id===k.slice(3));if(x)t=tbTekst(x)}
+  else if(k.startsWith("vr:")){const[,sid,vid]=k.split(":");const b2=(state.bestellingen||[]).find(y=>y._sid===sid);const v=b2&&bsVragen(b2).find(y=>y.id===vid);if(v)t=`Vraag van kantoor over ${Number(b2.aantal)||0} ${b2.eenheid||""} ${b2.wat}. ${v.tekst}`}
+  if(t)leesVoor(t,b)});
+function leesKnopHTML(key,klein){return kanVoorlezen()?`<button class="micbtn${klein?" sm":""}" type="button" data-lees="${esc(key)}" aria-label="Voorlezen">🔊 Voorlezen</button>`:""}
+/* ---------- toolbox ---------- */
+function tbAan(){return !!(state.cfg&&state.cfg.toolbox)}
+function tbLib(){const eigen=state.tbEigen||[],ids=new Set(eigen.map(x=>x.id));return [...TB_STANDAARD.filter(x=>!ids.has(x.id)).map(x=>({...x,standaard:true})),...eigen.filter(x=>!x.verwijderd).map(x=>({...x,standaard:TB_STANDAARD.some(t=>t.id===x.id),aangepast:true}))].sort((a,b)=>a.titel.localeCompare(b.titel,"nl"))}
+function tbVoorMij(x,uid){return x.voor==="alle"||(Array.isArray(x.voor)&&x.voor.includes(uid))}
+function tbKey(uid,sid){return uid+"__"+sid}
+function tbGetekend(uid,sid){return (state.tbAf||{})[tbKey(uid,sid)]}
+function tbInhoud(t){return `<p style="margin:0">${esc(t.onderwerp||"")}</p>${(t.punten||[]).length?`<ul>${t.punten.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>`:""}${(t.afspraken||[]).length?`<div class="afs"><b>Afspraken</b><ul>${t.afspraken.map(p=>`<li>${esc(p)}</li>`).join("")}</ul></div>`:""}`}
+/* monteur */
+function tbMijnUid(){return state.preview?state.preview.id:state.uid}
+function tbOpenVoorMij(){const uid=tbMijnUid();if(!uid||!tbAan()||(state.office&&!state.preview))return[];return (state.tbSessies||[]).filter(x=>tbVoorMij(x,uid)&&!tbGetekend(uid,x.id))}
+function renderTbMonteur(){const uid=tbMijnUid(),btn=$("#ms-toolbox");if(!btn)return;const open=tbOpenVoorMij();
+  const dot=btn.querySelector(".rdot");if(open.length&&!dot)btn.insertAdjacentHTML("beforeend",'<i class="rdot" aria-hidden="true"></i>');if(!open.length&&dot)dot.remove();
+  btn.setAttribute("aria-label",open.length?`Toolbox, ${open.length} nog af te tekenen`:"Toolbox");
+  $("#tb-meld").hidden=!open.length||$("#v-monteur").dataset.sub==="toolbox";if(open.length)$("#tb-meldtxt").textContent=open.length===1?"Er staat een toolbox voor je klaar":`Er staan ${open.length} toolboxen voor je klaar`;
+  if($("#v-monteur").dataset.sub!=="toolbox")return;
+  const mijn=(state.tbSessies||[]).filter(x=>tbVoorMij(x,uid)).sort((a,b)=>(!!tbGetekend(uid,a.id)-!!tbGetekend(uid,b.id))||(b.datum||"").localeCompare(a.datum||""));
+  $("#tb-mijn").innerHTML=mijn.length?mijn.map(x=>{const af=tbGetekend(uid,x.id);return `<div class="tbkaart${af?"":" tbopen"}"><div class="tbkop"><h3>${esc(x.titel)}</h3>${leesKnopHTML("tb:"+x.id)}</div><small style="color:var(--muted)">${fmtD(x.datum)}${x.locatie?" · "+esc(x.locatie):""}${!af&&x.uiterlijk?" · aftekenen vóór "+fmtD(x.uiterlijk):""}</small>
+    ${af?`<p class="tbok" style="margin:0">✓ Afgetekend op ${tijdKort(af.op)}</p><details class="more"><summary>Opnieuw lezen</summary><div style="margin-top:8px">${tbInhoud(x)}</div></details>`:`${tbInhoud(x)}<div class="tbsign"><label class="chk"><input type="checkbox" data-tbchk="${esc(x.id)}"> Ik heb deze toolbox gelezen, begrijp de afspraken en houd me eraan.</label><label>Vraag of opmerking (optioneel)<input data-tbopm="${esc(x.id)}" placeholder="bijv. vraag over de afspraken" autocomplete="off"></label><button class="btn ok-btn" type="button" data-tbaf="${esc(x.id)}">Aftekenen</button></div>`}</div>`}).join(""):'<div class="empty">Er staan nog geen toolboxen voor je klaar.</div>'}
+$("#tb-naar").onclick=()=>{showTab("monteur");kiesSub("toolbox")};
+$("#tb-mijn").addEventListener("click",async e=>{const b=e.target.closest("[data-tbaf]");if(!b)return;const sid=b.dataset.tbaf,m=$("#tb-mmsg");m.className="msg err";
+  if(state.preview){m.textContent="Je bekijkt de app als monteur; aftekenen is uitgeschakeld.";return}
+  const chk=$(`#tb-mijn [data-tbchk="${CSS.escape(sid)}"]`);if(!chk||!chk.checked){m.textContent="Vink eerst aan dat je de toolbox hebt gelezen.";return}
+  const x=(state.tbSessies||[]).find(t=>t.id===sid);if(!x||!state.db||!state.uid)return;b.disabled=true;
+  try{await state.db.doc(UREN_COL+"/"+state.uid).collection("toolbox").doc(sid).set({naam:fi.naam.value.trim(),op:new Date().toISOString(),opmerking:($(`#tb-mijn [data-tbopm="${CSS.escape(sid)}"]`).value||"").trim(),titel:x.titel,datum:x.datum});m.className="msg ok";m.textContent="Afgetekend. Dank je wel!"}
+  catch(err){b.disabled=false;m.textContent="Aftekenen mislukt. Probeer het opnieuw."}});
+/* kantoor */
+function tbDoelMonteurs(x){const mons=(state.monteurs||[]).filter(m=>!blokIds().has(m.id));return x.voor==="alle"?mons.filter(m=>!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(m.id))):mons.filter(m=>(x.voor||[]).includes(m.id))}
+function renderToolboxKantoor(){if(!state.office)return;$("#tab-tb").hidden=!tbAan();if(!tbAan())return;
+  const lib=tbLib(),kies=$("#tb-kies"),cur=kies.value;kies.innerHTML=lib.map(t=>`<option value="${esc(t.id)}">${esc(t.titel)}${t.standaard?(t.aangepast?" (standaard, aangepast)":""):" (eigen)"}</option>`).join("");if(lib.some(t=>t.id===cur))kies.value=cur;
+  const t=lib.find(x=>x.id===kies.value);$("#tb-voorbeeld").innerHTML=t?`<div class="tbkaart"><div class="tbkop"><b>${esc(t.titel)}</b>${leesKnopHTML("tb:"+t.id)}</div>${tbInhoud(t)}</div>`:"";
+  if(!$("#tb-datum").value)$("#tb-datum").value=iso(new Date());if(!$("#tb-uiterlijk").value)$("#tb-uiterlijk").value=iso(addDays(new Date(),7));
+  const gekozen=new Set([...document.querySelectorAll("#tb-monlijst input:checked")].map(i=>i.value));
+  $("#tb-monlijst").innerHTML=(state.monteurs||[]).filter(m=>!blokIds().has(m.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(m.id))).sort((a,b)=>String(a.monteur).localeCompare(b.monteur,"nl")).map(m=>`<label><input type="checkbox" value="${esc(m.id)}" ${gekozen.has(m.id)?"checked":""}> ${esc(m.monteur)}</label>`).join("");
+  const S=(state.tbSessies||[]).slice().sort((a,b)=>(b.datum||"").localeCompare(a.datum||"")||(b.aangemaakt||"").localeCompare(a.aangemaakt||""));let missend=0;
+  $("#tb-lijst").innerHTML=S.length?S.map(x=>{const doel=tbDoelMonteurs(x),ja=doel.filter(m=>tbGetekend(m.id,x.id)),pct=doel.length?Math.round(ja.length/doel.length*100):0;const te=x.uiterlijk&&x.uiterlijk<iso(new Date());missend+=te?doel.length-ja.length:0;
+    const opm=doel.map(m=>[m,tbGetekend(m.id,x.id)]).filter(([,a])=>a&&a.opmerking);
+    return `<details class="tbses"><summary><span><b>${esc(x.titel)}</b><br><small>${fmtD(x.datum)}${x.locatie?" · "+esc(x.locatie):""} · ${x.voor==="alle"?"alle monteurs":doel.length+" monteurs"}${x.uiterlijk?" · uiterlijk "+fmtD(x.uiterlijk):""}</small></span><span style="text-align:right"><b>${ja.length} / ${doel.length}</b> afgetekend<div class="tbbar"><i style="width:${pct}%"></i></div></span></summary>
+      <div class="tbin"><div class="tbmon">${doel.map(m=>{const a=tbGetekend(m.id,x.id);return `<div class="${a?"ja":te?"nee":""}">${a?"✓":"○"} ${esc(m.monteur)}<small>${a?"afgetekend "+tijdKort(a.op):te?"te laat, nog niet afgetekend":"nog niet afgetekend"}</small></div>`}).join("")||'<div>Geen monteurs.</div>'}</div>
+      ${opm.length?`<div class="edopm"><h3>Vragen en opmerkingen</h3>${opm.map(([m,a])=>`<p><b>${esc(m.monteur)}:</b> ${esc(a.opmerking)}</p>`).join("")}</div>`:""}
+      <details class="more"><summary>Inhoud</summary><div class="tbkaart" style="margin-top:8px">${tbInhoud(x)}</div></details>
+      <div class="toolbar"><button class="btn ghost sm" type="button" data-tbdel="${esc(x.id)}">Verwijderen</button></div></div></details>`}).join(""):'<div class="empty">Nog geen toolboxen uitgezet.</div>';
+  tabTel("#tab-tb","Toolbox",missend,missend===1?"aftekening te laat":"aftekeningen te laat");
+  $("#tb-lib").innerHTML=lib.map(t=>`<div class="werk"><span class="nm"><b>${esc(t.titel)}</b><small>${t.standaard?(t.aangepast?"standaard, aangepast":"standaard"):"eigen toolbox"} · ${(t.punten||[]).length} kernpunten</small></span><button class="rowbtn" type="button" data-tbed="${esc(t.id)}">Bekijken / bewerken</button></div>`).join("")}
+$("#tb-kies").addEventListener("change",renderToolboxKantoor);
+document.querySelectorAll('input[name="tb-voor"]').forEach(r=>r.addEventListener("change",()=>{$("#tb-monlijst").hidden=document.querySelector('input[name="tb-voor"]:checked').value!=="keuze"}));
+$("#tb-zet").onclick=async()=>{const m=$("#tb-msg"),t=tbLib().find(x=>x.id===$("#tb-kies").value);m.className="msg err";if(!t||!state.db)return;
+  const keuze=document.querySelector('input[name="tb-voor"]:checked').value==="keuze",ids=[...document.querySelectorAll("#tb-monlijst input:checked")].map(i=>i.value);
+  if(keuze&&!ids.length){m.textContent="Kies minstens één monteur.";return}const datum=$("#tb-datum").value||iso(new Date());
+  if(!await vraag("Toolbox klaarzetten?",`"${t.titel}" klaarzetten voor ${keuze?ids.length+" monteur(s)":"alle monteurs"}. Zij krijgen een rood bolletje in de app.`,"Ja, klaarzetten"))return;
+  try{await state.db.collection("kantoor/config/tbsessies").add({toolboxId:t.id,titel:t.titel,onderwerp:t.onderwerp||"",punten:t.punten||[],afspraken:t.afspraken||[],datum,uiterlijk:$("#tb-uiterlijk").value||"",locatie:$("#tb-locatie").value.trim(),voor:keuze?ids:"alle",aangemaakt:new Date().toISOString()});
+    m.className="msg ok";m.textContent=`Toolbox "${t.titel}" staat klaar.`;$("#tb-locatie").value=""}catch(err){m.textContent="Klaarzetten mislukt."}};
+$("#tb-lijst").addEventListener("click",async e=>{const b=e.target.closest("[data-tbdel]");if(!b)return;const x=(state.tbSessies||[]).find(t=>t.id===b.dataset.tbdel);if(!x)return;
+  const n=tbDoelMonteurs(x).filter(m=>tbGetekend(m.id,x.id)).length;
+  if(!await vraag("Toolbox verwijderen?",`Weet je zeker dat je "${x.titel}" van ${fmtD(x.datum)} wilt verwijderen?${n?` ${n} aftekening(en) blijven bewaard in de backup, maar zijn dan niet meer zichtbaar.`:""}`,"Ja, verwijderen"))return;
+  try{await state.db.doc("kantoor/config/tbsessies/"+x.id).delete()}catch(err){$("#tb-lmsg").className="msg err";$("#tb-lmsg").textContent="Verwijderen mislukt."}});
+/* bibliotheek bewerken */
+$("#tb-nieuw").onclick=()=>tbForm(null);
+function tbForm(t){const f=$("#tb-form");f.hidden=false;$("#tb-fid").value=t?t.id:"";$("#tb-ftitel").value=t?t.titel:"";$("#tb-fond").value=t?t.onderwerp||"":"";$("#tb-fpunt").value=t?(t.punten||[]).join("\n"):"";$("#tb-fafs").value=t?(t.afspraken||[]).join("\n"):"";
+  $("#tb-fdel").hidden=!t;$("#tb-fdel").textContent=t&&t.standaard?(t.aangepast?"Terug naar standaard":"Verbergen"):"Verwijderen";$("#tb-ftitel").focus()}
+$("#tb-fx").onclick=()=>{$("#tb-form").hidden=true};
+$("#tb-lib").addEventListener("click",e=>{const b=e.target.closest("[data-tbed]");if(!b)return;const t=tbLib().find(x=>x.id===b.dataset.tbed);if(t){tbForm(t);$("#tb-form").scrollIntoView({behavior:"smooth",block:"start"})}});
+$("#tb-form").addEventListener("submit",async e=>{e.preventDefault();const regels=v=>v.split("\n").map(x=>x.replace(/^[-•*\s]+/,"").trim()).filter(Boolean);
+  const id=$("#tb-fid").value||("eigen-"+Date.now().toString(36)),d={titel:$("#tb-ftitel").value.trim(),onderwerp:$("#tb-fond").value.trim(),punten:regels($("#tb-fpunt").value),afspraken:regels($("#tb-fafs").value),bijgewerkt:new Date().toISOString()};
+  if(!d.titel)return;try{await state.db.doc("kantoor/config/toolboxen/"+id).set(d);$("#tb-form").hidden=true;$("#tb-msg").className="msg ok";$("#tb-msg").textContent=`Toolbox "${d.titel}" opgeslagen in de bibliotheek.`}catch(err){}});
+$("#tb-fdel").onclick=async()=>{const id=$("#tb-fid").value;const t=tbLib().find(x=>x.id===id);if(!t)return;
+  if(!await vraag(t.standaard?(t.aangepast?"Terug naar standaard?":"Standaard toolbox verbergen?"):"Toolbox verwijderen?",`Weet je het zeker? Dit gaat over "${t.titel}". Al uitgezette toolboxen blijven bestaan.`,"Ja"))return;
+  try{if(t.standaard&&!t.aangepast)await state.db.doc("kantoor/config/toolboxen/"+id).set({...t,verwijderd:true});else await state.db.doc("kantoor/config/toolboxen/"+id).delete();$("#tb-form").hidden=true}catch(err){}};
+$("#tb-xlsx").addEventListener("click",async()=>{const m=$("#tb-lmsg");m.className="msg";if(!state.dl||typeof XLSX==="undefined"){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return}
+  const S=state.tbSessies||[];if(!S.length){m.className="msg err";m.textContent="Nog geen toolboxen uitgezet.";return}
+  const a=[["Datum toolbox","Toolbox","Project / locatie","Monteur","Afgetekend","Afgetekend op","Vraag of opmerking"]];
+  S.slice().sort((x,y)=>(x.datum||"").localeCompare(y.datum||"")).forEach(x=>tbDoelMonteurs(x).forEach(mo=>{const af=tbGetekend(mo.id,x.id);a.push([x.datum?parse(x.datum):"",x.titel,x.locatie||"",mo.monteur,af?"Ja":"Nee",af?new Date(af.op):"",af&&af.opmerking||""])}));
+  const ws=XLSX.utils.aoa_to_sheet(a,{cellDates:true});for(let i=2;i<=a.length;i++){if(ws["A"+i]&&ws["A"+i].t==="d")ws["A"+i].z="dd-mm-yyyy";if(ws["F"+i]&&ws["F"+i].t==="d")ws["F"+i].z="dd-mm-yyyy hh:mm"}ws["!cols"]=[12,40,24,22,10,16,40].map(w=>({wch:w}));ws["!autofilter"]={ref:`A1:G${a.length}`};
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Toolbox-registratie");
+  try{await state.dl.save({filename:`Alwiti toolbox-registratie ${iso(new Date())}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent="Excel opgeslagen."}catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet."}}});
+$("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
+  try{await state.db.doc("kantoor/config").set({...state.cfg,toolbox:aan});m.className="msg ok";m.textContent=aan?"Toolbox staat aan. Je vindt hem in het tabblad Toolbox.":"Toolbox staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 /* ---------- instellingen ---------- */
 function kantoorAan(id){return (state.cfg&&state.cfg.kantoorMonteurs||[]).includes(id)}
 function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
 function pasInstellingenToe(){const c=state.cfg||{};let r;
   if(state.preview)r=reisAan(state.preview.id);else if(state.office)r=!!c.reistijd||(c.reisMonteurs||[]).length>0;else r=reisAan(state.uid);
-  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;if(!r&&fi.reis)fi.reis.value=0}
+  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
@@ -1294,8 +1499,8 @@ function lmCheck(){$("#lm-go").disabled=!(state.lmBackup&&$("#lm-woord").value.t
 $("#lm-woord").addEventListener("input",lmCheck);
 $("#lm-backup").onclick=async()=>{const ok=await maakBackup($("#lm-msg"));if(ok){state.lmBackup=true;$("#lm-bok").textContent="✓ backup gemaakt"}lmCheck()};
 $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwner)return;
-  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked;
-  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
+  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked,tbw=$("#lm-tb").checked;
+  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(tbw)wat.push(`${(state.tbSessies||[]).length} toolbox-registraties`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
   if(!await vraag("Administratie definitief leegmaken?",`Je staat op het punt dit te wissen: ${wat.join(", ")}. Dit kan NIET ongedaan worden gemaakt. Weet je het echt zeker?`,"Ja, alles wissen"))return;
   b.disabled=true;$("#lm-woord").value="";let n=0;const del=async p=>{try{await state.db.doc(p).delete();n++;if(n%20===0)m.textContent=`Bezig… ${n} items gewist`}catch(e){}};m.className="msg";m.textContent="Bezig met wissen…";
   try{for(const r of state.uren.slice())await del(r._path);
@@ -1306,6 +1511,7 @@ $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwn
       for(const x of (state.bestellingen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bestelStatus||{}))await del("kantoor/config/bestelstatus/"+id);
       for(const a of Object.values(state.antwoorden||{}))if(a._path)await del(a._path);await del("kantoor/config/topper/huidig")}
     if(proj)for(const w of state.werken.slice())await del(WERK_COL+"/"+w.id);
+    if(tbw){for(const a of Object.values(state.tbAf||{}))if(a._path)await del(a._path);for(const x of (state.tbSessies||[]).slice())await del("kantoor/config/tbsessies/"+x.id)}
     if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
       const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs","bestelMonteurs"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
     else{for(const x of (state.monteurs||[]))await del("goedgekeurd/"+x.id)}
@@ -1751,7 +1957,7 @@ $("#b-backup").addEventListener("click",()=>maakBackup($("#m-xlsx")));
 async function maakBackup(m){m.className="msg";
   if(!state.dl){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return false}
   const strip=o=>{const c={...o};delete c._path;return c};
-  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),telaat:Object.values(state.telaat||{})};
+  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),toolbox:{sessies:state.tbSessies||[],aftekeningen:Object.values(state.tbAf||{}).map(strip),eigen:state.tbEigen||[]},telaat:Object.values(state.telaat||{})};
   try{await state.dl.save({filename:`Alwiti uren backup ${iso(new Date())}.json`,data:JSON.stringify(data,null,1)});m.className="msg ok";m.textContent=`Backup opgeslagen: ${data.werken.length} projecten, ${data.monteurs.length} monteurs, ${data.uren.length} urenregels, ${data.weekstaten.length} weekstaten, ${data.bonnen.length} bonnetjes.`;return true}
   catch(err){if(err&&err.code==="declined"){m.className="msg err";m.textContent="Backup niet opgeslagen.";return false}m.className="msg err";m.textContent="Backup downloaden lukte niet in deze weergave.";return false}}
 $("#fl-werkq").addEventListener("input",e=>{const v=e.target.value.trim().toLowerCase();let w=null;
@@ -2071,15 +2277,17 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
     try{state.office=(await user.canEdit())===true}catch(e){}try{state.isOwner=!!(await user.isOwner())}catch(e){}}
   $("#lm-alleen").hidden=!!state.isOwner;$("#lm-stappen").hidden=!state.isOwner;
   pasInstellingenToe();
-  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
+  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
   else{$("#who").textContent="Monteurs";document.querySelector("nav.tabs").hidden=true}
-  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","topper"].includes(s)?s:"uren",true);subZichtbaar()}
+  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","toolbox","topper"].includes(s)?s:"uren",true);subZichtbaar()}
   if(!db){$("#offline").hidden=false;return}
   state.db=db;
   if(state.office)db.doc("kantoor/config").collection("imports").onSnapshot(s=>{state.imports=s.docs.map(d=>({id:d.id,...d.data()}));renderImports()},()=>{});
   db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
+  db.collection("kantoor/config/tbsessies").onSnapshot(s=>{state.tbSessies=s.docs.map(d=>({id:d.id,...d.data()}));renderTbMonteur();renderToolboxKantoor()},()=>{});
+  if(state.office)db.collection("kantoor/config/toolboxen").onSnapshot(s=>{state.tbEigen=s.docs.map(d=>({id:d.id,...d.data()}));renderToolboxKantoor()},()=>{});
   db.doc("kantoor/config/topper/huidig").onSnapshot(d=>{state.topper=d.exists?d.data():null;if($("#v-monteur").dataset.sub==="topper")renderTopperWeek()},()=>{});
   const merge=()=>{state.uren=[].concat(...per.values());renderWeek();renderOffice();updWsTel();publiceerTopper();if($("#v-monteur").dataset.sub==="topper")renderTopperWeek();if(!$("#ed-ovl").hidden)renderEdWeek()};
   const watchIn=(root,uid)=>{const key=root+"/"+uid;if(subs.has(key))return;subs.set(key,db.doc(root+"/"+uid).collection("items").onSnapshot(s=>{per.set(key,s.docs.map(d=>({id:d.id,_path:root+"/"+uid+"/items/"+d.id,...d.data()})));merge()},()=>{}))};
@@ -2088,10 +2296,11 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   const bsPer=new Map();const bsMerge=()=>{state.bestellingen=[].concat(...bsPer.values());renderMijnBest();renderBestellingenKantoor()};
   const watchBest=uid=>{const key="bs/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("bestellingen").onSnapshot(s=>{bsPer.set(uid,s.docs.map(d=>({id:d.id,_sid:uid+"__"+d.id,_path:UREN_COL+"/"+uid+"/bestellingen/"+d.id,...d.data()})));bsMerge()},()=>{}))};
   const antPer=new Map();const antMerge=()=>{state.antwoorden=Object.assign({},...antPer.values());renderMijnBest();renderBestellingenKantoor();if(!$("#vr-ovl").hidden&&vrBs){const b=(state.bestellingen||[]).find(x=>x._sid===vrBs);if(b)$("#vr-draad").innerHTML=draadHTML(b,false)}};
+  const tbPer=new Map();const watchTb=uid=>{const key="tb/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("toolbox").onSnapshot(s=>{tbPer.set(uid,Object.fromEntries(s.docs.map(d=>[uid+"__"+d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/toolbox/"+d.id}])));state.tbAf=Object.assign({},...tbPer.values());renderTbMonteur();renderToolboxKantoor()},()=>{}))};
   const watchAnt=uid=>{const key="ant/"+uid;if(subs.has(key))return;subs.set(key,db.doc(UREN_COL+"/"+uid).collection("antwoorden").onSnapshot(s=>{antPer.set(uid,Object.fromEntries(s.docs.map(d=>[d.id,{...d.data(),_path:UREN_COL+"/"+uid+"/antwoorden/"+d.id}])));antMerge()},()=>{}))};
   db.collection("kantoor/config/bestelstatus").onSnapshot(s=>{state.bestelStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBest();renderBestellingenKantoor()},()=>{});
   db.collection("kantoor/config/bonstatus").onSnapshot(s=>{state.bonStatus=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderMijnBonnen();renderBonnenKantoor()},()=>{});
-  const watch=uid=>{watchIn(UREN_COL,uid);watchIn("goedgekeurd",uid);watchBest(uid);watchAnt(uid);if(!uid.startsWith("papier-")||state.office)watchBon(uid)};
+  const watch=uid=>{watchIn(UREN_COL,uid);watchIn("goedgekeurd",uid);watchBest(uid);watchAnt(uid);watchTb(uid);if(!uid.startsWith("papier-")||state.office)watchBon(uid)};
   if(state.office){
     db.collection(UREN_COL).onSnapshot(s=>{state.monteurs=s.docs.map(d=>({id:d.id,...d.data()}));renderKoppel();renderWerken();renderWeekcontrole();renderAanlevering();s.docs.forEach(d=>watch(d.id));merge()},()=>{});
     db.collection("goedgekeurd").onSnapshot(s=>{s.docs.forEach(d=>watchIn("goedgekeurd",d.id))},()=>{});
