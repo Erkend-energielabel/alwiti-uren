@@ -421,7 +421,7 @@ details.fold[open]>*+*{margin-top:14px}
 .msub2 button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .msub2 button .rdot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;animation:puls 1.6s ease-in-out infinite}
 @media (max-width:560px){.msub2 button{font-size:14px;padding:10px 8px;flex:1 1 40%}}
-#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]),#v-monteur[data-sub="toolbox"] [data-msub]:not([data-msub="toolbox"]),#v-monteur[data-sub="nieuws"] [data-msub]:not([data-msub="nieuws"]),#v-monteur[data-sub="verj"] [data-msub]:not([data-msub="verj"]){display:none!important}
+#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]),#v-monteur[data-sub="toolbox"] [data-msub]:not([data-msub="toolbox"]),#v-monteur[data-sub="nieuws"] [data-msub]:not([data-msub="nieuws"]),#v-monteur[data-sub="docs"] [data-msub]:not([data-msub="docs"]),#v-monteur[data-sub="verj"] [data-msub]:not([data-msub="verj"]){display:none!important}
 #v-monteur[data-sub]:not([data-sub="uren"]):not([hidden]){display:flex;flex-direction:column;gap:16px;max-width:760px}
 .tw{display:flex;flex-direction:column;gap:6px}
 .twrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:6px;background:var(--bg)}
@@ -476,6 +476,19 @@ details.fold[open]>*+*{margin-top:14px}
 .feestmuts{display:inline-block;width:24px;height:24px;margin-left:6px;vertical-align:-4px;flex:none}
 .vjmeld{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,#fff4d6,#ffe1e6);border:1px solid #e0a800;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-weight:700;color:#1b1b1c}
 .vjmeld span{margin-right:auto}.vjmeld .x{border:0;background:none;font-size:18px;cursor:pointer;color:#6a6a6d}
+/* ---------- documenten ---------- */
+.dclijst{display:flex;flex-direction:column;gap:14px}
+.dcgroep h3{margin:0 0 6px}
+.dcrow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.dcrow+.dcrow{margin-top:6px}
+.dcrow.nieuw{border:2px solid var(--red)}
+.dcico{width:44px;height:52px;border-radius:4px;display:grid;place-items:center;font:700 11px var(--f-body);color:#fff;background:#c0121b;position:relative}
+.dcico.img{background:#2a9d8f}
+.dcico::after{content:"";position:absolute;top:0;right:0;border-width:0 10px 10px 0;border-style:solid;border-color:var(--surface) var(--surface) rgba(0,0,0,.25) rgba(0,0,0,.25)}
+.dcrow b{display:block;overflow:hidden;text-overflow:ellipsis}
+.dcrow small{color:var(--muted)}
+.dcrow .toolbar{gap:6px;justify-content:flex-end}
+.dcgel{font-size:12px;color:var(--muted)}
 /* ---------- toolbox ---------- */
 .tbkaart{border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
 .tbkaart h3{color:var(--fg);font-size:18px;margin:0}
@@ -538,7 +551,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   html,body{background:#fff!important}
   body{font-size:12.5px}
   body::before{display:none!important}
-  header.top,[data-lees],.smilies,.emo.leeg,.ballon,#vj-meld,.nwcomp,.nwact .vrin,#msub,#vr-meld,#tb-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
+  header.top,#dc-maak,.dcrow .btn,[data-lees],.smilies,.emo.leeg,.ballon,#vj-meld,.nwcomp,.nwact .vrin,#msub,#vr-meld,#tb-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
   label:has(select),label:has(input[type=search]){display:none!important}
   input[type=checkbox]{visibility:hidden}
   .edday label.tl:not(.aan){display:none!important}
@@ -579,6 +592,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button role="tab" id="tab-bn" aria-selected="false" data-tab="bonnen" hidden>Bonnen</button>
     <button role="tab" id="tab-bs" aria-selected="false" data-tab="bestellingen" hidden>Bestellingen</button>
     <button role="tab" id="tab-tb" aria-selected="false" data-tab="toolbox" hidden>Toolbox</button>
+    <button role="tab" id="tab-dc" aria-selected="false" data-tab="documenten" hidden>Documenten</button>
     <button role="tab" id="tab-nw" aria-selected="false" data-tab="nieuws" hidden>Nieuws</button>
     <button role="tab" id="tab-vj" aria-selected="false" data-tab="verjaardagen" hidden>Verjaardagen</button>
     <button role="tab" id="tab-lc" aria-selected="false" data-tab="locaties" hidden>Locaties</button>
@@ -599,6 +613,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button type="button" role="tab" data-ms="uren" id="ms-uren">Uren invullen</button>
     <button type="button" role="tab" data-ms="bestellen" id="ms-bestellen" hidden>Materiaal bestellen</button>
     <button type="button" role="tab" data-ms="bonnen" id="ms-bonnen">Bonnetjes</button>
+    <button type="button" role="tab" data-ms="docs" id="ms-docs" hidden>Documenten</button>
     <button type="button" role="tab" data-ms="nieuws" id="ms-nieuws" hidden>Alwiti nieuws</button>
     <button type="button" role="tab" data-ms="verj" id="ms-verj" hidden>Verjaardagen</button>
     <button type="button" role="tab" data-ms="toolbox" id="ms-toolbox" hidden>Toolbox</button>
@@ -636,6 +651,13 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="msg" id="m-save" role="status"></div>
     </form>
 
+    <div class="card" id="dc-card" data-msub="docs">
+      <h2>Documenten</h2>
+      <p class="hint" style="margin:0">V&amp;G-plannen, RI&amp;E, werkinstructies en andere documenten van kantoor. Tik op Openen om het document te bekijken.</p>
+      <label style="max-width:420px">Toon<select id="dc-mproj"></select></label>
+      <div class="dclijst" id="dc-m"></div>
+      <div class="msg" id="dc-mmsg" role="status"></div>
+    </div>
     <div class="card" id="nw-card" data-msub="nieuws">
       <h2>Alwiti nieuws</h2>
       <div class="nwfeed" id="nw-feed-m"></div>
@@ -899,6 +921,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="card">
       <h2>Instellingen</h2>
       <label class="schak"><input type="checkbox" id="set-reis" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Reistijd voor alle monteurs</b><small>Aan: iedereen vult per dag reistijd in. Uit: alleen monteurs bij wie je het zelf aanzet (tabblad Monteurs → kies monteur).</small></span></label>
+      <label class="schak"><input type="checkbox" id="set-dc" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Documenten</b><small>Aan: kantoor deelt PDF's en foto's (V&amp;G-plan, RI&amp;E, werkinstructies) en monteurs openen ze in de app.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-nw" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Alwiti nieuws</b><small>Aan: kantoor plaatst berichten met foto, monteurs kunnen een duimpje geven en reageren.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-vj" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Verjaardagen</b><small>Aan: iedereen ziet wie er jarig is (met ballonnen) en kan feliciteren. Je stelt de datum per monteur in.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-tb" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Toolbox</b><small>Aan: kantoor krijgt het tabblad Toolbox en monteurs zien hun toolboxen in de app om af te tekenen.</small></span></label>
@@ -913,6 +936,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
               <label class="lmc"><input type="checkbox" checked disabled> Alle urenregels, weekstaten (ook goedgekeurde) en "te laat"-aantekeningen</label>
               <label class="lmc"><input type="checkbox" id="lm-bon" checked> Alle bonnetjes, bestellingen en foto's</label>
               <label class="lmc"><input type="checkbox" id="lm-proj"> Ook alle projecten</label>
+              <label class="lmc"><input type="checkbox" id="lm-doc"> Ook alle gedeelde documenten</label>
               <label class="lmc"><input type="checkbox" id="lm-soc"> Ook alle nieuwsberichten, duimpjes, reacties en felicitaties</label>
               <label class="lmc"><input type="checkbox" id="lm-tb"> Ook alle toolbox-registraties (wie wat heeft afgetekend)</label>
               <label class="lmc"><input type="checkbox" id="lm-mon"> Ook alle monteurs (inclusief instellingen per monteur)</label>
@@ -959,6 +983,31 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="toolbar"><h2 style="margin-right:auto">Wie heeft wat besteld</h2><span class="hint" id="bs-perhint"></span></div>
       <p class="hint" style="margin:0">Aantal bestellingen per monteur en soort in de gekozen periode (afgewezen telt niet mee). Klik op een naam om alleen zijn bestellingen te zien.</p>
       <div class="tablewrap"><table id="bs-pm"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="v-documenten" hidden style="display:flex;flex-direction:column;gap:20px;max-width:980px">
+    <div class="card" id="dc-maak">
+      <h2>Document delen</h2>
+      <p class="hint" style="margin:0">PDF of foto, maximaal 10 MB. De monteurs krijgen een rood bolletje bij Documenten.</p>
+      <div class="form">
+        <label class="full">Bestand<input type="file" id="dc-file" accept="application/pdf,.pdf,image/*"></label>
+        <label class="full">Titel<input id="dc-titel" placeholder="bijv. V&amp;G-plan Stadswerven" autocomplete="off"></label>
+        <label>Soort<select id="dc-cat"></select></label>
+        <label>Project (optioneel)<select id="dc-proj"></select></label>
+        <label class="full">Toelichting (optioneel)<input id="dc-oms" placeholder="bijv. lezen vóór start op de bouwplaats" autocomplete="off"></label>
+      </div>
+      <fieldset class="lmset"><legend>Voor wie</legend>
+        <label class="lmc"><input type="radio" name="dc-voor" value="alle" checked> Alle monteurs</label>
+        <label class="lmc"><input type="radio" name="dc-voor" value="keuze"> Alleen deze monteurs:</label>
+        <div class="tbvoor" id="dc-monlijst" hidden></div>
+      </fieldset>
+      <div class="toolbar"><button class="btn" type="button" id="dc-zet">Delen</button><span class="msg" id="dc-msg" role="status"></span></div>
+    </div>
+    <div class="card">
+      <div class="toolbar"><h2 style="margin-right:auto">Gedeelde documenten</h2><select id="dc-kproj" aria-label="Project" style="width:auto"></select><select id="dc-filter" aria-label="Soort" style="width:auto"></select></div>
+      <div class="dclijst" id="dc-k"></div>
+      <div class="msg" id="dc-kmsg" role="status"></div>
     </div>
   </section>
 
@@ -1310,7 +1359,13 @@ const ALW=(()=>{
     catch(err){if(m){m.className="msg err";m.textContent=err.message}b.disabled=false}});
   async function verwijderLogin(mid){try{const r=await Store.call("verwijderMonteur",{mid});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}catch(e){Store.toast("Inlog niet verwijderd: "+e.message,true)}}
   function isKantoor(id){const m=info(id);return !!(m&&m.rol==="kantoor")}
-  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor};
+  /* document openen: ophalen uit de Sheet en tonen (PDF in nieuw tabblad, anders downloaden) */
+  async function openBestand(fid,naam,type){const w=window.open("","_blank");if(w){try{w.document.title=naam||"Document";w.document.body.innerHTML='<p style="font:16px system-ui;padding:20px">Document laden…</p>'}catch(e){}}
+    try{const r=await Store.call("foto",{fid});const bin=atob(r.data.split(",")[1]),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+      const blob=new Blob([buf],{type:type||r.data.slice(5,r.data.indexOf(";"))}),url=URL.createObjectURL(blob);
+      if(w&&!w.closed)w.location.href=url;else{const a=document.createElement("a");a.href=url;a.download=naam||"document";document.body.appendChild(a);a.click();a.remove()}setTimeout(()=>URL.revokeObjectURL(url),120000)}
+    catch(e){if(w&&!w.closed)w.close();Store.toast("Openen mislukt: "+e.message,true)}}
+  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor,openBestand};
 })();
 </script>
 
@@ -1348,10 +1403,10 @@ function werkLabel(id){const w=state.werken.find(x=>x.id===id);return w?(w.nr+" 
 /* ---------- tabs ---------- */
 function showTab(t,keep){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();if(t==="nieuws"&&typeof renderNieuws==="function")setTimeout(renderNieuws,0);if(t==="verjaardagen"||t==="nieuws")setTimeout(()=>{if(typeof renderVerj==="function")renderVerj()},0);
+  ["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","documenten","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();if(t==="nieuws"&&typeof renderNieuws==="function")setTimeout(renderNieuws,0);if(t==="documenten"&&typeof renderDocs==="function")setTimeout(renderDocs,0);if(t==="verjaardagen"||t==="nieuws")setTimeout(()=>{if(typeof renderVerj==="function")renderVerj()},0);
 }
 /* ---------- afdrukken op A3 (via het printvenster: kies "Opslaan als PDF") ---------- */
-const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",toolbox:"Toolbox-registratie",nieuws:"Alwiti nieuws",verjaardagen:"Verjaardagen",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
+const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",toolbox:"Toolbox-registratie",documenten:"Documenten",nieuws:"Alwiti nieuws",verjaardagen:"Verjaardagen",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
 function actieveTab(){const b=document.querySelector('nav.tabs button[aria-selected="true"]');return b?b.dataset.tab:""}
 function updPrint(){const b=document.getElementById("b-print");if(b)b.hidden=!state.office||!!state.preview||!PRINTBAAR[actieveTab()]}
 function filterTekst(sec){const p=[];
@@ -1383,13 +1438,15 @@ function regelHTML(r,i){const tOpts=Object.entries(TYPES).map(([k,v])=>`<option 
    <div class="rtop"><select data-f="type" aria-label="Type uren">${tOpts}</select><input data-f="uren" type="number" min="0.25" max="24" step="0.25" inputmode="decimal" placeholder="uren" value="${esc(r.uren)}" aria-label="Aantal uren"><span class="ul">uur</span>${state.regels.length>1?`<button type="button" class="rx" data-rm="${i}" aria-label="Regel verwijderen">×</button>`:""}</div>
    <div class="rw"><select data-f="werk" aria-label="Project">${werkOpts}</select><div class="bk" role="group" aria-label="Buiten, werkplaats of kantoor"><button type="button" data-bk="buiten" aria-pressed="${r.soort!=="binnen"&&r.soort!=="kantoor"}" title="Buiten">B</button><button type="button" data-bk="binnen" aria-pressed="${r.soort==="binnen"}" title="Werkplaats">W</button>${kantoorAan(mijnId())||r.soort==="kantoor"?`<button type="button" data-bk="kantoor" aria-pressed="${r.soort==="kantoor"}" title="Kantoor">K</button>`:""}</div></div>
    <a class="navbtn" target="_blank" rel="noopener" hidden><svg viewBox="0 0 16 16" aria-hidden="true" class="mic"><path d="M15 1 1 7.2l5.6 1.9L8.5 15z" fill="currentColor"/></svg> <span>Route naar project</span></a>
+   <button class="navbtn dcknop" type="button" hidden style="background:var(--c-buiten);border:0;cursor:pointer">📄 <span>Documenten</span></button>
    <input class="rv" data-f="vrij" placeholder="Welk project? (naam, adres of nummer)" value="${esc(r.vrij)}">
    <div class="omsrow"><textarea data-f="oms" rows="1" placeholder="Omschrijving werkzaamheden (optioneel)">${esc(r.oms)}</textarea><button type="button" class="netbtn" data-net="${i}" hidden>Netjes maken</button></div>
   </div>`}
 function renderRegels(){const bh=$("#bk-hint");if(bh)bh.textContent="B = buiten (op de bouw) · W = werkplaats"+(kantoorAan(mijnId())?" · K = kantoor":"");const box=$("#regels");box.innerHTML=state.regels.map(regelHTML).join("");if(state.ai)box.querySelectorAll(".netbtn").forEach(b=>b.hidden=false);box.querySelectorAll('textarea[data-f="oms"]').forEach(autoH);
   box.querySelectorAll(".regel").forEach(el=>{const r=state.regels[+el.dataset.i];const sel=el.querySelector('[data-f="werk"]');sel.value=r.werk;if(sel.value!==r.werk){r.werk="";sel.value=""}regelVis(el,r)});updCalc()}
 function navUrl(w){const q=[w.adres,w.plaats].filter(Boolean).join(", ");return q?"https://www.google.com/maps/dir/?api=1&travelmode=driving&destination="+encodeURIComponent(q):""}
-function regelVis(el,r){const a=afw(r.type);{const nb=el.querySelector(".navbtn"),w=!a&&r.werk&&r.werk!=="__vrij"?state.werken.find(x=>x.id===r.werk):null,u=w?navUrl(w):"";nb.hidden=!u;if(u){nb.href=u;nb.querySelector("span").textContent="Route naar "+(w.adres?w.adres+(w.plaats?", "+w.plaats:""):w.plaats)}}Object.keys(TYPES).forEach(k=>el.classList.toggle("t-"+k,r.type===k&&k!=="normaal"));el.classList.toggle("k",r.soort==="binnen");el.classList.toggle("ko",r.soort==="kantoor");el.querySelector(".rw").hidden=a;el.querySelector(".rv").hidden=a||r.werk!=="__vrij";el.classList.toggle("afw",a)}
+function regelVis(el,r){const a=afw(r.type);{const nb=el.querySelector(".navbtn"),w=!a&&r.werk&&r.werk!=="__vrij"?state.werken.find(x=>x.id===r.werk):null,u=w?navUrl(w):"";nb.hidden=!u;if(u){nb.href=u;nb.querySelector("span").textContent="Route naar "+(w.adres?w.adres+(w.plaats?", "+w.plaats:""):w.plaats)}
+    const dk=el.querySelector(".dcknop");if(dk){const n=w?dcVanProject(w.id).length:0;dk.hidden=!n;if(n){dk.dataset.proj=w.id;dk.querySelector("span").textContent=`Documenten ${w.nr} (${n})`}}}Object.keys(TYPES).forEach(k=>el.classList.toggle("t-"+k,r.type===k&&k!=="normaal"));el.classList.toggle("k",r.soort==="binnen");el.classList.toggle("ko",r.soort==="kantoor");el.querySelector(".rw").hidden=a;el.querySelector(".rv").hidden=a||r.werk!=="__vrij";el.classList.toggle("afw",a)}
 $("#regels").addEventListener("input",e=>{const el=e.target.closest(".regel"),f=e.target.dataset.f;if(!el||!f)return;const r=state.regels[+el.dataset.i];r[f]=e.target.value;if(f==="type"||f==="werk"){regelVis(el,r);if(f==="werk"&&r.werk==="__vrij")el.querySelector(".rv").focus()}updCalc();saveConcept()});
 $("#regels").addEventListener("change",e=>{const el=e.target.closest(".regel"),f=e.target.dataset.f;if(!el||!f)return;const r=state.regels[+el.dataset.i];r[f]=e.target.value;regelVis(el,r);updCalc();saveConcept()});
 $("#regels").addEventListener("click",e=>{const bk=e.target.dataset&&e.target.dataset.bk;if(bk){const el=e.target.closest(".regel"),r=state.regels[+el.dataset.i];r.soort=bk;el.querySelectorAll("[data-bk]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.bk===bk));el.classList.toggle("k",bk==="binnen");el.classList.toggle("ko",bk==="kantoor");saveConcept();return}
@@ -1478,7 +1535,7 @@ async function netjes(veld,btn){const m=$("#m-net"),txt=veld.value.trim();m.clas
     $("#net-undo").onclick=()=>{veld.value=veld.dataset.voor||veld.value;veld.dispatchEvent(new Event("input",{bubbles:true}));veld.dispatchEvent(new Event("change",{bubbles:true}));m.textContent="Oorspronkelijke tekst teruggezet."};return nieuw}
   catch(e){m.className="msg err";m.textContent=e&&e.code==="not_granted"?"Netjes maken is niet toegestaan. Sta Claude toe als de app erom vraagt.":e&&e.code==="rate_limited"?"Even te vaak gebruikt. Probeer het zo opnieuw.":"Netjes maken lukte niet. Probeer het opnieuw.";return null}
   finally{btn.disabled=false;btn.textContent=oud}}
-$("#regels").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.net;if(i==null)return;const el=e.target.closest(".regel");netjes(el.querySelector('[data-f="oms"]'),e.target)});
+$("#regels").addEventListener("click",e=>{const dk=e.target.closest&&e.target.closest(".dcknop");if(dk){dcProjFilter=dk.dataset.proj||"";kiesSub("docs");return}const i=e.target.dataset&&e.target.dataset.net;if(i==null)return;const el=e.target.closest(".regel");netjes(el.querySelector('[data-f="oms"]'),e.target)});
 $("#net-opm").onclick=e=>netjes(fi.opm,e.target);
 /* ---------- bonnetjes ---------- */
 const BON_ST={ingediend:"Ingediend",akkoord:"Akkoord",afgewezen:"Afgewezen"};
@@ -1550,10 +1607,10 @@ function bestVis(){const c=$("#best-card");if(!c)return;setTimeout(subZichtbaar,
   if(toon){const ps=state.werken.filter(w=>w.actief!==false),cur=$("#best-proj").value;$("#best-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#best-proj").value=cur;renderMijnBest()}}
 /* ---------- monteur: tabbladen ---------- */
 function subZichtbaar(){const pv=!!state.preview,mon=!state.office||pv;const bAan=pv?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));
-  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#ms-nieuws").hidden=!(mon&&nwAan());$("#ms-verj").hidden=!(mon&&vjAan());$("#msub").hidden=$("#v-monteur").hidden;
-  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan()))||(cur==="nieuws"&&!(mon&&nwAan()))||(cur==="verj"&&!(mon&&vjAan())))kiesSub("uren",true);renderTbMonteur()}
+  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#ms-nieuws").hidden=!(mon&&nwAan());$("#ms-docs").hidden=!(mon&&dcAan());$("#ms-verj").hidden=!(mon&&vjAan());$("#msub").hidden=$("#v-monteur").hidden;
+  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan()))||(cur==="nieuws"&&!(mon&&nwAan()))||(cur==="docs"&&!(mon&&dcAan()))||(cur==="verj"&&!(mon&&vjAan())))kiesSub("uren",true);renderTbMonteur()}
 function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.querySelectorAll("#msub [data-ms]").forEach(b=>b.setAttribute("aria-selected",b.dataset.ms===t));if(!stil)ls("alw-msub",t);
-  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(t==="nieuws"){nwSessieGezien=lsg(nwGezienKey())||"";renderNieuws();nwMarkeerGezien();setTimeout(updNwDot,0)}else updNwDot();renderVerj();if(!stil)window.scrollTo({top:0})}
+  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(t==="nieuws"){nwSessieGezien=lsg(nwGezienKey())||"";renderNieuws();nwMarkeerGezien();setTimeout(updNwDot,0)}else updNwDot();renderVerj();renderDocs();if(!stil)window.scrollTo({top:0})}
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
 /* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
 function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
@@ -1736,6 +1793,60 @@ async function socWijzig(fn){if(!state.db||!state.uid)throw{code:"geen"};const c
 function socNaam(uid,d){return (d&&d.naam)||((state.monteurs||[]).find(x=>x.id===uid)||{}).monteur||"Collega"}
 function alleSoc(){return Object.entries(state.sociaal||{})}
 function nuMag(){return !state.preview&&!!state.uid&&!state.geblokt}
+/* ---------- documenten ---------- */
+const DC_CAT=["V&G-plan","RI&E","LMRA / rode kaart","Werkinstructie","Tekening","Veiligheidsinformatieblad (VIB)","Keuring / certificaat","Overig"];
+function dcAan(){return !!(state.cfg&&state.cfg.documenten)}
+function dcVoor(x,uid){return x.voor==="alle"||(Array.isArray(x.voor)&&x.voor.includes(uid))}
+function dcGeopend(uid,id){const d=(state.sociaal||{})[uid];return d&&d.gelezen&&d.gelezen[id]}
+function dcGrootte(n){return n>1048576?(n/1048576).toFixed(1).replace(".",",")+" MB":Math.max(1,Math.round(n/1024))+" kB"}
+function openBestand(x){ALW.openBestand(x.bestand,x.naam,x.type)}
+let dcBlob=null;
+function dcIcoon(x){const img=/^image\//.test(x.type||"");return `<span class="dcico${img?" img":""}" aria-hidden="true">${img?"FOTO":"PDF"}</span>`}
+function dcRij(x,metBeheer){const uid=state.preview?state.preview.id:state.uid,open=!metBeheer&&!dcGeopend(uid,x.id);
+  let gel="";if(metBeheer){const doel=(state.monteurs||[]).filter(m=>!blokIds().has(m.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(m.id))&&dcVoor(x,m.id)),ja=doel.filter(m=>dcGeopend(m.id,x.id));gel=`<span class="dcgel" title="${esc(ja.map(m=>m.monteur).join(", ")||"nog niemand")}">Geopend door ${ja.length} van ${doel.length}</span>`}
+  return `<div class="dcrow${open?" nieuw":""}">${dcIcoon(x)}<div><b>${open?'<i class="rdot" aria-hidden="true" style="margin-right:6px"></i>':""}${esc(x.titel||x.naam)}</b><small>${esc(x.categorie||"")}${x.projectNr?" · "+esc(x.projectNr+" "+(x.projectNaam||"")):""} · ${fmtD((x.op||"").slice(0,10))}${x.grootte?" · "+dcGrootte(x.grootte):""}${metBeheer&&x.voor!=="alle"?" · "+(x.voor||[]).length+" monteur(s)":""}</small>${x.oms?`<small style="display:block">${esc(x.oms)}</small>`:""}${gel}</div>
+   <div class="toolbar"><button class="btn sm" type="button" data-dcopen="${esc(x.id)}">Openen</button>${metBeheer?`<button class="btn ghost sm" type="button" data-dcdel="${esc(x.id)}">Verwijderen</button>`:""}</div></div>`}
+let dcProjFilter="";
+function dcVanProject(pid){const uid=state.preview?state.preview.id:state.uid;if(!dcAan())return[];return (state.docs||[]).filter(x=>x.projectId===pid&&(state.office&&!state.preview||dcVoor(x,uid)))}
+function dcProjOpties(L,cur,alleTekst){const ps=new Map();L.forEach(x=>{if(x.projectId)ps.set(x.projectId,(x.projectNr||"")+" – "+(x.projectNaam||""))});
+  return `<option value="">${alleTekst}</option><option value="__alg" ${cur==="__alg"?"selected":""}>Alleen algemene documenten</option>`+[...ps.entries()].sort((a,b)=>b[1].localeCompare(a[1],"nl",{numeric:true})).map(([id,t])=>`<option value="${esc(id)}" ${cur===id?"selected":""}>Project ${esc(t)}</option>`).join("")}
+function dcFilterProj(L,v){return !v?L:v==="__alg"?L.filter(x=>!x.projectId):L.filter(x=>x.projectId===v)}
+function dcGroepen(L,metBeheer){const proj=new Map(),alg=[];L.forEach(x=>{if(x.projectId){if(!proj.has(x.projectId))proj.set(x.projectId,[]);proj.get(x.projectId).push(x)}else alg.push(x)});
+  const pHTML=[...proj.entries()].sort((a,b)=>String(b[1][0].projectNr||"").localeCompare(String(a[1][0].projectNr||""),"nl",{numeric:true})).map(([,l])=>`<div class="dcgroep"><h3>📁 Project ${esc(l[0].projectNr||"")} ${esc(l[0].projectNaam||"")}</h3>${l.map(x=>dcRij(x,metBeheer)).join("")}</div>`).join("");
+  return pHTML+(alg.length?dcCatGroepen(alg,metBeheer):"")}
+function dcCatGroepen(L,metBeheer){const g=new Map();L.forEach(x=>{const c=x.categorie||"Overig";if(!g.has(c))g.set(c,[]);g.get(c).push(x)});
+  return [...g.entries()].sort((a,b)=>DC_CAT.indexOf(a[0])-DC_CAT.indexOf(b[0])).map(([c,l])=>`<div class="dcgroep"><h3>${esc(c)}</h3>${l.map(x=>dcRij(x,metBeheer)).join("")}</div>`).join("")}
+function renderDocs(){const alle=(state.docs||[]).slice().sort((a,b)=>(b.op||"").localeCompare(a.op||""));
+  if(state.office&&!state.preview){$("#tab-dc").hidden=!dcAan();
+    if($("#dc-cat").options.length!==DC_CAT.length)$("#dc-cat").innerHTML=DC_CAT.map(c=>`<option>${esc(c)}</option>`).join("");
+    const f=$("#dc-filter"),fv=f.value;f.innerHTML='<option value="">Alle soorten</option>'+DC_CAT.map(c=>`<option ${c===fv?"selected":""}>${esc(c)}</option>`).join("");
+    const ps=state.werken.filter(w=>w.actief!==false),pv=$("#dc-proj").value;$("#dc-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#dc-proj").value=pv;
+    const gek=new Set([...document.querySelectorAll("#dc-monlijst input:checked")].map(i=>i.value));
+    $("#dc-monlijst").innerHTML=(state.monteurs||[]).filter(m=>!blokIds().has(m.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(m.id))).sort((a,b)=>String(a.monteur).localeCompare(b.monteur,"nl")).map(m=>`<label><input type="checkbox" value="${esc(m.id)}" ${gek.has(m.id)?"checked":""}> ${esc(m.monteur)}</label>`).join("");
+    const kp=$("#dc-kproj"),kpv=kp.value;kp.innerHTML=dcProjOpties(alle,kpv,"Alle projecten");const L=dcFilterProj(alle,kp.value).filter(x=>!f.value||x.categorie===f.value);$("#dc-k").innerHTML=L.length?dcGroepen(L,true):'<div class="empty">Nog geen documenten gedeeld.</div>'}
+  const uid=state.preview?state.preview.id:state.uid,mijn=alle.filter(x=>dcVoor(x,uid)),nieuw=mijn.filter(x=>!dcGeopend(uid,x.id)).length;
+  if($("#v-monteur").dataset.sub==="docs"){$("#dc-mproj").innerHTML=dcProjOpties(mijn,dcProjFilter,"Alle documenten");const zicht=dcFilterProj(mijn,dcProjFilter);$("#dc-m").innerHTML=zicht.length?dcGroepen(zicht,false):(mijn.length?'<div class="empty">Geen documenten bij deze keuze.</div>':'<div class="empty">Er zijn nog geen documenten voor je gedeeld.</div>')}else if(false)$("#dc-m").innerHTML=mijn.length?dcGroepen(mijn,false):'<div class="empty">Er zijn nog geen documenten voor je gedeeld.</div>';
+  const b=$("#ms-docs");if(b){const d=b.querySelector(".rdot"),aan=dcAan()&&nieuw>0&&!(state.office&&!state.preview);if(aan&&!d)b.insertAdjacentHTML("beforeend",'<i class="rdot" aria-hidden="true"></i>');if(!aan&&d)d.remove();b.setAttribute("aria-label",aan?`Documenten, ${nieuw} nieuw`:"Documenten")}}
+async function dcOpen(id){const x=(state.docs||[]).find(y=>y.id===id);if(!x)return;openBestand(x);
+  if(!state.office&&!state.preview&&state.uid&&!dcGeopend(state.uid,id)){try{await socWijzig(d=>{d.gelezen=d.gelezen||{};d.gelezen[id]=new Date().toISOString();return d});renderDocs()}catch(e){}}}
+$("#dc-m").addEventListener("click",e=>{const b=e.target.closest("[data-dcopen]");if(b)dcOpen(b.dataset.dcopen)});
+$("#dc-k").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.dcopen){dcOpen(b.dataset.dcopen);return}
+  if(b.dataset.dcdel){const x=(state.docs||[]).find(y=>y.id===b.dataset.dcdel);if(!x||!await vraag("Document verwijderen?",`Weet je zeker dat je "${x.titel||x.naam}" wilt verwijderen? Monteurs kunnen het dan niet meer openen.`,"Ja, verwijderen"))return;
+    try{await state.db.doc("kantoor/config/documenten/"+x.id).delete();if(x.bestand&&state.assets){try{await state.assets.delete(x.bestand)}catch(e2){}}}catch(err){$("#dc-kmsg").className="msg err";$("#dc-kmsg").textContent="Verwijderen mislukt."}}});
+$("#dc-filter").addEventListener("change",renderDocs);$("#dc-kproj").addEventListener("change",renderDocs);$("#dc-mproj").addEventListener("change",e=>{dcProjFilter=e.target.value;renderDocs()});
+document.querySelectorAll('input[name="dc-voor"]').forEach(r=>r.addEventListener("change",()=>{$("#dc-monlijst").hidden=document.querySelector('input[name="dc-voor"]:checked').value!=="keuze"}));
+$("#dc-file").addEventListener("change",()=>{const f=$("#dc-file").files[0];if(f&&!$("#dc-titel").value)$("#dc-titel").value=f.name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ");
+  if(f&&/rie|ri&e/i.test(f.name))$("#dc-cat").value="RI&E";else if(f&&/v.?g|vg-?plan/i.test(f.name))$("#dc-cat").value="V&G-plan";else if(f&&/lmra|rode.?kaart/i.test(f.name))$("#dc-cat").value="LMRA / rode kaart"});
+$("#dc-zet").onclick=async()=>{const m=$("#dc-msg"),f=$("#dc-file").files[0];m.className="msg err";
+  if(!f){m.textContent="Kies eerst een bestand.";return}if(!state.assets){m.textContent="Bestanden delen kan in deze weergave niet.";return}
+  if(!/^application\/pdf$|^image\//.test(f.type||"")&&!/\.pdf$/i.test(f.name)){m.textContent="Alleen PDF of foto.";return}
+  if(f.size>10*1048576){m.textContent="Het bestand is groter dan 10 MB. Verklein of splits het eerst.";return}
+  const keuze=document.querySelector('input[name="dc-voor"]:checked').value==="keuze",ids=[...document.querySelectorAll("#dc-monlijst input:checked")].map(i=>i.value);if(keuze&&!ids.length){m.textContent="Kies minstens één monteur.";return}
+  $("#dc-zet").disabled=true;m.className="msg";m.textContent="Bezig met uploaden…";
+  try{const type=f.type||(/\.pdf$/i.test(f.name)?"application/pdf":"application/octet-stream");const up=await state.assets.upload(f,{type});const w=state.werken.find(x=>x.id===$("#dc-proj").value);
+    await state.db.collection("kantoor/config/documenten").add({titel:$("#dc-titel").value.trim()||f.name,naam:f.name,type,grootte:f.size,bestand:up.id,categorie:$("#dc-cat").value,oms:$("#dc-oms").value.trim(),projectId:w?w.id:"",projectNr:w?w.nr:"",projectNaam:w?w.naam:"",voor:keuze?ids:"alle",op:new Date().toISOString(),door:fi.naam.value.trim()||"Kantoor"});
+    $("#dc-file").value="";$("#dc-titel").value="";$("#dc-oms").value="";m.className="msg ok";m.textContent="Gedeeld. Monteurs zien het bij Documenten."}
+  catch(err){m.className="msg err";m.textContent=err&&err.message?"Uploaden mislukt: "+err.message:"Uploaden mislukt."}finally{$("#dc-zet").disabled=false}};
 /* ---------- Alwiti nieuws ---------- */
 function nwAan(){return !!(state.cfg&&state.cfg.nieuws)}
 let nwBlob=null;
@@ -1900,8 +2011,8 @@ $("#tb-xlsx").addEventListener("click",async()=>{const m=$("#tb-lmsg");m.classNa
   const ws=XLSX.utils.aoa_to_sheet(a,{cellDates:true});for(let i=2;i<=a.length;i++){if(ws["A"+i]&&ws["A"+i].t==="d")ws["A"+i].z="dd-mm-yyyy";if(ws["F"+i]&&ws["F"+i].t==="d")ws["F"+i].z="dd-mm-yyyy hh:mm"}ws["!cols"]=[12,40,24,22,10,16,40].map(w=>({wch:w}));ws["!autofilter"]={ref:`A1:G${a.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Toolbox-registratie");
   try{await state.dl.save({filename:`Alwiti toolbox-registratie ${iso(new Date())}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent="Excel opgeslagen."}catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet."}}});
-["nw","vj"].forEach(k=>$("#set-"+k).addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg"),veld=k==="nw"?"nieuws":"verjaardagen";
-  try{await state.db.doc("kantoor/config").set({...state.cfg,[veld]:aan});m.className="msg ok";m.textContent=(k==="nw"?"Alwiti nieuws":"Verjaardagen")+(aan?" staat aan.":" staat uit.")}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}}));
+["nw","vj","dc"].forEach(k=>$("#set-"+k).addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg"),veld=k==="nw"?"nieuws":k==="dc"?"documenten":"verjaardagen";
+  try{await state.db.doc("kantoor/config").set({...state.cfg,[veld]:aan});m.className="msg ok";m.textContent=(k==="nw"?"Alwiti nieuws":k==="dc"?"Documenten":"Verjaardagen")+(aan?" staat aan.":" staat uit.")}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}}));
 $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,toolbox:aan});m.className="msg ok";m.textContent=aan?"Toolbox staat aan. Je vindt hem in het tabblad Toolbox.":"Toolbox staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 /* ---------- instellingen ---------- */
@@ -1910,7 +2021,7 @@ function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
 function pasInstellingenToe(){const c=state.cfg||{};let r;
   if(state.preview)r=reisAan(state.preview.id);else if(state.office)r=!!c.reistijd||(c.reisMonteurs||[]).length>0;else r=reisAan(state.uid);
-  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
+  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;const xd=$("#set-dc");if(xd)xd.checked=!!c.documenten;if(state.office)$("#tab-dc").hidden=!c.documenten;setTimeout(renderDocs,0);if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
@@ -1920,8 +2031,8 @@ function lmCheck(){$("#lm-go").disabled=!(state.lmBackup&&$("#lm-woord").value.t
 $("#lm-woord").addEventListener("input",lmCheck);
 $("#lm-backup").onclick=async()=>{const ok=await maakBackup($("#lm-msg"));if(ok){state.lmBackup=true;$("#lm-bok").textContent="✓ backup gemaakt"}lmCheck()};
 $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwner)return;
-  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked,tbw=$("#lm-tb").checked,soc=$("#lm-soc").checked;
-  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(tbw)wat.push(`${(state.tbSessies||[]).length} toolbox-registraties`);if(soc)wat.push(`${(state.nieuws||[]).length} nieuwsberichten met reacties`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
+  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked,tbw=$("#lm-tb").checked,soc=$("#lm-soc").checked,dcw=$("#lm-doc").checked;
+  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(tbw)wat.push(`${(state.tbSessies||[]).length} toolbox-registraties`);if(dcw)wat.push(`${(state.docs||[]).length} documenten`);if(soc)wat.push(`${(state.nieuws||[]).length} nieuwsberichten met reacties`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
   if(!await vraag("Administratie definitief leegmaken?",`Je staat op het punt dit te wissen: ${wat.join(", ")}. Dit kan NIET ongedaan worden gemaakt. Weet je het echt zeker?`,"Ja, alles wissen"))return;
   b.disabled=true;$("#lm-woord").value="";let n=0;const del=async p=>{try{await state.db.doc(p).delete();n++;if(n%20===0)m.textContent=`Bezig… ${n} items gewist`}catch(e){}};m.className="msg";m.textContent="Bezig met wissen…";
   try{for(const r of state.uren.slice())await del(r._path);
@@ -1932,6 +2043,7 @@ $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwn
       for(const x of (state.bestellingen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bestelStatus||{}))await del("kantoor/config/bestelstatus/"+id);
       for(const a of Object.values(state.antwoorden||{}))if(a._path)await del(a._path);await del("kantoor/config/topper/huidig")}
     if(proj)for(const w of state.werken.slice())await del(WERK_COL+"/"+w.id);
+    if(dcw){for(const x of (state.docs||[]).slice()){await del("kantoor/config/documenten/"+x.id);if(x.bestand&&state.assets){try{await state.assets.delete(x.bestand)}catch(e){}}}}
     if(soc){for(const x of (state.nieuws||[]).slice()){await del("kantoor/config/nieuws/"+x.id);if(x.foto&&state.assets){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.sociaal||{}))await del("sociaal/"+id)}
     if(tbw){for(const a of Object.values(state.tbAf||{}))if(a._path)await del(a._path);for(const x of (state.tbSessies||[]).slice())await del("kantoor/config/tbsessies/"+x.id)}
     if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
@@ -2389,7 +2501,7 @@ $("#b-backup").addEventListener("click",()=>maakBackup($("#m-xlsx")));
 async function maakBackup(m){m.className="msg";
   if(!state.dl){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return false}
   const strip=o=>{const c={...o};delete c._path;return c};
-  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),nieuws:state.nieuws||[],sociaal:state.sociaal||{},verjaardagen:state.verj||{},toolbox:{sessies:state.tbSessies||[],aftekeningen:Object.values(state.tbAf||{}).map(strip),eigen:state.tbEigen||[]},telaat:Object.values(state.telaat||{})};
+  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),documenten:state.docs||[],nieuws:state.nieuws||[],sociaal:state.sociaal||{},verjaardagen:state.verj||{},toolbox:{sessies:state.tbSessies||[],aftekeningen:Object.values(state.tbAf||{}).map(strip),eigen:state.tbEigen||[]},telaat:Object.values(state.telaat||{})};
   try{await state.dl.save({filename:`Alwiti uren backup ${iso(new Date())}.json`,data:JSON.stringify(data,null,1)});m.className="msg ok";m.textContent=`Backup opgeslagen: ${data.werken.length} projecten, ${data.monteurs.length} monteurs, ${data.uren.length} urenregels, ${data.weekstaten.length} weekstaten, ${data.bonnen.length} bonnetjes.`;return true}
   catch(err){if(err&&err.code==="declined"){m.className="msg err";m.textContent="Backup niet opgeslagen.";return false}m.className="msg err";m.textContent="Backup downloaden lukte niet in deze weergave.";return false}}
 $("#fl-werkq").addEventListener("input",e=>{const v=e.target.value.trim().toLowerCase();let w=null;
@@ -2710,17 +2822,18 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
     try{state.office=(await user.canEdit())===true}catch(e){}try{state.isOwner=!!(await user.isOwner())}catch(e){}}
   $("#lm-alleen").hidden=!!state.isOwner;$("#lm-stappen").hidden=!state.isOwner;
   pasInstellingenToe();
-  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
+  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","documenten","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
   else{$("#who").textContent=fi.naam.value||"Monteurs";document.querySelector("nav.tabs").hidden=true}
-  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","nieuws","verj","toolbox","topper"].includes(s)?s:"uren",true);subZichtbaar()}
+  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","docs","nieuws","verj","toolbox","topper"].includes(s)?s:"uren",true);subZichtbaar()}
   if(!db){$("#offline").hidden=false;return}
   state.db=db;
   if(state.office)db.doc("kantoor/config").collection("imports").onSnapshot(s=>{state.imports=s.docs.map(d=>({id:d.id,...d.data()}));renderImports()},()=>{});
   db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
+  db.collection("kantoor/config/documenten").onSnapshot(s=>{state.docs=s.docs.map(d=>({id:d.id,...d.data()}));renderDocs();if(typeof renderRegels==="function"&&!state.office)renderRegels()},()=>{});
   db.collection("kantoor/config/nieuws").onSnapshot(s=>{state.nieuws=s.docs.map(d=>({id:d.id,...d.data()}));renderNieuws();if($("#v-monteur").dataset.sub==="nieuws"&&!$("#v-monteur").hidden)nwMarkeerGezien()},()=>{});
-  db.collection("sociaal").onSnapshot(s=>{state.sociaal=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderNieuws();renderVerj()},()=>{});
+  db.collection("sociaal").onSnapshot(s=>{state.sociaal=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderNieuws();renderVerj();renderDocs()},()=>{});
   db.doc("kantoor/config/extra/verjaardagen").onSnapshot(d=>{state.verj=d.exists?d.data():{};renderVerj();if(state.office&&kSel)renderKoppel()},()=>{});
   db.collection("kantoor/config/tbsessies").onSnapshot(s=>{state.tbSessies=s.docs.map(d=>({id:d.id,...d.data()}));renderTbMonteur();renderToolboxKantoor()},()=>{});
   if(state.office)db.collection("kantoor/config/toolboxen").onSnapshot(s=>{state.tbEigen=s.docs.map(d=>({id:d.id,...d.data()}));renderToolboxKantoor()},()=>{});

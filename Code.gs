@@ -26,7 +26,8 @@ var SEG = /^[A-Za-z0-9_\-.~:@+]{1,200}$/;
 var MAX_FOUT = 5;
 var DEEL = 45000;            // tekens per cel (Google Sheets: max 50.000)
 var MAX_DOC = 400000;        // maximale grootte van één document
-var MAX_FOTO = 3000000;      // maximale grootte van één foto (base64)
+var MAX_FOTO = 3000000;      // maximale grootte van één foto van een monteur (base64)
+var MAX_BESTAND = 14500000;  // maximale grootte van een document van kantoor (base64, ca. 10 MB)
 
 /* ------------------------------------------------------------------ web */
 
@@ -246,7 +247,7 @@ function magLezen_(me, p) {
   if (/^kantoor\/config\/werken\/[^\/]+$/.test(p)) return true;
   if (p === 'kantoor/config/topper/huidig') return true;
   if (/^kantoor\/config\/tbsessies\/[^\/]+$/.test(p)) return true;
-  if (/^kantoor\/config\/nieuws\/[^\/]+$/.test(p) || p === 'kantoor/config/extra/verjaardagen') return true;
+  if (/^kantoor\/config\/(nieuws|documenten)\/[^\/]+$/.test(p) || p === 'kantoor/config/extra/verjaardagen') return true;
   if (/^sociaal\/[^\/]+$/.test(p)) return true;
   if (s.length === 4 && s[0] === 'kantoor' && (s[2] === 'bonstatus' || s[2] === 'bestelstatus')) return s[3].indexOf(u + '__') === 0;
   if (p === 'uren/' + u || p === 'goedgekeurd/' + u) return true;
@@ -400,8 +401,10 @@ function fotoRijen_(sh, fid) {
 function fotoUp_(body) {
   var me = auth_(body);
   var data = String(body.data || '');
-  if (!/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(data)) throw fout_('Dit is geen geldige foto.');
-  if (data.length > MAX_FOTO) throw fout_('De foto is te groot.');
+  var isFoto = /^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/.test(data);
+  var isPdf = /^data:application\/pdf;base64,[A-Za-z0-9+\/=]+$/.test(data);
+  if (!isFoto && !(isPdf && kantoor_(me))) throw fout_(kantoor_(me) ? 'Alleen PDF of foto.' : 'Dit is geen geldige foto.');
+  if (data.length > (kantoor_(me) ? MAX_BESTAND : MAX_FOTO)) throw fout_(isPdf ? 'Het bestand is te groot (max. 10 MB).' : 'De foto is te groot.');
   var fid = 'f' + Utilities.getUuid().replace(/-/g, '');
   var nu = new Date().toISOString(), rijen = [];
   for (var i = 0, n = 0; i < data.length; i += DEEL, n++) rijen.push([fid, me.id, n, data.slice(i, i + DEEL), nu]);
@@ -422,7 +425,9 @@ function foto_(body) {
     var maker = monteurs_().filter(function (x) { return x.id === rijen[0].uid; })[0];
     if (!maker || maker.rol !== 'kantoor') throw fout_('Geen toegang tot deze foto.', 'denied');
   }
-  var delen = rijen.map(function (r) { return sh.getRange(r.rij, 3, 1, 2).getValues()[0]; })
+  var min = rijen[0].rij, max = rijen[rijen.length - 1].rij;
+  var blok = sh.getRange(min, 1, max - min + 1, 4).getValues();
+  var delen = blok.filter(function (r) { return String(r[0]) === fid; }).map(function (r) { return [r[2], r[3]]; })
     .sort(function (a, b) { return Number(a[0]) - Number(b[0]); });
   return { ok: true, data: delen.map(function (d) { return String(d[1]); }).join('') };
 }
@@ -434,8 +439,9 @@ function fotoDel_(body) {
     var sh = fotoSheet_(), rijen = fotoRijen_(sh, fid);
     if (!rijen.length) return { ok: true };
     if (!kantoor_(me) && rijen[0].uid !== me.id) throw fout_('Geen toegang tot deze foto.', 'denied');
-    rijen.map(function (r) { return r.rij; }).sort(function (a, b) { return b - a; })
-      .forEach(function (r) { sh.deleteRow(r); });
+    var nrs = rijen.map(function (r) { return r.rij; }).sort(function (a, b) { return a - b; });
+    if (nrs[nrs.length - 1] - nrs[0] + 1 === nrs.length) sh.deleteRows(nrs[0], nrs.length);
+    else nrs.reverse().forEach(function (r) { sh.deleteRow(r); });
   } finally { lock.releaseLock(); }
   return { ok: true };
 }
