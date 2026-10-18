@@ -921,6 +921,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="card">
       <h2>Instellingen</h2>
       <label class="schak"><input type="checkbox" id="set-reis" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Reistijd voor alle monteurs</b><small>Aan: iedereen vult per dag reistijd in. Uit: alleen monteurs bij wie je het zelf aanzet (tabblad Monteurs → kies monteur).</small></span></label>
+      <label class="schak"><input type="checkbox" id="set-tp" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Topper van de week</b><small>Aan: monteurs zien punten, reeks, badges en de topper van de week; kantoor ziet de ranglijst.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-dc" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Documenten</b><small>Aan: kantoor deelt PDF's en foto's (V&amp;G-plan, RI&amp;E, werkinstructies) en monteurs openen ze in de app.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-nw" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Alwiti nieuws</b><small>Aan: kantoor plaatst berichten met foto, monteurs kunnen een duimpje geven en reageren.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-vj" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Verjaardagen</b><small>Aan: iedereen ziet wie er jarig is (met ballonnen) en kan feliciteren. Je stelt de datum per monteur in.</small></span></label>
@@ -1607,8 +1608,8 @@ function bestVis(){const c=$("#best-card");if(!c)return;setTimeout(subZichtbaar,
   if(toon){const ps=state.werken.filter(w=>w.actief!==false),cur=$("#best-proj").value;$("#best-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#best-proj").value=cur;renderMijnBest()}}
 /* ---------- monteur: tabbladen ---------- */
 function subZichtbaar(){const pv=!!state.preview,mon=!state.office||pv;const bAan=pv?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));
-  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#ms-nieuws").hidden=!(mon&&nwAan());$("#ms-docs").hidden=!(mon&&dcAan());$("#ms-verj").hidden=!(mon&&vjAan());$("#msub").hidden=$("#v-monteur").hidden;
-  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan()))||(cur==="nieuws"&&!(mon&&nwAan()))||(cur==="docs"&&!(mon&&dcAan()))||(cur==="verj"&&!(mon&&vjAan())))kiesSub("uren",true);renderTbMonteur()}
+  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!(mon&&tpAan());$("#ms-toolbox").hidden=!(mon&&tbAan());$("#ms-nieuws").hidden=!(mon&&nwAan());$("#ms-docs").hidden=!(mon&&dcAan());$("#ms-verj").hidden=!(mon&&vjAan());$("#msub").hidden=$("#v-monteur").hidden;
+  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!(mon&&tpAan()))||(cur==="toolbox"&&!(mon&&tbAan()))||(cur==="nieuws"&&!(mon&&nwAan()))||(cur==="docs"&&!(mon&&dcAan()))||(cur==="verj"&&!(mon&&vjAan())))kiesSub("uren",true);renderTbMonteur()}
 function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.querySelectorAll("#msub [data-ms]").forEach(b=>b.setAttribute("aria-selected",b.dataset.ms===t));if(!stil)ls("alw-msub",t);
   if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(t==="nieuws"){nwSessieGezien=lsg(nwGezienKey())||"";renderNieuws();nwMarkeerGezien();setTimeout(updNwDot,0)}else updNwDot();renderVerj();renderDocs();if(!stil)window.scrollTo({top:0})}
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
@@ -1617,7 +1618,7 @@ function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);cons
   const perW=k=>[...names].map(n=>{const sp=spelVoor(n),p=sp.perWeek.filter(([x])=>x===k).reduce((t,[,v])=>t+v,0);return{naam:n,punten:p,reeks:sp.streak}}).filter(x=>x.punten>0).sort((a,b)=>b.punten-a.punten||b.reeks-a.reeks||a.naam.localeCompare(b.naam,"nl"));
   return{deze:{week:isoWeek(wk),lijst:perW(iso(wk))},vorige:{week:isoWeek(vw),lijst:perW(iso(vw))}}}
 let topperT=null,topperLaatst="";
-function publiceerTopper(){if(!state.office||!state.db)return;clearTimeout(topperT);topperT=setTimeout(async()=>{const d=topperData(),j=JSON.stringify(d);if(j===topperLaatst)return;
+function publiceerTopper(){if(!state.office||!state.db||!tpAan())return;clearTimeout(topperT);topperT=setTimeout(async()=>{const d=topperData(),j=JSON.stringify(d);if(j===topperLaatst)return;
   const cur=state.topper?JSON.stringify({deze:state.topper.deze,vorige:state.topper.vorige}):"";topperLaatst=j;if(cur===j)return;
   try{await state.db.doc("kantoor/config/topper/huidig").set({...d,bijgewerkt:new Date().toISOString()})}catch(e){topperLaatst=""}},4000)}
 function renderTopperWeek(){const el=$("#tw-lijst");if(!el)return;const t=state.office&&!state.preview?topperData():state.topper;const ik=state.preview?state.preview.naam:fi.naam.value.trim();
@@ -2011,6 +2012,9 @@ $("#tb-xlsx").addEventListener("click",async()=>{const m=$("#tb-lmsg");m.classNa
   const ws=XLSX.utils.aoa_to_sheet(a,{cellDates:true});for(let i=2;i<=a.length;i++){if(ws["A"+i]&&ws["A"+i].t==="d")ws["A"+i].z="dd-mm-yyyy";if(ws["F"+i]&&ws["F"+i].t==="d")ws["F"+i].z="dd-mm-yyyy hh:mm"}ws["!cols"]=[12,40,24,22,10,16,40].map(w=>({wch:w}));ws["!autofilter"]={ref:`A1:G${a.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Toolbox-registratie");
   try{await state.dl.save({filename:`Alwiti toolbox-registratie ${iso(new Date())}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent="Excel opgeslagen."}catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet."}}});
+function tpAan(){return !(state.cfg&&state.cfg.topperUit)}
+$("#set-tp").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
+  try{await state.db.doc("kantoor/config").set({...state.cfg,topperUit:!aan});m.className="msg ok";m.textContent=aan?"Topper van de week staat aan.":"Topper van de week staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 ["nw","vj","dc"].forEach(k=>$("#set-"+k).addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg"),veld=k==="nw"?"nieuws":k==="dc"?"documenten":"verjaardagen";
   try{await state.db.doc("kantoor/config").set({...state.cfg,[veld]:aan});m.className="msg ok";m.textContent=(k==="nw"?"Alwiti nieuws":k==="dc"?"Documenten":"Verjaardagen")+(aan?" staat aan.":" staat uit.")}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}}));
 $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
@@ -2021,7 +2025,7 @@ function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
 function pasInstellingenToe(){const c=state.cfg||{};let r;
   if(state.preview)r=reisAan(state.preview.id);else if(state.office)r=!!c.reistijd||(c.reisMonteurs||[]).length>0;else r=reisAan(state.uid);
-  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;const xd=$("#set-dc");if(xd)xd.checked=!!c.documenten;if(state.office)$("#tab-dc").hidden=!c.documenten;setTimeout(renderDocs,0);if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
+  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;const xd=$("#set-dc");if(xd)xd.checked=!!c.documenten;const xp=$("#set-tp");if(xp)xp.checked=!c.topperUit;if(state.office){$("#tab-rl").hidden=!!c.topperUit;if(c.topperUit&&actieveTab()==="ranglijst")showTab("weekstaten")}if(state.office)$("#tab-dc").hidden=!c.documenten;setTimeout(renderDocs,0);if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
