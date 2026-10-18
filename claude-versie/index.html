@@ -1469,11 +1469,17 @@ const TB_STANDAARD=[
 /* ---------- voorlezen (spraak van de telefoon/computer) ---------- */
 function kanVoorlezen(){return typeof window.speechSynthesis!=="undefined"&&typeof window.SpeechSynthesisUtterance!=="undefined"}
 let leesKnop=null;
-function stemNL(){const v=speechSynthesis.getVoices();return v.find(x=>/^nl[-_]NL/i.test(x.lang))||v.find(x=>/^nl/i.test(x.lang))||null}
+/* altijd een vrouwenstem: bekende Nederlandse vrouwenstemmen eerst, bekende mannenstemmen overslaan */
+const STEM_V=["fenna","colette","hanna","claire","ellen","fleur","lotte","ilse","laura","google nederlands","female","vrouw"],STEM_M=["xander","maarten","frank","guus","bart","daan","max","arnaud","male","man"];
+let stemVrouw=true;
+function stemNL(){const v=speechSynthesis.getVoices().filter(x=>/^nl/i.test(x.lang)),nm=x=>(x.name||"").toLowerCase(),isM=x=>STEM_M.some(m=>new RegExp("\\b"+m+"\\b").test(nm(x)));
+  const nl=v.filter(x=>/^nl[-_]NL/i.test(x.lang)),overig=v.filter(x=>!/^nl[-_]NL/i.test(x.lang));
+  for(const k of STEM_V){const f=nl.find(x=>nm(x).includes(k))||overig.find(x=>nm(x).includes(k));if(f){stemVrouw=true;return f}}
+  const g=nl.find(x=>!isM(x))||overig.find(x=>!isM(x));stemVrouw=!!g;return g||v[0]||null}
 function leesVoor(tekst,knop){if(!kanVoorlezen())return;const bezig=leesKnop===knop&&speechSynthesis.speaking;speechSynthesis.cancel();if(leesKnop){leesKnop.classList.remove("aan");leesKnop.textContent=leesKnop.dataset.lbl||"🔊 Voorlezen"}leesKnop=null;if(bezig)return;
   const zinnen=(String(tekst).replace(/\s+/g," ").match(/[^.!?]+[.!?]*/g)||[]).map(z=>z.trim()).filter(Boolean);if(!zinnen.length)return;
   knop.dataset.lbl=knop.dataset.lbl||knop.textContent;knop.classList.add("aan");knop.textContent="⏹ Stoppen";leesKnop=knop;const stem=stemNL();
-  zinnen.forEach((z,i)=>{const u=new SpeechSynthesisUtterance(z);u.lang="nl-NL";if(stem)u.voice=stem;u.rate=0.95;if(i===zinnen.length-1)u.onend=u.onerror=()=>{if(leesKnop===knop){knop.classList.remove("aan");knop.textContent=knop.dataset.lbl;leesKnop=null}};speechSynthesis.speak(u)})}
+  zinnen.forEach((z,i)=>{const u=new SpeechSynthesisUtterance(z);u.lang="nl-NL";if(stem)u.voice=stem;u.rate=0.95;if(!stemVrouw)u.pitch=1.25;if(i===zinnen.length-1)u.onend=u.onerror=()=>{if(leesKnop===knop){knop.classList.remove("aan");knop.textContent=knop.dataset.lbl;leesKnop=null}};speechSynthesis.speak(u)})}
 if(kanVoorlezen()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
 function tbTekst(x){return [x.titel+".",x.onderwerp||"",(x.punten||[]).length?"Kernpunten.":"",...(x.punten||[]).map(p=>p.replace(/[.!?]?$/,".")),(x.afspraken||[]).length?"Afspraken.":"",...(x.afspraken||[]).map(p=>p.replace(/[.!?]?$/,"."))].filter(Boolean).join(" ")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-lees]");if(!b)return;let t="";const k=b.dataset.lees;
