@@ -421,13 +421,53 @@ details.fold[open]>*+*{margin-top:14px}
 .msub2 button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .msub2 button .rdot{position:absolute;top:-5px;right:-5px;width:16px;height:16px;animation:puls 1.6s ease-in-out infinite}
 @media (max-width:560px){.msub2 button{font-size:14px;padding:10px 8px;flex:1 1 40%}}
-#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]),#v-monteur[data-sub="toolbox"] [data-msub]:not([data-msub="toolbox"]){display:none!important}
+#v-monteur[data-sub="uren"] [data-msub]:not([data-msub="uren"]),#v-monteur[data-sub="bestellen"] [data-msub]:not([data-msub="bestellen"]),#v-monteur[data-sub="bonnen"] [data-msub]:not([data-msub="bonnen"]),#v-monteur[data-sub="topper"] [data-msub]:not([data-msub="topper"]),#v-monteur[data-sub="toolbox"] [data-msub]:not([data-msub="toolbox"]),#v-monteur[data-sub="nieuws"] [data-msub]:not([data-msub="nieuws"]),#v-monteur[data-sub="verj"] [data-msub]:not([data-msub="verj"]){display:none!important}
 #v-monteur[data-sub]:not([data-sub="uren"]):not([hidden]){display:flex;flex-direction:column;gap:16px;max-width:760px}
 .tw{display:flex;flex-direction:column;gap:6px}
 .twrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:6px;background:var(--bg)}
 .twrow.ik{outline:2px solid var(--red)}
 .twrow .rk{font-size:20px;text-align:center}.twrow b{font-variant-numeric:tabular-nums}
 .twrow.p1{background:linear-gradient(90deg,var(--warn-soft),var(--bg))}
+/* ---------- nieuws & verjaardagen ---------- */
+.nwfeed{display:flex;flex-direction:column;gap:16px}
+.nwpost{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column}
+.nwpost img.nwfoto{width:100%;max-height:420px;object-fit:cover;background:var(--bg);cursor:zoom-in;display:block}
+.nwin{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.nwkop{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.nwkop h3{color:var(--fg);font-size:20px;margin:0;text-transform:none;letter-spacing:0;font-family:var(--f-display)}
+.nwkop small{color:var(--muted)}
+.nwtekst{margin:0;white-space:pre-wrap;font-size:15px}
+.nwact{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.duim{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:6px 14px;font:600 15px var(--f-body);cursor:pointer;min-height:40px}
+.duim[aria-pressed="true"]{background:var(--binnen-soft);border-color:var(--binnen);color:var(--binnen)}
+.duim small{color:var(--muted);font-weight:500}
+.nwreac{display:flex;flex-direction:column;gap:6px}
+.nwr{background:var(--bg);border-radius:8px;padding:7px 10px;font-size:14px;display:flex;gap:8px;align-items:flex-start}
+.nwr div{flex:1;min-width:0}.nwr small{color:var(--muted)}
+.nwr .x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px}
+.nwnieuw{border:2px solid var(--red)}
+.nwcomp{display:flex;flex-direction:column;gap:10px}
+.nwcomp img{max-height:220px;object-fit:contain;border-radius:6px;background:var(--bg);align-self:flex-start}
+.vjscene{position:relative;overflow:hidden;border-radius:12px;padding:28px 18px 22px;text-align:center;background:linear-gradient(160deg,#fff4d6,#ffe1e6 55%,#dcecff);color:#1b1b1c;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.vjscene h3{font:700 30px/1.1 var(--f-display);color:#c0121b;margin:0;text-transform:uppercase;letter-spacing:.03em;position:relative;z-index:2}
+.vjscene p{margin:0;position:relative;z-index:2;font-weight:600}
+.vjscene .btn,.vjscene .vrin{position:relative;z-index:2}
+.ballon{position:absolute;bottom:-90px;width:46px;height:58px;border-radius:50% 50% 48% 48%;opacity:.9;animation:stijg 7s linear infinite;z-index:1}
+.ballon::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:40px;background:rgba(0,0,0,.35)}
+.ballon::before{content:"";position:absolute;left:calc(50% - 4px);top:calc(100% - 2px);border:4px solid transparent;border-bottom-color:inherit}
+@keyframes stijg{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-170px) rotate(4deg)}100%{transform:translateY(-360px) rotate(-4deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.ballon{animation:none;bottom:12px;opacity:.5}}
+.vjlijst{display:flex;flex-direction:column;gap:6px}
+.vjrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--bg)}
+.vjrow .dt{font:700 18px/1 var(--f-display);text-align:center}.vjrow .dt small{display:block;font:500 11px var(--f-body);color:var(--muted);text-transform:uppercase}
+.vjrow.vandaag{background:linear-gradient(90deg,#ffe1e6,var(--bg))}
+.vjfel{display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;max-width:520px;position:relative;z-index:2}
+.vjfel .nwr{background:rgba(255,255,255,.75)}
+.muntje{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:6px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a0,#e0a800 60%,#a87700);box-shadow:0 0 0 2px #fff,0 1px 3px rgba(0,0,0,.35);font-size:13px;vertical-align:-5px;animation:munt 2.4s ease-in-out infinite}
+@keyframes munt{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}
+@media (prefers-reduced-motion:reduce){.muntje{animation:none}}
+.vjmeld{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,#fff4d6,#ffe1e6);border:1px solid #e0a800;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-weight:700;color:#1b1b1c}
+.vjmeld span{margin-right:auto}.vjmeld .x{border:0;background:none;font-size:18px;cursor:pointer;color:#6a6a6d}
 /* ---------- toolbox ---------- */
 .tbkaart{border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
 .tbkaart h3{color:var(--fg);font-size:18px;margin:0}
@@ -457,6 +497,9 @@ details.fold[open]>*+*{margin-top:14px}
 /* ---------- vragen over bestellingen ---------- */
 .rdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--surface);flex:none;vertical-align:middle}
 nav.tabs button .rdot{margin-left:6px;width:12px;height:12px;animation:puls 1.6s ease-in-out infinite}
+nav.tabs button{display:inline-flex;align-items:center}
+nav.tabs button[hidden]{display:none}
+nav.tabs button .muntje{vertical-align:0}
 nav.tabs button .tdot{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--red);color:var(--red-ink);font:700 12px var(--f-body);letter-spacing:0;box-shadow:0 0 0 2px var(--surface);vertical-align:1px}
 nav.tabs button[aria-selected="true"] .tdot{background:var(--red-ink);color:var(--red);box-shadow:none}
 nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
@@ -487,7 +530,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   html,body{background:#fff!important}
   body{font-size:12.5px}
   body::before{display:none!important}
-  header.top,[data-lees],#msub,#vr-meld,#tb-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
+  header.top,[data-lees],.ballon,#vj-meld,.nwcomp,.nwact .vrin,#msub,#vr-meld,#tb-meld,.vrin,.micbtn,#pv-bar,#offline,#blok-msg,.syncbar,.toast,#login,.btn,.rowbtn,.netbtn,.x,.rx,.edadd,.dagadd,.dnb,.seg2,input[type=file],input[type=search],select,details:not([open]),details.gevaar,.hint.dict,.ovl:not(#ed-ovl){display:none!important}
   label:has(select),label:has(input[type=search]){display:none!important}
   input[type=checkbox]{visibility:hidden}
   .edday label.tl:not(.aan){display:none!important}
@@ -528,6 +571,8 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button role="tab" id="tab-bn" aria-selected="false" data-tab="bonnen" hidden>Bonnen</button>
     <button role="tab" id="tab-bs" aria-selected="false" data-tab="bestellingen" hidden>Bestellingen</button>
     <button role="tab" id="tab-tb" aria-selected="false" data-tab="toolbox" hidden>Toolbox</button>
+    <button role="tab" id="tab-nw" aria-selected="false" data-tab="nieuws" hidden>Nieuws</button>
+    <button role="tab" id="tab-vj" aria-selected="false" data-tab="verjaardagen" hidden>Verjaardagen</button>
     <button role="tab" id="tab-lc" aria-selected="false" data-tab="locaties" hidden>Locaties</button>
     <button role="tab" id="tab-rl" aria-selected="false" data-tab="ranglijst" hidden>Ranglijst</button>
     <button role="tab" id="tab-mo" aria-selected="false" data-tab="monteurs" hidden>Monteurs</button>
@@ -546,9 +591,12 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button type="button" role="tab" data-ms="uren" id="ms-uren">Uren invullen</button>
     <button type="button" role="tab" data-ms="bestellen" id="ms-bestellen" hidden>Materiaal bestellen</button>
     <button type="button" role="tab" data-ms="bonnen" id="ms-bonnen">Bonnetjes</button>
+    <button type="button" role="tab" data-ms="nieuws" id="ms-nieuws" hidden>Alwiti nieuws</button>
+    <button type="button" role="tab" data-ms="verj" id="ms-verj" hidden>Verjaardagen</button>
     <button type="button" role="tab" data-ms="toolbox" id="ms-toolbox" hidden>Toolbox</button>
     <button type="button" role="tab" data-ms="topper" id="ms-topper" hidden>Topper van de week</button>
   </div>
+  <div id="vj-meld" class="vjmeld" hidden role="status"><span id="vj-meldtxt">🎈 Vandaag is er iemand jarig!</span><button class="btn sm" type="button" id="vj-naar">Feliciteren</button><button class="x" type="button" id="vj-weg" aria-label="Melding sluiten">×</button></div>
   <div id="tb-meld" class="vrmeld" hidden role="status"><i class="rdot" aria-hidden="true"></i><span id="tb-meldtxt">Er staat een toolbox voor je klaar</span><button class="btn sm" type="button" id="tb-naar">Lezen en aftekenen</button></div>
   <div id="vr-meld" class="vrmeld" hidden role="status"><i class="rdot" aria-hidden="true"></i><span id="vr-meldtxt">Kantoor heeft een vraag over je bestelling</span><button class="btn sm" type="button" id="vr-naar">Bekijken en antwoorden</button></div>
 
@@ -580,6 +628,14 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="msg" id="m-save" role="status"></div>
     </form>
 
+    <div class="card" id="nw-card" data-msub="nieuws">
+      <h2>Alwiti nieuws</h2>
+      <div class="nwfeed" id="nw-feed-m"></div>
+    </div>
+    <div class="card" id="vj-card" data-msub="verj">
+      <h2>Verjaardagen</h2>
+      <div id="vj-m"></div>
+    </div>
     <div class="card" id="tb-card" data-msub="toolbox">
       <h2>Toolbox</h2>
       <p class="hint" style="margin:0">Lees de toolbox goed door. Bespreek vragen met je uitvoerder of kantoor en teken daarna af.</p>
@@ -835,6 +891,8 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="card">
       <h2>Instellingen</h2>
       <label class="schak"><input type="checkbox" id="set-reis" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Reistijd voor alle monteurs</b><small>Aan: iedereen vult per dag reistijd in. Uit: alleen monteurs bij wie je het zelf aanzet (tabblad Monteurs → kies monteur).</small></span></label>
+      <label class="schak"><input type="checkbox" id="set-nw" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Alwiti nieuws</b><small>Aan: kantoor plaatst berichten met foto, monteurs kunnen een duimpje geven en reageren.</small></span></label>
+      <label class="schak"><input type="checkbox" id="set-vj" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Verjaardagen</b><small>Aan: iedereen ziet wie er jarig is (met ballonnen) en kan feliciteren. Je stelt de datum per monteur in.</small></span></label>
       <label class="schak"><input type="checkbox" id="set-tb" role="switch"><span class="sw" aria-hidden="true"></span><span><b>Toolbox</b><small>Aan: kantoor krijgt het tabblad Toolbox en monteurs zien hun toolboxen in de app om af te tekenen.</small></span></label>
       <div class="msg" id="set-msg" role="status"></div>
       <details class="gevaar" id="lm-box">
@@ -847,6 +905,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
               <label class="lmc"><input type="checkbox" checked disabled> Alle urenregels, weekstaten (ook goedgekeurde) en "te laat"-aantekeningen</label>
               <label class="lmc"><input type="checkbox" id="lm-bon" checked> Alle bonnetjes, bestellingen en foto's</label>
               <label class="lmc"><input type="checkbox" id="lm-proj"> Ook alle projecten</label>
+              <label class="lmc"><input type="checkbox" id="lm-soc"> Ook alle nieuwsberichten, duimpjes, reacties en felicitaties</label>
               <label class="lmc"><input type="checkbox" id="lm-tb"> Ook alle toolbox-registraties (wie wat heeft afgetekend)</label>
               <label class="lmc"><input type="checkbox" id="lm-mon"> Ook alle monteurs (inclusief instellingen per monteur)</label>
             </fieldset>
@@ -893,6 +952,23 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <p class="hint" style="margin:0">Aantal bestellingen per monteur en soort in de gekozen periode (afgewezen telt niet mee). Klik op een naam om alleen zijn bestellingen te zien.</p>
       <div class="tablewrap"><table id="bs-pm"><thead></thead><tbody></tbody></table></div>
     </div>
+  </section>
+
+  <section id="v-nieuws" hidden style="display:flex;flex-direction:column;gap:20px;max-width:820px">
+    <div class="card nwcomp">
+      <h2>Nieuwsbericht plaatsen</h2>
+      <label>Titel<input id="nw-titel" placeholder="bijv. Oplevering Stadswerven gevierd!" autocomplete="off"></label>
+      <label>Bericht<textarea id="nw-tekst" rows="4" placeholder="Typ of spreek je bericht in"></textarea></label>
+      <div class="toolbar"><label class="bonfoto"><input type="file" id="nw-file" accept="image/*"><span class="btn ghost sm">Foto toevoegen</span></label><button class="micbtn" type="button" id="nw-mic" hidden>🎤 Inspreken</button><button class="btn ghost sm" type="button" id="nw-fx" hidden>Foto weghalen</button></div>
+      <img id="nw-prev" alt="Voorbeeld foto" hidden>
+      <div class="toolbar"><button class="btn" type="button" id="nw-plaats">Plaatsen</button><span class="msg" id="nw-msg" role="status"></span></div>
+    </div>
+    <div class="nwfeed" id="nw-feed-k"></div>
+  </section>
+
+  <section id="v-verjaardagen" hidden style="display:flex;flex-direction:column;gap:20px;max-width:820px">
+    <div class="card"><h2>Verjaardagen</h2><div id="vj-k"></div>
+      <p class="hint" style="margin:0">Verjaardagen stel je in bij Monteurs → kies een monteur → Verjaardag (alleen dag en maand).</p></div>
   </section>
 
   <section id="v-toolbox" hidden style="display:flex;flex-direction:column;gap:20px">
@@ -1263,10 +1339,10 @@ function werkLabel(id){const w=state.werken.find(x=>x.id===id);return w?(w.nr+" 
 /* ---------- tabs ---------- */
 function showTab(t,keep){
   document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();
+  ["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"].forEach(v=>$("#v-"+v).hidden=v!==t);if(!keep)ls("alw-tab",t);updPrint();if(document.getElementById("msub"))subZichtbaar();if(t==="nieuws"&&typeof renderNieuws==="function")setTimeout(renderNieuws,0);if(t==="verjaardagen"||t==="nieuws")setTimeout(()=>{if(typeof renderVerj==="function")renderVerj()},0);
 }
 /* ---------- afdrukken op A3 (via het printvenster: kies "Opslaan als PDF") ---------- */
-const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",toolbox:"Toolbox-registratie",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
+const PRINTBAAR={weekstaten:"Weekstaten",kantoor:"Overzicht uren",rapport:"Rapport",bonnen:"Bonnen & declaraties",bestellingen:"Bestellingen",toolbox:"Toolbox-registratie",nieuws:"Alwiti nieuws",verjaardagen:"Verjaardagen",locaties:"Buiten, werkplaats & kantoor",ranglijst:"Ranglijst",werken:"Projecten"};
 function actieveTab(){const b=document.querySelector('nav.tabs button[aria-selected="true"]');return b?b.dataset.tab:""}
 function updPrint(){const b=document.getElementById("b-print");if(b)b.hidden=!state.office||!!state.preview||!PRINTBAAR[actieveTab()]}
 function filterTekst(sec){const p=[];
@@ -1465,10 +1541,10 @@ function bestVis(){const c=$("#best-card");if(!c)return;setTimeout(subZichtbaar,
   if(toon){const ps=state.werken.filter(w=>w.actief!==false),cur=$("#best-proj").value;$("#best-proj").innerHTML='<option value="">— geen —</option>'+ps.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");$("#best-proj").value=cur;renderMijnBest()}}
 /* ---------- monteur: tabbladen ---------- */
 function subZichtbaar(){const pv=!!state.preview,mon=!state.office||pv;const bAan=pv?bestelAan(state.preview.id):(!state.office&&!!state.uid&&bestelAan(state.uid));
-  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#msub").hidden=$("#v-monteur").hidden;
-  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan())))kiesSub("uren",true);renderTbMonteur()}
+  $("#ms-bestellen").hidden=!bAan;$("#ms-topper").hidden=!mon;$("#ms-toolbox").hidden=!(mon&&tbAan());$("#ms-nieuws").hidden=!(mon&&nwAan());$("#ms-verj").hidden=!(mon&&vjAan());$("#msub").hidden=$("#v-monteur").hidden;
+  const cur=$("#v-monteur").dataset.sub;if((cur==="bestellen"&&!bAan)||(cur==="topper"&&!mon)||(cur==="toolbox"&&!(mon&&tbAan()))||(cur==="nieuws"&&!(mon&&nwAan()))||(cur==="verj"&&!(mon&&vjAan())))kiesSub("uren",true);renderTbMonteur()}
 function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.querySelectorAll("#msub [data-ms]").forEach(b=>b.setAttribute("aria-selected",b.dataset.ms===t));if(!stil)ls("alw-msub",t);
-  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(!stil)window.scrollTo({top:0})}
+  if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(t==="nieuws"){renderNieuws();nwMarkeerGezien();setTimeout(updNwDot,0)}else updNwDot();renderVerj();if(!stil)window.scrollTo({top:0})}
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
 /* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
 function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
@@ -1633,9 +1709,92 @@ if(kanVoorlezen()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschang
 function tbTekst(x){return [x.titel+".",x.onderwerp||"",(x.punten||[]).length?"Kernpunten.":"",...(x.punten||[]).map(p=>p.replace(/[.!?]?$/,".")),(x.afspraken||[]).length?"Afspraken.":"",...(x.afspraken||[]).map(p=>p.replace(/[.!?]?$/,"."))].filter(Boolean).join(" ")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-lees]");if(!b)return;let t="";const k=b.dataset.lees;
   if(k.startsWith("tb:")){const x=(state.tbSessies||[]).find(y=>y.id===k.slice(3))||tbLib().find(y=>y.id===k.slice(3));if(x)t=tbTekst(x)}
+  else if(k.startsWith("nw:")){const x=(state.nieuws||[]).find(y=>y.id===k.slice(3));if(x)t=(x.titel?x.titel+". ":"")+(x.tekst||"")}
   else if(k.startsWith("vr:")){const[,sid,vid]=k.split(":");const b2=(state.bestellingen||[]).find(y=>y._sid===sid);const v=b2&&bsVragen(b2).find(y=>y.id===vid);if(v)t=`Vraag van kantoor over ${Number(b2.aantal)||0} ${b2.eenheid||""} ${b2.wat}. ${v.tekst}`}
   if(t)leesVoor(t,b)});
 function leesKnopHTML(key,klein){return kanVoorlezen()?`<button class="micbtn${klein?" sm":""}" type="button" data-lees="${esc(key)}" aria-label="Voorlezen">🔊 Voorlezen</button>`:""}
+/* ---------- sociaal: eigen document per persoon (duimpjes, reacties, felicitaties) ---------- */
+function mijnSoc(){return (state.sociaal||{})[state.uid]||{}}
+async function socWijzig(fn){if(!state.db||!state.uid)throw{code:"geen"};const cur=JSON.parse(JSON.stringify(mijnSoc()));const nw=fn(cur)||cur;nw.naam=fi.naam.value.trim()||nw.naam||"";nw.bijgewerkt=new Date().toISOString();
+  if(Array.isArray(nw.reacties)&&nw.reacties.length>300)nw.reacties=nw.reacties.slice(-300);if(Array.isArray(nw.felicitaties)&&nw.felicitaties.length>200)nw.felicitaties=nw.felicitaties.slice(-200);
+  state.sociaal={...(state.sociaal||{}),[state.uid]:nw};await state.db.doc("sociaal/"+state.uid).set(nw)}
+function socNaam(uid,d){return (d&&d.naam)||((state.monteurs||[]).find(x=>x.id===uid)||{}).monteur||"Collega"}
+function alleSoc(){return Object.entries(state.sociaal||{})}
+function nuMag(){return !state.preview&&!!state.uid&&!state.geblokt}
+/* ---------- Alwiti nieuws ---------- */
+function nwAan(){return !!(state.cfg&&state.cfg.nieuws)}
+let nwBlob=null;
+function nwDuimen(id){return alleSoc().filter(([,d])=>d.duimen&&d.duimen[id]).map(([u,d])=>({uid:u,naam:socNaam(u,d)}))}
+function nwReacties(id){const r=[];alleSoc().forEach(([u,d])=>(d.reacties||[]).forEach(x=>{if(x.post===id)r.push({...x,uid:u,naam:socNaam(u,d)})}));return r.sort((a,b)=>(a.op||"").localeCompare(b.op||""))}
+function lsg(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function nwGezienKey(){return "alw-nw-gezien-"+(state.uid||"")}
+function nwPostHTML(x,gezien){const duim=nwDuimen(x.id),ik=duim.some(d=>d.uid===state.uid),reac=nwReacties(x.id),nieuw=gezien&&(x.op||"")>gezien;
+  return `<article class="nwpost${nieuw?" nwnieuw":""}">${x.foto?`<img class="nwfoto" ${fotoSrc(x.foto)} alt="${esc(x.titel||"Foto")}" loading="lazy" data-nwlb="${esc(x.id)}">`:""}<div class="nwin">
+   <div class="nwkop"><div><h3>${esc(x.titel||"Bericht van kantoor")}</h3><small>${nieuw?'<b style="color:var(--red)">Nieuw · </b>':""}${tijdKort(x.op)}</small></div><div class="toolbar">${leesKnopHTML("nw:"+x.id,true)}${state.office&&!state.preview?`<button class="btn ghost sm" type="button" data-nwdel="${esc(x.id)}">Verwijderen</button>`:""}</div></div>
+   ${x.tekst?`<p class="nwtekst">${esc(x.tekst)}</p>`:""}
+   <div class="nwact"><button class="duim" type="button" data-nwduim="${esc(x.id)}" aria-pressed="${ik}" title="${esc(duim.map(d=>d.naam).join(", "))}">👍 <span>${duim.length||""}</span> <small>${duim.length?esc(duim.slice(0,3).map(d=>d.naam.split(" ")[0]).join(", "))+(duim.length>3?" en "+(duim.length-3)+" anderen":""):"Duimpje"}</small></button><small style="color:var(--muted)">${reac.length?reac.length+(reac.length===1?" reactie":" reacties"):""}</small></div>
+   <div class="nwreac">${reac.map(r=>`<div class="nwr"><div><b>${esc(r.naam)}</b> ${esc(r.tekst)} <small>${tijdKort(r.op)}</small></div>${r.uid===state.uid||(state.office&&!state.preview)?`<button class="x" type="button" data-nwrdel="${esc(r.uid+"|"+r.id)}" aria-label="Reactie verwijderen">×</button>`:""}</div>`).join("")}</div>
+   ${nuMag()?`<div class="vrin"><textarea data-nwin="${esc(x.id)}" rows="1" maxlength="1000" placeholder="Schrijf een reactie…"></textarea><button class="micbtn" type="button" data-nwmic="${esc(x.id)}" aria-label="Reactie inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-nwstuur="${esc(x.id)}">Plaatsen</button></div>`:""}
+  </div></article>`}
+function renderNieuws(){const posts=(state.nieuws||[]).slice().sort((a,b)=>(b.op||"").localeCompare(a.op||""));const gezien=lsg(nwGezienKey())||"";
+  const bewaar=el=>{const c={};el.querySelectorAll("[data-nwin]").forEach(t=>{if(t.value)c[t.dataset.nwin]=t.value});const f=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.nwin:null;return[c,f]};
+  const teken=(el,leeg)=>{if(!el)return;const[c,f]=bewaar(el);el.innerHTML=posts.length?posts.map(x=>nwPostHTML(x,el.id==="nw-feed-m"?gezien:"")).join(""):`<div class="empty">${leeg}</div>`;Object.entries(c).forEach(([k,v])=>{const t=el.querySelector(`[data-nwin="${CSS.escape(k)}"]`);if(t)t.value=v});if(f){const t=el.querySelector(`[data-nwin="${CSS.escape(f)}"]`);if(t)t.focus()}};
+  if(state.office&&!state.preview)teken($("#nw-feed-k"),"Nog geen berichten. Plaats hierboven het eerste nieuws.");
+  if($("#v-monteur").dataset.sub==="nieuws")teken($("#nw-feed-m"),"Nog geen nieuws van kantoor.");
+  updNwDot()}
+function updNwDot(){const b=$("#ms-nieuws");if(b){const gezien=lsg(nwGezienKey())||"",n=(state.nieuws||[]).filter(x=>(x.op||"")>gezien).length,open=nwAan()&&n>0&&$("#v-monteur").dataset.sub!=="nieuws"&&!(state.office&&!state.preview);
+  const d=b.querySelector(".rdot");if(open&&!d)b.insertAdjacentHTML("beforeend",'<i class="rdot" aria-hidden="true"></i>');if(!open&&d)d.remove()}
+  if(state.office&&!state.preview){const k="alw-nw-kantoor-"+(state.uid||""),gz=lsg(k)||"",n=alleSoc().reduce((t,[u,d])=>t+(u===state.uid?0:(d.reacties||[]).filter(r=>(r.op||"")>gz).length+Object.values(d.duimen||{}).filter(op=>typeof op==="string"&&op>gz).length),0);
+    tabTel("#tab-nw","Nieuws",$("#v-nieuws").hidden?n:0,n===1?"nieuwe reactie":"nieuwe reacties");if(!$("#v-nieuws").hidden){try{localStorage.setItem(k,new Date().toISOString())}catch(e){}}}}
+function nwMarkeerGezien(){const p=(state.nieuws||[]).map(x=>x.op||"").sort().pop();if(p){try{localStorage.setItem(nwGezienKey(),p)}catch(e){}}}
+async function nwActie(e){const t=e.target.closest("button,img");if(!t)return;const m=$("#nw-msg");
+  if(t.dataset.nwlb){const x=(state.nieuws||[]).find(y=>y.id===t.dataset.nwlb);if(x&&x.foto){zetLb(x.foto);$("#lb-cap").textContent=x.titel||"";$("#lb-ovl").hidden=false}return}
+  if(t.dataset.nwmic){const v=t.closest(".vrin").querySelector("textarea");if(v)spreekIn(t,v);return}
+  try{if(t.dataset.nwduim){if(!nuMag())return;const id=t.dataset.nwduim;await socWijzig(d=>{d.duimen=d.duimen||{};if(d.duimen[id])delete d.duimen[id];else d.duimen[id]=new Date().toISOString();return d});renderNieuws();return}
+    if(t.dataset.nwstuur){const id=t.dataset.nwstuur,v=t.closest(".vrin").querySelector("textarea"),tekst=(v.value||"").trim();if(!tekst||!nuMag())return;t.disabled=true;
+      await socWijzig(d=>{d.reacties=d.reacties||[];d.reacties.push({id:"r"+Date.now().toString(36),post:id,tekst,op:new Date().toISOString()});return d});v.value="";t.disabled=false;renderNieuws();return}
+    if(t.dataset.nwrdel){const[uid,rid]=t.dataset.nwrdel.split("|");if(!await vraag("Reactie verwijderen?","Weet je zeker dat je deze reactie wilt verwijderen?","Ja, verwijderen"))return;
+      if(uid===state.uid)await socWijzig(d=>{d.reacties=(d.reacties||[]).filter(r=>r.id!==rid);return d});else if(state.office){const d=JSON.parse(JSON.stringify((state.sociaal||{})[uid]||{}));d.reacties=(d.reacties||[]).filter(r=>r.id!==rid);await state.db.doc("sociaal/"+uid).set(d)}renderNieuws();return}
+    if(t.dataset.nwdel){const x=(state.nieuws||[]).find(y=>y.id===t.dataset.nwdel);if(!x||!await vraag("Bericht verwijderen?",`Weet je zeker dat je "${x.titel||"dit bericht"}" wilt verwijderen? De reacties zijn dan ook niet meer te zien.`,"Ja, verwijderen"))return;
+      await state.db.doc("kantoor/config/nieuws/"+x.id).delete();if(x.foto&&state.assets){try{await state.assets.delete(x.foto)}catch(e){}}return}}
+  catch(err){if(m){m.className="msg err";m.textContent="Opslaan mislukt. Probeer het opnieuw."}}}
+$("#nw-feed-k").addEventListener("click",nwActie);$("#nw-feed-m").addEventListener("click",nwActie);
+$("#nw-file").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;nwBlob=await verklein(f);const im=$("#nw-prev");im.src=URL.createObjectURL(nwBlob);im.hidden=false;$("#nw-fx").hidden=false});
+$("#nw-fx").onclick=()=>{nwBlob=null;$("#nw-file").value="";$("#nw-prev").hidden=true;$("#nw-fx").hidden=true};
+$("#nw-mic").onclick=()=>spreekIn($("#nw-mic"),$("#nw-tekst"));
+$("#nw-plaats").onclick=async()=>{const m=$("#nw-msg"),titel=$("#nw-titel").value.trim(),tekst=$("#nw-tekst").value.trim();m.className="msg err";
+  if(!titel&&!tekst&&!nwBlob){m.textContent="Vul een titel of bericht in, of voeg een foto toe.";return}if(!state.db)return;$("#nw-plaats").disabled=true;m.className="msg";m.textContent="Plaatsen…";
+  try{let foto="";if(nwBlob&&state.assets){const up=await state.assets.upload(nwBlob,{type:nwBlob.type||"image/jpeg"});foto=up.id}
+    await state.db.collection("kantoor/config/nieuws").add({titel,tekst,foto,op:new Date().toISOString(),door:fi.naam.value.trim()||"Kantoor"});
+    $("#nw-titel").value="";$("#nw-tekst").value="";$("#nw-fx").click();m.className="msg ok";m.textContent="Geplaatst. Monteurs zien een rood bolletje bij Alwiti nieuws."}
+  catch(err){m.className="msg err";m.textContent="Plaatsen mislukt."}finally{$("#nw-plaats").disabled=false}};
+/* ---------- verjaardagen ---------- */
+function vjAan(){return !!(state.cfg&&state.cfg.verjaardagen)}
+function vjVan(uid){return ((state.verj||{}).lijst||{})[uid]||{}}
+function vjLijst(){return Object.entries((state.verj||{}).lijst||{}).filter(([u,v])=>v&&v.dag&&v.maand&&!blokIds().has(u)).map(([uid,v])=>({uid,...v}))}
+function vjVolgende(v){const nu=new Date(),v0=new Date(nu.getFullYear(),nu.getMonth(),nu.getDate());let d=new Date(nu.getFullYear(),v.maand-1,v.dag);if(d<v0)d=new Date(nu.getFullYear()+1,v.maand-1,v.dag);return{d,dagen:Math.round((d-v0)/864e5)}}
+function vjJarig(){return vjLijst().filter(v=>vjVolgende(v).dagen===0)}
+function vjFel(uid){const jaar=new Date().getFullYear(),r=[];alleSoc().forEach(([u,d])=>(d.felicitaties||[]).forEach(f=>{if(f.voor===uid&&f.jaar===jaar)r.push({...f,uid:u,naam:socNaam(u,d)})}));return r.sort((a,b)=>(a.op||"").localeCompare(b.op||""))}
+function ballonnen(){const kl=["#e63946","#f4a261","#2a9d8f","#457b9d","#e9c46a","#c77dff","#ff70a6","#06d6a0"];return Array.from({length:12},(_,i)=>`<i class="ballon" style="left:${(i*8.3+Math.random()*4)%96}%;background:${kl[i%8]};border-bottom-color:${kl[i%8]};animation-delay:${(i*0.6).toFixed(1)}s;animation-duration:${(6+i%4)}s"></i>`).join("")}
+function vjHTML(){const jarig=vjJarig(),komend=vjLijst().map(v=>({...v,...vjVolgende(v)})).sort((a,b)=>a.dagen-b.dagen);const ik=state.preview?state.preview.id:state.uid;
+  let h=jarig.map(j=>{const fel=vjFel(j.uid),zelf=j.uid===ik,al=fel.some(f=>f.uid===state.uid);return `<div class="vjscene">${ballonnen()}<p>🎂 Vandaag jarig</p><h3>${zelf?"Gefeliciteerd, "+esc(j.naam.split(" ")[0])+"!":esc(j.naam)}</h3>
+    <p>${zelf?(fel.length?`${fel.length} ${fel.length===1?"collega feliciteerde":"collega's feliciteerden"} je al.`:"Fijne verjaardag van iedereen bij Alwiti!"):(fel.length?`${fel.length}× gefeliciteerd`:"Wees de eerste die feliciteert!")}</p>
+    ${!zelf&&nuMag()?(al?'<p>✓ Jij hebt gefeliciteerd</p>':`<div class="vrin" style="width:100%;max-width:520px"><textarea data-vjin="${esc(j.uid)}" rows="1" maxlength="500" placeholder="Gefeliciteerd! (typ of spreek een berichtje in)"></textarea><button class="micbtn" type="button" data-vjmic="${esc(j.uid)}" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vjfel="${esc(j.uid)}">🎉 Feliciteren</button></div>`):""}
+    ${fel.length?`<div class="vjfel">${fel.map(f=>`<div class="nwr"><div><b>${esc(f.naam)}</b> ${esc(f.tekst||"Gefeliciteerd!")} <small>${tijdKort(f.op)}</small></div></div>`).join("")}</div>`:""}</div>`}).join("");
+  h+=`<h3 style="margin-top:${jarig.length?16:0}px">Komende verjaardagen</h3><div class="vjlijst">${komend.length?komend.slice(0,30).map(v=>`<div class="vjrow${v.dagen===0?" vandaag":""}"><span class="dt">${v.dag}<small>${MNDL[v.maand-1].slice(0,3)}</small></span><span><b>${esc(v.naam)}</b></span><span style="color:var(--muted);font-size:14px">${v.dagen===0?"🎂 vandaag":v.dagen===1?"morgen":"over "+v.dagen+" dagen"}</span></div>`).join(""):'<div class="empty">Nog geen verjaardagen ingesteld.</div>'}</div>`;return h}
+function renderVerj(){const jarig=vjAan()?vjJarig():[];
+  if(state.office&&!state.preview){$("#tab-vj").hidden=!vjAan();const b=$("#tab-vj");if(b){b.innerHTML="Verjaardagen"+(jarig.length?`<span class="muntje" title="Vandaag jarig: ${esc(jarig.map(j=>j.naam).join(", "))}" aria-hidden="true">🎂</span>`:"");b.setAttribute("aria-label",jarig.length?`Verjaardagen, vandaag jarig: ${jarig.map(j=>j.naam).join(", ")}`:"Verjaardagen")}if(!$("#v-verjaardagen").hidden)$("#vj-k").innerHTML=vjHTML()}
+  if($("#v-monteur").dataset.sub==="verj")$("#vj-m").innerHTML=vjHTML();
+  const mb=$("#ms-verj");if(mb){const d=mb.querySelector(".muntje");if(jarig.length&&!d)mb.insertAdjacentHTML("beforeend",'<span class="muntje" aria-hidden="true">🎂</span>');if(!jarig.length&&d)d.remove()}
+  const weg=lsg("alw-vj-weg")===iso(new Date());$("#vj-meld").hidden=!jarig.length||weg||(state.office&&!state.preview?!$("#v-verjaardagen").hidden:$("#v-monteur").dataset.sub==="verj");
+  if(jarig.length){const ik=state.preview?state.preview.id:state.uid,zelf=jarig.some(j=>j.uid===ik);$("#vj-meldtxt").textContent=zelf?"🎈 Gefeliciteerd met je verjaardag!":`🎈 Vandaag jarig: ${jarig.map(j=>j.naam).join(" en ")}`;$("#vj-naar").textContent=zelf?"Bekijken":"Feliciteren"}}
+$("#vj-weg").onclick=()=>{try{localStorage.setItem("alw-vj-weg",iso(new Date()))}catch(e){}$("#vj-meld").hidden=true};
+$("#vj-naar").onclick=()=>{if(state.office&&!state.preview)showTab("verjaardagen");else{showTab("monteur");kiesSub("verj")}renderVerj()};
+async function vjActie(e){const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.vjmic){const v=t.closest(".vrin").querySelector("textarea");if(v)spreekIn(t,v);return}
+  if(!t.dataset.vjfel||!nuMag())return;const uid=t.dataset.vjfel,v=t.closest(".vrin").querySelector("textarea"),tekst=(v.value||"").trim().slice(0,500)||"Gefeliciteerd!";t.disabled=true;
+  try{await socWijzig(d=>{d.felicitaties=d.felicitaties||[];d.felicitaties.push({voor:uid,jaar:new Date().getFullYear(),tekst,op:new Date().toISOString()});return d});feest();renderVerj()}catch(err){t.disabled=false}}
+$("#vj-m").addEventListener("click",vjActie);$("#vj-k").addEventListener("click",vjActie);
 /* ---------- toolbox ---------- */
 function tbAan(){return !!(state.cfg&&state.cfg.toolbox)}
 function tbLib(){const eigen=state.tbEigen||[],ids=new Set(eigen.map(x=>x.id));return [...TB_STANDAARD.filter(x=>!ids.has(x.id)).map(x=>({...x,standaard:true})),...eigen.filter(x=>!x.verwijderd).map(x=>({...x,standaard:TB_STANDAARD.some(t=>t.id===x.id),aangepast:true}))].sort((a,b)=>a.titel.localeCompare(b.titel,"nl"))}
@@ -1710,6 +1869,8 @@ $("#tb-xlsx").addEventListener("click",async()=>{const m=$("#tb-lmsg");m.classNa
   const ws=XLSX.utils.aoa_to_sheet(a,{cellDates:true});for(let i=2;i<=a.length;i++){if(ws["A"+i]&&ws["A"+i].t==="d")ws["A"+i].z="dd-mm-yyyy";if(ws["F"+i]&&ws["F"+i].t==="d")ws["F"+i].z="dd-mm-yyyy hh:mm"}ws["!cols"]=[12,40,24,22,10,16,40].map(w=>({wch:w}));ws["!autofilter"]={ref:`A1:G${a.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Toolbox-registratie");
   try{await state.dl.save({filename:`Alwiti toolbox-registratie ${iso(new Date())}.xlsx`,data:new Uint8Array(XLSX.write(wb,{bookType:"xlsx",type:"array"}))});m.className="msg ok";m.textContent="Excel opgeslagen."}catch(e){if(e&&e.code!=="declined"){m.className="msg err";m.textContent="Exporteren lukte niet."}}});
+["nw","vj"].forEach(k=>$("#set-"+k).addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg"),veld=k==="nw"?"nieuws":"verjaardagen";
+  try{await state.db.doc("kantoor/config").set({...state.cfg,[veld]:aan});m.className="msg ok";m.textContent=(k==="nw"?"Alwiti nieuws":"Verjaardagen")+(aan?" staat aan.":" staat uit.")}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}}));
 $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,toolbox:aan});m.className="msg ok";m.textContent=aan?"Toolbox staat aan. Je vindt hem in het tabblad Toolbox.":"Toolbox staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 /* ---------- instellingen ---------- */
@@ -1718,7 +1879,7 @@ function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
 function pasInstellingenToe(){const c=state.cfg||{};let r;
   if(state.preview)r=reisAan(state.preview.id);else if(state.office)r=!!c.reistijd||(c.reisMonteurs||[]).length>0;else r=reisAan(state.uid);
-  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
+  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
@@ -1728,8 +1889,8 @@ function lmCheck(){$("#lm-go").disabled=!(state.lmBackup&&$("#lm-woord").value.t
 $("#lm-woord").addEventListener("input",lmCheck);
 $("#lm-backup").onclick=async()=>{const ok=await maakBackup($("#lm-msg"));if(ok){state.lmBackup=true;$("#lm-bok").textContent="✓ backup gemaakt"}lmCheck()};
 $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwner)return;
-  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked,tbw=$("#lm-tb").checked;
-  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(tbw)wat.push(`${(state.tbSessies||[]).length} toolbox-registraties`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
+  const bon=$("#lm-bon").checked,proj=$("#lm-proj").checked,mon=$("#lm-mon").checked,tbw=$("#lm-tb").checked,soc=$("#lm-soc").checked;
+  const wat=[`${state.uren.length} urenregels`,`${(state.archief||[]).length} weekstaten`,`${Object.keys(state.telaat||{}).length} te-laat-aantekeningen`];if(bon)wat.push(`${(state.bonnen||[]).length} bonnetjes`,`${(state.bestellingen||[]).length} bestellingen`);if(proj)wat.push(`${state.werken.length} projecten`);if(tbw)wat.push(`${(state.tbSessies||[]).length} toolbox-registraties`);if(soc)wat.push(`${(state.nieuws||[]).length} nieuwsberichten met reacties`);if(mon)wat.push(`${(state.monteurs||[]).length} monteurs`);
   if(!await vraag("Administratie definitief leegmaken?",`Je staat op het punt dit te wissen: ${wat.join(", ")}. Dit kan NIET ongedaan worden gemaakt. Weet je het echt zeker?`,"Ja, alles wissen"))return;
   b.disabled=true;$("#lm-woord").value="";let n=0;const del=async p=>{try{await state.db.doc(p).delete();n++;if(n%20===0)m.textContent=`Bezig… ${n} items gewist`}catch(e){}};m.className="msg";m.textContent="Bezig met wissen…";
   try{for(const r of state.uren.slice())await del(r._path);
@@ -1740,6 +1901,7 @@ $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwn
       for(const x of (state.bestellingen||[]).slice()){await del(x._path);if(state.assets&&x.foto){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.bestelStatus||{}))await del("kantoor/config/bestelstatus/"+id);
       for(const a of Object.values(state.antwoorden||{}))if(a._path)await del(a._path);await del("kantoor/config/topper/huidig")}
     if(proj)for(const w of state.werken.slice())await del(WERK_COL+"/"+w.id);
+    if(soc){for(const x of (state.nieuws||[]).slice()){await del("kantoor/config/nieuws/"+x.id);if(x.foto&&state.assets){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.sociaal||{}))await del("sociaal/"+id)}
     if(tbw){for(const a of Object.values(state.tbAf||{}))if(a._path)await del(a._path);for(const x of (state.tbSessies||[]).slice())await del("kantoor/config/tbsessies/"+x.id)}
     if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
       const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs","bestelMonteurs"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
@@ -2104,6 +2266,7 @@ function renderKoppel(){
    <label class="schak"><input type="checkbox" id="k-reis" role="switch" ${reisAan(mon.id)?"checked":""} ${state.cfg&&state.cfg.reistijd?"disabled":""}><span class="sw" aria-hidden="true"></span><span><b>Reistijd invullen</b><small>${state.cfg&&state.cfg.reistijd?"Staat aan voor alle monteurs (zie Instellingen hierboven).":"Aan: deze monteur vult per dag zijn reistijd in."}</small></span></label>
    <label class="schak"><input type="checkbox" id="k-best" role="switch" ${bestelAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag materiaal bestellen</b><small>Aan: deze monteur krijgt de kaart "Materiaal bestellen" om met een foto schroeven, kleding, schoenen en ander materiaal aan te vragen.</small></span></label>
    <label class="schak"><input type="checkbox" id="k-kant" role="switch" ${kantoorAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag kantooruren schrijven</b><small>Aan: deze monteur krijgt naast B en W ook de knop K (kantoor).</small></span></label>
+   <label class="allw" style="cursor:default">Verjaardag<select id="k-vjd" style="width:auto;height:auto"><option value="">dag</option>${Array.from({length:31},(_,i)=>`<option ${vjVan(mon.id).dag===i+1?"selected":""}>${i+1}</option>`).join("")}</select><select id="k-vjm" style="width:auto;height:auto"><option value="">maand</option>${MNDL.map((m,i)=>`<option value="${i+1}" ${vjVan(mon.id).maand===i+1?"selected":""}>${m}</option>`).join("")}</select><small style="color:var(--muted)">alleen dag en maand</small></label>
    <label class="allw" style="cursor:default">Standaard week<input type="number" id="k-norm" min="1" max="80" step="0.5" value="${mon.weekUren||""}" placeholder="${nl(norm()).replace(",00","")}" style="width:90px;height:auto"> uur <small style="color:var(--muted)">leeg = standaard (${nl(norm()).replace(",00","")} u)</small></label>
    ${ALW.pinRij(mon)}
    <div class="toolbar"><button class="btn sm" type="button" id="k-preview">Bekijk als ${esc(mon.monteur)}</button></div>
@@ -2120,7 +2283,10 @@ function verbBadges(w){if(!Array.isArray(w.verborgen)||!w.verborgen.length)retur
   return ` <span class="vb" title="Verborgen voor: ${esc(w.verborgen.map(nm).join(", "))}">verborgen voor ${w.verborgen.map(id=>`<i title="${esc(nm(id))}">${esc(initials(nm(id)))}</i>`).join("")}</span>`}
 function hidOf(w){return Array.isArray(w.verborgen)&&w.verborgen.includes(kSel)}
 async function koppel(w,zichtbaar){const list=new Set(Array.isArray(w.verborgen)?w.verborgen:[]);zichtbaar?list.delete(kSel):list.add(kSel);await state.db.collection(WERK_COL).doc(w.id).update({verborgen:[...list]})}
-$("#k-panel").addEventListener("change",async e=>{if(e.target.id==="k-best"){const set=new Set(state.cfg.bestelMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
+$("#k-panel").addEventListener("change",async e=>{if(e.target.id==="k-vjd"||e.target.id==="k-vjm"){const d=+$("#k-vjd").value||0,m=+$("#k-vjm").value||0,mon=(state.monteurs||[]).find(x=>x.id===kSel);if(!mon)return;
+    if((d&&!m)||(!d&&m))return;const lijst={...((state.verj||{}).lijst||{})};if(d&&m)lijst[kSel]={dag:d,maand:m,naam:mon.monteur};else delete lijst[kSel];
+    try{await state.db.doc("kantoor/config/extra/verjaardagen").set({lijst});const k=$("#k-msg");k.className="msg ok";k.textContent=d?`Verjaardag ${mon.monteur}: ${d} ${MNDL[m-1]}.`:"Verjaardag verwijderd."}catch(err){}return}
+  if(e.target.id==="k-best"){const set=new Set(state.cfg.bestelMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,bestelMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-kant"){const set=new Set(state.cfg.kantoorMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,kantoorMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
@@ -2187,7 +2353,7 @@ $("#b-backup").addEventListener("click",()=>maakBackup($("#m-xlsx")));
 async function maakBackup(m){m.className="msg";
   if(!state.dl){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return false}
   const strip=o=>{const c={...o};delete c._path;return c};
-  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),toolbox:{sessies:state.tbSessies||[],aftekeningen:Object.values(state.tbAf||{}).map(strip),eigen:state.tbEigen||[]},telaat:Object.values(state.telaat||{})};
+  const data={app:"Alwiti urenregistratie",gemaakt:new Date().toISOString(),instellingen:state.cfg||{},werken:state.werken,monteurs:state.monteurs||[],uren:state.uren.map(r=>({pad:r._path,...strip(r)})),weekstaten:state.archief||[],bonnen:(state.bonnen||[]).map(b=>({pad:b._path,status:bonStatus(b),...strip(b)})),bestellingen:(state.bestellingen||[]).map(b=>({pad:b._path,status:bsStatus(b),...strip(b)})),nieuws:state.nieuws||[],sociaal:state.sociaal||{},verjaardagen:state.verj||{},toolbox:{sessies:state.tbSessies||[],aftekeningen:Object.values(state.tbAf||{}).map(strip),eigen:state.tbEigen||[]},telaat:Object.values(state.telaat||{})};
   try{await state.dl.save({filename:`Alwiti uren backup ${iso(new Date())}.json`,data:JSON.stringify(data,null,1)});m.className="msg ok";m.textContent=`Backup opgeslagen: ${data.werken.length} projecten, ${data.monteurs.length} monteurs, ${data.uren.length} urenregels, ${data.weekstaten.length} weekstaten, ${data.bonnen.length} bonnetjes.`;return true}
   catch(err){if(err&&err.code==="declined"){m.className="msg err";m.textContent="Backup niet opgeslagen.";return false}m.className="msg err";m.textContent="Backup downloaden lukte niet in deze weergave.";return false}}
 $("#fl-werkq").addEventListener("input",e=>{const v=e.target.value.trim().toLowerCase();let w=null;
@@ -2508,15 +2674,18 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
     try{state.office=(await user.canEdit())===true}catch(e){}try{state.isOwner=!!(await user.isOwner())}catch(e){}}
   $("#lm-alleen").hidden=!!state.isOwner;$("#lm-stappen").hidden=!state.isOwner;
   pasInstellingenToe();
-  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
+  if(state.office){["#tab-ws","#tab-k","#tab-bn","#tab-bs","#tab-r","#tab-lc","#tab-rl","#tab-mo","#tab-w"].forEach(x=>$(x).hidden=false);const h=location.hash.replace("#",""),ok=["monteur","weekstaten","kantoor","bonnen","bestellingen","toolbox","nieuws","verjaardagen","rapport","locaties","ranglijst","monteurs","werken"];showTab(ok.includes(h)?h:(ok.includes(ls("alw-tab"))?ls("alw-tab"):"weekstaten"))}
   else{$("#who").textContent=fi.naam.value||"Monteurs";document.querySelector("nav.tabs").hidden=true}
-  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","toolbox","topper"].includes(s)?s:"uren",true);subZichtbaar()}
+  {const s=ls("alw-msub");kiesSub(["uren","bestellen","bonnen","nieuws","verj","toolbox","topper"].includes(s)?s:"uren",true);subZichtbaar()}
   if(!db){$("#offline").hidden=false;return}
   state.db=db;
   if(state.office)db.doc("kantoor/config").collection("imports").onSnapshot(s=>{state.imports=s.docs.map(d=>({id:d.id,...d.data()}));renderImports()},()=>{});
   db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
+  db.collection("kantoor/config/nieuws").onSnapshot(s=>{state.nieuws=s.docs.map(d=>({id:d.id,...d.data()}));renderNieuws()},()=>{});
+  db.collection("sociaal").onSnapshot(s=>{state.sociaal=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderNieuws();renderVerj()},()=>{});
+  db.doc("kantoor/config/extra/verjaardagen").onSnapshot(d=>{state.verj=d.exists?d.data():{};renderVerj();if(state.office&&kSel)renderKoppel()},()=>{});
   db.collection("kantoor/config/tbsessies").onSnapshot(s=>{state.tbSessies=s.docs.map(d=>({id:d.id,...d.data()}));renderTbMonteur();renderToolboxKantoor()},()=>{});
   if(state.office)db.collection("kantoor/config/toolboxen").onSnapshot(s=>{state.tbEigen=s.docs.map(d=>({id:d.id,...d.data()}));renderToolboxKantoor()},()=>{});
   db.doc("kantoor/config/topper/huidig").onSnapshot(d=>{state.topper=d.exists?d.data():null;if($("#v-monteur").dataset.sub==="topper")renderTopperWeek()},()=>{});

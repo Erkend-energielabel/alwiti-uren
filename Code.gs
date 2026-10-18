@@ -246,6 +246,8 @@ function magLezen_(me, p) {
   if (/^kantoor\/config\/werken\/[^\/]+$/.test(p)) return true;
   if (p === 'kantoor/config/topper/huidig') return true;
   if (/^kantoor\/config\/tbsessies\/[^\/]+$/.test(p)) return true;
+  if (/^kantoor\/config\/nieuws\/[^\/]+$/.test(p) || p === 'kantoor/config/extra/verjaardagen') return true;
+  if (/^sociaal\/[^\/]+$/.test(p)) return true;
   if (s.length === 4 && s[0] === 'kantoor' && (s[2] === 'bonstatus' || s[2] === 'bestelstatus')) return s[3].indexOf(u + '__') === 0;
   if (p === 'uren/' + u || p === 'goedgekeurd/' + u) return true;
   if (s.length === 4 && s[1] === u && ((s[0] === 'uren' && (s[2] === 'items' || s[2] === 'bonnen' || s[2] === 'bestellingen' || s[2] === 'antwoorden' || s[2] === 'toolbox')) || (s[0] === 'goedgekeurd' && s[2] === 'items'))) return true;
@@ -256,6 +258,7 @@ function magSchrijven_(me, op, huidig, docs) {
   if (kantoor_(me)) return true;
   var u = me.id, p = op.p, s = p.split('/');
   if (p === 'uren/' + u) return op.op !== 'delete';
+  if (p === 'sociaal/' + u) return op.op !== 'delete' && JSON.stringify(op.d || {}).length <= 300000;
   if (s.length === 4 && s[0] === 'uren' && s[1] === u && s[2] === 'items') {
     if (huidig && huidig.status === 'ok') return false;               // goedgekeurd: niet meer wijzigen
     if (op.d && op.d.status === 'ok') return false;                   // zelf goedkeuren mag niet
@@ -414,7 +417,11 @@ function foto_(body) {
   var me = auth_(body), fid = String(body.fid || '');
   var sh = fotoSheet_(), rijen = fotoRijen_(sh, fid);
   if (!rijen.length) throw fout_('Foto niet gevonden.', 'notfound');
-  if (!kantoor_(me) && rijen[0].uid !== me.id) throw fout_('Geen toegang tot deze foto.', 'denied');
+  if (!kantoor_(me) && rijen[0].uid !== me.id) {
+    // foto's die kantoor plaatst (bijv. bij Alwiti nieuws) mag iedereen zien
+    var maker = monteurs_().filter(function (x) { return x.id === rijen[0].uid; })[0];
+    if (!maker || maker.rol !== 'kantoor') throw fout_('Geen toegang tot deze foto.', 'denied');
+  }
   var delen = rijen.map(function (r) { return sh.getRange(r.rij, 3, 1, 2).getValues()[0]; })
     .sort(function (a, b) { return Number(a[0]) - Number(b[0]); });
   return { ok: true, data: delen.map(function (d) { return String(d[1]); }).join('') };
