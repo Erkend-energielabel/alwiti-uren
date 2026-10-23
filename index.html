@@ -1323,7 +1323,7 @@ const ALW=(()=>{
     const laadNamen=async()=>{try{const r=await Store.call("namen",{});sel.innerHTML='<option value="">Kies je naam…</option>'+r.namen.map(n=>`<option value="${esc(n.id)}">${esc(n.naam)}</option>`).join("");const last=ls("alw-lastid");if(last)sel.value=last;if(!vorig)msg.textContent="";if(sel.value)q("#lg-pin").focus()}
       catch(e){sel.innerHTML='<option value="">—</option>';msg.className="msg err";msg.textContent=e.message+(e.code==="net"?" Probeer het zo opnieuw.":"")}};
     laadNamen();
-    {const tw=q("#lg-taal");if(tw&&ls("alw-taal-ok")){tw.hidden=false;const cur=ls("alw-taal")==="uk"?"uk":"nl";tw.querySelectorAll("[data-taal]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.taal===cur);b.onclick=()=>{const t=b.dataset.taal;try{t==="uk"?localStorage.setItem("alw-taal","uk"):localStorage.removeItem("alw-taal");const id=sel.value||ls("alw-lastid");if(id)localStorage.setItem("alw-taal-"+id,t)}catch(e){}if(t!==cur)location.reload()}})}}
+    {const tw=q("#lg-taal");if(tw&&ls("alw-taal-ok")){tw.hidden=false;let cur="nl";try{cur=sessionStorage.getItem("alw-taal")==="uk"?"uk":"nl"}catch(e){}tw.querySelectorAll("[data-taal]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.taal===cur);b.onclick=()=>{const t=b.dataset.taal;try{t==="uk"?sessionStorage.setItem("alw-taal","uk"):sessionStorage.removeItem("alw-taal")}catch(e){}if(t!==cur)location.reload()}})}}
     return new Promise(res=>{q("#lg-form").onsubmit=async ev=>{ev.preventDefault();const id=sel.value,pin=q("#lg-pin").value.trim();
       if(!id){if(sel.options.length<2)return laadNamen();msg.className="msg err";msg.textContent="Kies je naam.";return}
       if(!pin){msg.className="msg err";msg.textContent="Vul je pincode in.";return}
@@ -2431,7 +2431,7 @@ function renderKoppel(){
    <label class="schak"><input type="checkbox" id="k-reis" role="switch" ${reisAan(mon.id)?"checked":""} ${state.cfg&&state.cfg.reistijd?"disabled":""}><span class="sw" aria-hidden="true"></span><span><b>Reistijd invullen</b><small>${state.cfg&&state.cfg.reistijd?"Staat aan voor alle monteurs (zie Instellingen hierboven).":"Aan: deze monteur vult per dag zijn reistijd in."}</small></span></label>
    <label class="schak"><input type="checkbox" id="k-best" role="switch" ${bestelAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag materiaal bestellen</b><small>Aan: deze monteur krijgt de kaart "Materiaal bestellen" om met een foto schroeven, kleding, schoenen en ander materiaal aan te vragen.</small></span></label>
    <label class="schak"><input type="checkbox" id="k-kant" role="switch" ${kantoorAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag kantooruren schrijven</b><small>Aan: deze monteur krijgt naast B en W ook de knop K (kantoor).</small></span></label>
-   <label class="schak"><input type="checkbox" id="k-taal" role="switch" ${taalUA(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Oekraïense vertaling</b><small>Aan: de app staat voor deze monteur in het Oekraïens, ook de standaard toolboxen. Hij kan zelf terugschakelen naar Nederlands met de knop rechtsboven. Wat hij invult, zie jij gewoon in het Nederlands; vrije tekst die hij in het Oekraïens typt krijgt een knop "Vertalen".</small></span></label>
+   <label class="schak"><input type="checkbox" id="k-taal" role="switch" ${taalUA(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Oekraïense vertaling</b><small>Aan: deze monteur krijgt rechtsboven de knop УКР om de app in het Oekraïens te zetten, ook de standaard toolboxen. De app opent altijd in het Nederlands; zijn keuze geldt zolang de app open is. Wat hij invult, zie jij gewoon in het Nederlands; vrije tekst die hij in het Oekraïens typt krijgt een knop "Vertalen".</small></span></label>
    <label class="allw" style="cursor:default">Verjaardag<select id="k-vjd" style="width:auto;height:auto"><option value="">dag</option>${Array.from({length:31},(_,i)=>`<option ${vjVan(mon.id).dag===i+1?"selected":""}>${i+1}</option>`).join("")}</select><select id="k-vjm" style="width:auto;height:auto"><option value="">maand</option>${MNDL.map((m,i)=>`<option value="${i+1}" ${vjVan(mon.id).maand===i+1?"selected":""}>${m}</option>`).join("")}</select><small style="color:var(--muted)">alleen dag en maand</small></label>
    <label class="allw" style="cursor:default">Standaard week<input type="number" id="k-norm" min="1" max="80" step="0.5" value="${mon.weekUren||""}" placeholder="${nl(norm()).replace(",00","")}" style="width:90px;height:auto"> uur <small style="color:var(--muted)">leeg = standaard (${nl(norm()).replace(",00","")} u)</small></label>
    ${ALW.pinRij(mon)}
@@ -2455,7 +2455,7 @@ $("#k-panel").addEventListener("change",async e=>{if(e.target.id==="k-vjd"||e.ta
   if(e.target.id==="k-best"){const set=new Set(state.cfg.bestelMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,bestelMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-taal"){const set=new Set(state.cfg.taalUA||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
-    try{await state.db.doc("kantoor/config").set({...state.cfg,taalUA:[...set]});const k=$("#k-msg"),mon=(state.monteurs||[]).find(x=>x.id===kSel);k.className="msg ok";k.textContent=aan?`${mon?mon.monteur:"De monteur"} ziet de app nu in het Oekraïens (na verversen of binnen een halve minuut).`:`${mon?mon.monteur:"De monteur"} ziet de app weer in het Nederlands.`}catch(err){e.target.checked=!aan}return}
+    try{await state.db.doc("kantoor/config").set({...state.cfg,taalUA:[...set]});const k=$("#k-msg"),mon=(state.monteurs||[]).find(x=>x.id===kSel);k.className="msg ok";k.textContent=aan?`${mon?mon.monteur:"De monteur"} heeft nu de knop УКР om de app in het Oekraïens te zetten (na verversen of binnen een halve minuut).`:`${mon?mon.monteur:"De monteur"} heeft de knop УКР niet meer; de app is weer alleen Nederlands.`}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-kant"){const set=new Set(state.cfg.kantoorMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,kantoorMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-reis"){const set=new Set(state.cfg.reisMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
@@ -3124,20 +3124,22 @@ const I18N=(()=>{
     obs=new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")doeTekst(m.target);else if(m.type==="attributes")doeAttr(m.target,m.attributeName);else m.addedNodes.forEach(doeNode)}});
     obs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR})}
   const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lss=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  const ssg=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},sss=(k,v)=>{try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v)}catch(e){}};
   function toegestaan(){return !!(state.uid&&!state.office&&((state.cfg&&state.cfg.taalUA)||[]).includes(state.uid))}
   function knop(){const b=document.getElementById("b-taal");if(!b)return;const t=state.uid?toegestaan():false;b.hidden=!t;if(!t)return;
     b.textContent=aan?"🇳🇱 NL":"🇺🇦 УКР";b.title=aan?"Nederlands":"Українська мова";b.setAttribute("aria-label",b.title)}
   /* wordt aangeroepen zodra instellingen binnen zijn; schakelt in, of herlaadt om terug te gaan naar Nederlands */
   function update(){if(!state.uid){knop();return}if(!state.office&&!state.cfgOk){knop();return}
-    const t=toegestaan(),wil=t&&(lsg("alw-taal-"+state.uid)||"uk")==="uk";if(t)lss("alw-taal-ok","1");
-    lss("alw-taal",wil?"uk":null);if(wil&&!aan){start();try{renderNieuws();renderMijnBest();renderVerj();renderTbMonteur();renderRegels()}catch(e){}}
+    const t=toegestaan(),wil=t&&ssg("alw-taal")==="uk";if(t)lss("alw-taal-ok","1");
+    if(!t)sss("alw-taal",null);if(wil&&!aan){start();try{renderNieuws();renderMijnBest();renderVerj();renderTbMonteur();renderRegels()}catch(e){}}
     else if(!wil&&aan){location.reload();return}knop()}
-  function wissel(){if(!state.uid)return;lss("alw-taal-"+state.uid,aan?"nl":"uk");lss("alw-taal",aan?null:"uk");location.reload()}
+  function wissel(){if(!state.uid)return;sss("alw-taal",aan?null:"uk");location.reload()}
   /* link naar Google Translate voor vrije tekst (nieuws, vragen, antwoorden) */
   function link(tekst){tekst=String(tekst||"").trim();if(!tekst)return"";const cyr=CYR.test(tekst);let naar,lbl;
     if(aan&&!cyr){naar="uk";lbl="🌐 Перекласти"}else if(!aan&&cyr){naar="nl";lbl="🌐 Vertalen"}else return"";
     return ` <a class="gtlink" translate="no" target="_blank" rel="noopener" href="https://translate.google.com/?sl=auto&tl=${naar}&op=translate&text=${encodeURIComponent(tekst.slice(0,4000))}">${lbl}</a>`}
-  if(lsg("alw-taal")==="uk")start();
+  /* elke keer openen begint in het Nederlands; de keuze voor Oekraïens geldt alleen zolang de app open is */
+  lss("alw-taal",null);if(ssg("alw-taal")==="uk")start();
   return{tr:s=>{const t=tr(s);return t==null?s:t},kent:s=>tr(s)!=null,get actief(){return aan},update,wissel,link,knop}
 })();
 document.getElementById("b-taal").addEventListener("click",()=>I18N.wissel());
