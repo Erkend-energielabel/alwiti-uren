@@ -545,6 +545,10 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 /* ---------- afdrukken op A3 ---------- */
 .printkop{display:none}
 #b-print{margin-left:auto;align-self:center}
+#b-taal{padding:4px 10px;font-size:12px;margin-left:8px;white-space:nowrap}
+.gtlink{font-size:12px;font-weight:600;color:var(--c-buiten);text-decoration:none;white-space:nowrap}.gtlink:hover{text-decoration:underline}
+.taal-ua .wkmid .wk{font-size:18px}.taal-ua .msub2 button{font-size:12px}
+.ua{font-size:10px;font-weight:700;padding:0 5px;border-radius:4px;background:#ffd500;color:#0057b7}
 @media print{
   @page{size:A3 landscape;margin:12mm}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -600,6 +604,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button role="tab" id="tab-mo" aria-selected="false" data-tab="monteurs" hidden>Monteurs</button>
     <button role="tab" id="tab-w" aria-selected="false" data-tab="werken" hidden>Projecten</button>
   </nav>
+  <button class="btn ghost sm" type="button" id="b-taal" hidden translate="no"></button>
   <button class="btn ghost sm" type="button" id="b-print" hidden title="Exporteren naar PDF (A3 liggend): kies in het venster 'Opslaan als PDF'">Exporteren naar PDF</button>
 </div></header>
 
@@ -1150,6 +1155,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 .toast.err{background:var(--red);color:var(--red-ink)}
 #b-uit{padding:4px 10px;font-size:12px;margin-left:8px}
 .pinrij{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lgtaal{display:flex;gap:8px;justify-content:center}.lgtaal button[aria-pressed="true"]{border-color:var(--fg);font-weight:700}
 .pinrij input{width:110px;height:auto}
 </style>
 <div class="login" id="login" hidden>
@@ -1161,6 +1167,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <button class="btn" type="submit" id="lg-go">Inloggen</button>
     <div class="msg" id="lg-msg" role="status"></div>
     <p class="hint" style="margin:0">Staat je naam er niet bij of ben je je pincode vergeten? Vraag het kantoor.</p>
+    <div class="lgtaal" id="lg-taal" hidden translate="no"><button type="button" class="btn ghost sm" data-taal="nl">🇳🇱 Nederlands</button><button type="button" class="btn ghost sm" data-taal="uk">🇺🇦 Українська</button></div>
   </form>
 </div>
 <div class="syncbar" id="sync" hidden role="status"></div>
@@ -1316,6 +1323,7 @@ const ALW=(()=>{
     const laadNamen=async()=>{try{const r=await Store.call("namen",{});sel.innerHTML='<option value="">Kies je naam…</option>'+r.namen.map(n=>`<option value="${esc(n.id)}">${esc(n.naam)}</option>`).join("");const last=ls("alw-lastid");if(last)sel.value=last;if(!vorig)msg.textContent="";if(sel.value)q("#lg-pin").focus()}
       catch(e){sel.innerHTML='<option value="">—</option>';msg.className="msg err";msg.textContent=e.message+(e.code==="net"?" Probeer het zo opnieuw.":"")}};
     laadNamen();
+    {const tw=q("#lg-taal");if(tw&&ls("alw-taal-ok")){tw.hidden=false;const cur=ls("alw-taal")==="uk"?"uk":"nl";tw.querySelectorAll("[data-taal]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.taal===cur);b.onclick=()=>{const t=b.dataset.taal;try{t==="uk"?localStorage.setItem("alw-taal","uk"):localStorage.removeItem("alw-taal");const id=sel.value||ls("alw-lastid");if(id)localStorage.setItem("alw-taal-"+id,t)}catch(e){}if(t!==cur)location.reload()}})}}
     return new Promise(res=>{q("#lg-form").onsubmit=async ev=>{ev.preventDefault();const id=sel.value,pin=q("#lg-pin").value.trim();
       if(!id){if(sel.options.length<2)return laadNamen();msg.className="msg err";msg.textContent="Kies je naam.";return}
       if(!pin){msg.className="msg err";msg.textContent="Vul je pincode in.";return}
@@ -1694,13 +1702,13 @@ function bsVragen(b){return ((state.bestelStatus||{})[b._sid]||{}).vragen||[]}
 function bsAntw(v){return (state.antwoorden||{})[v.id]}
 function bsOpenVragen(b){return bsVragen(b).filter(v=>!bsAntw(v))}
 function tijdKort(t){if(!t)return"";const d=new Date(t);return fmtD(iso(d))+" "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}
-function draadHTML(b,metInvoer){const vs=bsVragen(b);if(!vs.length)return"";return vs.map(v=>{const a=bsAntw(v);return `<div class="vrbox${a?" klaar":""}"><p class="vrq"><b>Vraag kantoor:</b> ${esc(v.tekst)} <small>${tijdKort(v.op)}</small> ${metInvoer?leesKnopHTML("vr:"+b._sid+":"+v.id,true):""}</p>${a?`<p class="vra"><b>Antwoord ${esc(a.monteur||"")}:</b> ${esc(a.tekst)} <small>${tijdKort(a.op)}</small></p>`:metInvoer?`<div class="vrin"><textarea data-vrant="${esc(v.id)}" rows="2" placeholder="Typ of spreek je antwoord in"></textarea><button class="micbtn" type="button" data-vrmic="${esc(v.id)}" aria-label="Antwoord inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vrsend="${esc(v.id)}" data-vrbs="${esc(b._sid)}">Versturen</button></div>`:'<p><small>Nog geen antwoord van de monteur.</small></p>'}</div>`}).join("")}
+function draadHTML(b,metInvoer){const vs=bsVragen(b);if(!vs.length)return"";return vs.map(v=>{const a=bsAntw(v);return `<div class="vrbox${a?" klaar":""}"><p class="vrq"><b>Vraag kantoor:</b> ${esc(v.tekst)}${metInvoer?I18N.link(v.tekst):""} <small>${tijdKort(v.op)}</small> ${metInvoer?leesKnopHTML("vr:"+b._sid+":"+v.id,true):""}</p>${a?`<p class="vra"><b>Antwoord ${esc(a.monteur||"")}:</b> ${esc(a.tekst)}${I18N.link(a.tekst)} <small>${tijdKort(a.op)}</small></p>`:metInvoer?`<div class="vrin"><textarea data-vrant="${esc(v.id)}" rows="2" placeholder="Typ of spreek je antwoord in"></textarea><button class="micbtn" type="button" data-vrmic="${esc(v.id)}" aria-label="Antwoord inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vrsend="${esc(v.id)}" data-vrbs="${esc(b._sid)}">Versturen</button></div>`:'<p><small>Nog geen antwoord van de monteur.</small></p>'}</div>`}).join("")}
 /* inspreken via de browser (Chrome/Edge/Safari); anders het microfoontje van het toetsenbord */
 function spraakKan(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition)}
 let spraak=null;
 function spreekIn(knop,veld){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){veld.focus();return}
   if(spraak){try{spraak.stop()}catch(e){}return}
-  const r=new SR();r.lang="nl-NL";r.interimResults=true;r.continuous=true;const basis=veld.value?veld.value.replace(/\s*$/," "):"";let vast="";
+  const r=new SR();r.lang=(typeof I18N!=="undefined"&&I18N.actief)?"uk-UA":"nl-NL";r.interimResults=true;r.continuous=true;const basis=veld.value?veld.value.replace(/\s*$/," "):"";let vast="";
   r.onresult=e=>{let tus="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)vast+=t;else tus+=t}veld.value=(basis+vast+tus).replace(/^\s+/,"");veld.dispatchEvent(new Event("input",{bubbles:true}))};
   r.onend=()=>{spraak=null;knop.classList.remove("aan");if(veld.value){const v=veld.value.trim();veld.value=v.charAt(0).toUpperCase()+v.slice(1)}};
   r.onerror=e=>{spraak=null;knop.classList.remove("aan");if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed")){knop.hidden=true;veld.focus()}};
@@ -1776,10 +1784,14 @@ function stemNL(){const v=speechSynthesis.getVoices().filter(x=>/^nl/i.test(x.la
   const g=nl.find(x=>!isM(x))||overig.find(x=>!isM(x));stemVrouw=!!g;return g||v[0]||null}
 function leesVoor(tekst,knop){if(!kanVoorlezen())return;const bezig=leesKnop===knop&&speechSynthesis.speaking;speechSynthesis.cancel();if(leesKnop){leesKnop.classList.remove("aan");leesKnop.textContent=leesKnop.dataset.lbl||"🔊 Voorlezen"}leesKnop=null;if(bezig)return;
   const zinnen=(String(tekst).replace(/\s+/g," ").match(/[^.!?]+[.!?]*/g)||[]).map(z=>z.trim()).filter(Boolean);if(!zinnen.length)return;
-  knop.dataset.lbl=knop.dataset.lbl||knop.textContent;knop.classList.add("aan");knop.textContent="⏹ Stoppen";leesKnop=knop;const stem=stemNL();
-  zinnen.forEach((z,i)=>{const u=new SpeechSynthesisUtterance(z);u.lang="nl-NL";if(stem)u.voice=stem;u.rate=0.95;if(!stemVrouw)u.pitch=1.25;if(i===zinnen.length-1)u.onend=u.onerror=()=>{if(leesKnop===knop){knop.classList.remove("aan");knop.textContent=knop.dataset.lbl;leesKnop=null}};speechSynthesis.speak(u)})}
+  knop.dataset.lbl=knop.dataset.lbl||knop.textContent;knop.classList.add("aan");knop.textContent="⏹ Stoppen";leesKnop=knop;const ua=(String(tekst).match(/[\u0400-\u04FF]/g)||[]).length>String(tekst).length/4,stem=ua?stemUA():stemNL();
+  zinnen.forEach((z,i)=>{const u=new SpeechSynthesisUtterance(z);u.lang=ua?"uk-UA":"nl-NL";if(stem)u.voice=stem;u.rate=0.95;if(!stemVrouw)u.pitch=1.25;if(i===zinnen.length-1)u.onend=u.onerror=()=>{if(leesKnop===knop){knop.classList.remove("aan");knop.textContent=knop.dataset.lbl;leesKnop=null}};speechSynthesis.speak(u)})}
+/* Oekraïens: ook een vrouwenstem (Lesya op Apple, Polina op Windows) */
+const STEM_UV=["lesya","polina","natalia","oksana","female","жін"],STEM_UM=["ostap","male"];
+function stemUA(){const v=speechSynthesis.getVoices().filter(x=>/^uk/i.test(x.lang)),nm=x=>(x.name||"").toLowerCase(),isM=x=>STEM_UM.some(m=>new RegExp("\\b"+m+"\\b").test(nm(x)));
+  for(const k of STEM_UV){const f=v.find(x=>nm(x).includes(k));if(f){stemVrouw=true;return f}}const g=v.find(x=>!isM(x));stemVrouw=!!g||!v.length;return g||v[0]||null}
 if(kanVoorlezen()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{}}catch(e){}}
-function tbTekst(x){return [x.titel+".",x.onderwerp||"",(x.punten||[]).length?"Kernpunten.":"",...(x.punten||[]).map(p=>p.replace(/[.!?]?$/,".")),(x.afspraken||[]).length?"Afspraken.":"",...(x.afspraken||[]).map(p=>p.replace(/[.!?]?$/,"."))].filter(Boolean).join(" ")}
+function tbTekst(x){const T=s=>I18N.actief?I18N.tr(s):s;return [T(x.titel)+".",T(x.onderwerp||""),(x.punten||[]).length?T("Kernpunten."):"",...(x.punten||[]).map(p=>T(p).replace(/[.!?]?$/,".")),(x.afspraken||[]).length?T("Afspraken."):"",...(x.afspraken||[]).map(p=>T(p).replace(/[.!?]?$/,"."))].filter(Boolean).join(" ")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-lees]");if(!b)return;let t="";const k=b.dataset.lees;
   if(k.startsWith("tb:")){const x=(state.tbSessies||[]).find(y=>y.id===k.slice(3))||tbLib().find(y=>y.id===k.slice(3));if(x)t=tbTekst(x)}
   else if(k.startsWith("nw:")){const x=(state.nieuws||[]).find(y=>y.id===k.slice(3));if(x)t=(x.titel?x.titel+". ":"")+(x.tekst||"")}
@@ -1870,9 +1882,9 @@ function nwGezienKey(){return "alw-nw-gezien-"+(state.uid||"")}
 function nwPostHTML(x,gezien){const duim=nwDuimen(x.id),ik=duim.some(d=>d.uid===state.uid),reac=nwReacties(x.id),nieuw=gezien!=null&&(x.op||"")>gezien;
   return `<article class="nwpost${nieuw?" nwnieuw":""}">${x.foto?`<img class="nwfoto" ${fotoSrc(x.foto)} alt="${esc(x.titel||"Foto")}" loading="lazy" data-nwlb="${esc(x.id)}">`:""}<div class="nwin">
    <div class="nwkop"><div><h3>${nieuw?'<i class="rdot" aria-hidden="true" style="margin-right:8px;width:12px;height:12px"></i>':""}${esc(x.titel||"Bericht van kantoor")}</h3><small>${nieuw?'<b style="color:var(--red)">Nieuw · </b>':""}${tijdKort(x.op)}</small></div><div class="toolbar">${leesKnopHTML("nw:"+x.id,true)}${state.office&&!state.preview?`<button class="btn ghost sm" type="button" data-nwdel="${esc(x.id)}">Verwijderen</button>`:""}</div></div>
-   ${x.tekst?`<p class="nwtekst">${esc(x.tekst)}</p>`:""}
+   ${(()=>{const l=I18N.link((x.titel?x.titel+"\n\n":"")+(x.tekst||""));return x.tekst||l?`<p class="nwtekst">${esc(x.tekst||"")}${l}</p>`:""})()}
    <div class="nwact">${emoBarHTML(x.id)}<small style="color:var(--muted)">${reac.length?reac.length+(reac.length===1?" reactie":" reacties"):""}</small></div>
-   <div class="nwreac">${reac.map(r=>`<div class="nwr"><div><b>${esc(r.naam)}</b> ${esc(r.tekst)} <small>${tijdKort(r.op)}</small></div>${r.uid===state.uid||(state.office&&!state.preview)?`<button class="x" type="button" data-nwrdel="${esc(r.uid+"|"+r.id)}" aria-label="Reactie verwijderen">×</button>`:""}</div>`).join("")}</div>
+   <div class="nwreac">${reac.map(r=>`<div class="nwr"><div><b>${esc(r.naam)}</b> ${esc(r.tekst)}${I18N.link(r.tekst)} <small>${tijdKort(r.op)}</small></div>${r.uid===state.uid||(state.office&&!state.preview)?`<button class="x" type="button" data-nwrdel="${esc(r.uid+"|"+r.id)}" aria-label="Reactie verwijderen">×</button>`:""}</div>`).join("")}</div>
    ${nuMag()?`<div class="vrin"><textarea data-nwin="${esc(x.id)}" rows="1" maxlength="1000" placeholder="Schrijf een reactie…"></textarea><button class="micbtn" type="button" data-nwmic="${esc(x.id)}" aria-label="Reactie inspreken" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-nwstuur="${esc(x.id)}">Plaatsen</button>${smiliesHTML()}</div>`:""}
   </div></article>`}
 let nwSessieGezien=null;
@@ -1923,7 +1935,7 @@ function vjHTML(){const jarig=vjJarig(),komend=vjLijst().map(v=>({...v,...vjVolg
     <p>${zelf?(fel.length?`${fel.length} ${fel.length===1?"collega feliciteerde":"collega's feliciteerden"} je al.`:"Fijne verjaardag van iedereen bij Alwiti!"):(fel.length?`${fel.length}× gefeliciteerd`:"Wees de eerste die feliciteert!")}</p>
     ${!zelf&&nuMag()?(al?'<p>✓ Jij hebt gefeliciteerd</p>':`<div class="vrin" style="width:100%;max-width:520px"><textarea data-vjin="${esc(j.uid)}" rows="1" maxlength="500" placeholder="Gefeliciteerd! (typ of spreek een berichtje in)"></textarea><button class="micbtn" type="button" data-vjmic="${esc(j.uid)}" ${spraakKan()?"":"hidden"}>🎤</button><button class="btn sm" type="button" data-vjfel="${esc(j.uid)}">🎉 Feliciteren</button>${smiliesHTML()}</div>`):""}
     ${emoBarHTML("vj:"+j.uid+":"+new Date().getFullYear())}
-    ${fel.length?`<div class="vjfel">${fel.map(f=>`<div class="nwr"><div><b>${esc(f.naam)}</b> ${esc(f.tekst||"Gefeliciteerd!")} <small>${tijdKort(f.op)}</small></div></div>`).join("")}</div>`:""}</div>`}).join("");
+    ${fel.length?`<div class="vjfel">${fel.map(f=>`<div class="nwr"><div><b>${esc(f.naam)}</b> ${esc(f.tekst||"Gefeliciteerd!")}${I18N.link(f.tekst)} <small>${tijdKort(f.op)}</small></div></div>`).join("")}</div>`:""}</div>`}).join("");
   h+=`<h3 style="margin-top:${jarig.length?16:0}px">Komende verjaardagen</h3><div class="vjlijst">${komend.length?komend.slice(0,30).map(v=>`<div class="vjrow${v.dagen===0?" vandaag":""}"><span class="dt">${v.dag}<small>${MNDL[v.maand-1].slice(0,3)}</small></span><span><b>${esc(v.naam)}</b></span><span style="color:var(--muted);font-size:14px">${v.dagen===0?"🎂 vandaag":v.dagen===1?"morgen":"over "+v.dagen+" dagen"}</span></div>`).join(""):'<div class="empty">Nog geen verjaardagen ingesteld.</div>'}</div>`;return h}
 function renderVerj(){const jarig=vjAan()?vjJarig():[];
   if(state.office&&!state.preview){$("#tab-vj").hidden=!vjAan();const b=$("#tab-vj");if(b){b.innerHTML="Verjaardagen"+(jarig.length?FEESTMUTS:"");b.title=jarig.length?"Vandaag jarig: "+jarig.map(j=>j.naam).join(", "):"";b.setAttribute("aria-label",jarig.length?`Verjaardagen, vandaag jarig: ${jarig.map(j=>j.naam).join(", ")}`:"Verjaardagen")}if(!$("#v-verjaardagen").hidden)$("#vj-k").innerHTML=vjHTML()}
@@ -1954,7 +1966,7 @@ function renderTbMonteur(){const uid=tbMijnUid(),btn=$("#ms-toolbox");if(!btn)re
   $("#tb-meld").hidden=!open.length||$("#v-monteur").dataset.sub==="toolbox";if(open.length)$("#tb-meldtxt").textContent=open.length===1?"Er staat een toolbox voor je klaar":`Er staan ${open.length} toolboxen voor je klaar`;
   if($("#v-monteur").dataset.sub!=="toolbox")return;
   const mijn=(state.tbSessies||[]).filter(x=>tbVoorMij(x,uid)).sort((a,b)=>(!!tbGetekend(uid,a.id)-!!tbGetekend(uid,b.id))||(b.datum||"").localeCompare(a.datum||""));
-  $("#tb-mijn").innerHTML=mijn.length?mijn.map(x=>{const af=tbGetekend(uid,x.id);return `<div class="tbkaart${af?"":" tbopen"}"><div class="tbkop"><h3>${esc(x.titel)}</h3>${leesKnopHTML("tb:"+x.id)}</div><small style="color:var(--muted)">${fmtD(x.datum)}${x.locatie?" · "+esc(x.locatie):""}${!af&&x.uiterlijk?" · aftekenen vóór "+fmtD(x.uiterlijk):""}</small>
+  $("#tb-mijn").innerHTML=mijn.length?mijn.map(x=>{const af=tbGetekend(uid,x.id);return `<div class="tbkaart${af?"":" tbopen"}"><div class="tbkop"><h3>${esc(x.titel)}</h3>${leesKnopHTML("tb:"+x.id)}</div>${I18N.actief&&!I18N.kent(x.titel)?I18N.link(tbTekst(x)):""}<small style="color:var(--muted)">${fmtD(x.datum)}${x.locatie?" · "+esc(x.locatie):""}${!af&&x.uiterlijk?" · aftekenen vóór "+fmtD(x.uiterlijk):""}</small>
     ${af?`<p class="tbok" style="margin:0">✓ Afgetekend op ${tijdKort(af.op)}</p><details class="more"><summary>Opnieuw lezen</summary><div style="margin-top:8px">${tbInhoud(x)}</div></details>`:`${tbInhoud(x)}<div class="tbsign"><label class="chk"><input type="checkbox" data-tbchk="${esc(x.id)}"> Ik heb deze toolbox gelezen, begrijp de afspraken en houd me eraan.</label><label>Vraag of opmerking (optioneel)<input data-tbopm="${esc(x.id)}" placeholder="bijv. vraag over de afspraken" autocomplete="off"></label><button class="btn ok-btn" type="button" data-tbaf="${esc(x.id)}">Aftekenen</button></div>`}</div>`}).join(""):'<div class="empty">Er staan nog geen toolboxen voor je klaar.</div>'}
 $("#tb-naar").onclick=()=>{showTab("monteur");kiesSub("toolbox")};
 $("#tb-mijn").addEventListener("click",async e=>{const b=e.target.closest("[data-tbaf]");if(!b)return;const sid=b.dataset.tbaf,m=$("#tb-mmsg");m.className="msg err";
@@ -2021,11 +2033,12 @@ $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$(
   try{await state.db.doc("kantoor/config").set({...state.cfg,toolbox:aan});m.className="msg ok";m.textContent=aan?"Toolbox staat aan. Je vindt hem in het tabblad Toolbox.":"Toolbox staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 /* ---------- instellingen ---------- */
 function kantoorAan(id){return (state.cfg&&state.cfg.kantoorMonteurs||[]).includes(id)}
+function taalUA(id){return (state.cfg&&state.cfg.taalUA||[]).includes(id)}
 function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
 function pasInstellingenToe(){const c=state.cfg||{};let r;
   if(state.preview)r=reisAan(state.preview.id);else if(state.office)r=!!c.reistijd||(c.reisMonteurs||[]).length>0;else r=reisAan(state.uid);
-  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;const xd=$("#set-dc");if(xd)xd.checked=!!c.documenten;const xp=$("#set-tp");if(xp)xp.checked=!c.topperUit;if(state.office){$("#tab-rl").hidden=!!c.topperUit;if(c.topperUit&&actieveTab()==="ranglijst")showTab("weekstaten")}if(state.office)$("#tab-dc").hidden=!c.documenten;setTimeout(renderDocs,0);if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0}
+  document.body.classList.toggle("geen-reis",!r);setTimeout(bestVis,0);const x=$("#set-reis");if(x)x.checked=!!c.reistijd;const xt=$("#set-tb");if(xt)xt.checked=!!c.toolbox;const xn=$("#set-nw");if(xn)xn.checked=!!c.nieuws;const xv=$("#set-vj");if(xv)xv.checked=!!c.verjaardagen;const xd=$("#set-dc");if(xd)xd.checked=!!c.documenten;const xp=$("#set-tp");if(xp)xp.checked=!c.topperUit;if(state.office){$("#tab-rl").hidden=!!c.topperUit;if(c.topperUit&&actieveTab()==="ranglijst")showTab("weekstaten")}if(state.office)$("#tab-dc").hidden=!c.documenten;setTimeout(renderDocs,0);if(state.office){$("#tab-nw").hidden=!c.nieuws;$("#tab-vj").hidden=!c.verjaardagen}setTimeout(()=>{renderNieuws();renderVerj()},0);if(state.office)setTimeout(renderToolboxKantoor,0);if(!r&&fi.reis)fi.reis.value=0;try{I18N.update()}catch(e){}}
 $("#set-reis").addEventListener("change",async e=>{const aan=e.target.checked,m=$("#set-msg");
   try{await state.db.doc("kantoor/config").set({...state.cfg,reistijd:aan});m.className="msg ok";m.textContent=aan?"Reistijd staat aan voor alle monteurs.":"Reistijd staat alleen aan voor monteurs bij wie je het apart hebt aangezet."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 pasInstellingenToe();
@@ -2051,7 +2064,7 @@ $("#lm-go").onclick=async()=>{const m=$("#lm-msg"),b=$("#lm-go");if(!state.isOwn
     if(soc){for(const x of (state.nieuws||[]).slice()){await del("kantoor/config/nieuws/"+x.id);if(x.foto&&state.assets){try{await state.assets.delete(x.foto)}catch(e){}}}for(const id of Object.keys(state.sociaal||{}))await del("sociaal/"+id)}
     if(tbw){for(const a of Object.values(state.tbAf||{}))if(a._path)await del(a._path);for(const x of (state.tbSessies||[]).slice())await del("kantoor/config/tbsessies/"+x.id)}
     if(mon){for(const x of (state.monteurs||[]).slice()){await del(UREN_COL+"/"+x.id);await del("goedgekeurd/"+x.id)}
-      const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs","bestelMonteurs"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
+      const c={...state.cfg};["geblokkeerd","reisMonteurs","kantoorMonteurs","bestelMonteurs","taalUA"].forEach(k=>delete c[k]);await state.db.doc("kantoor/config").set(c)}
     else{for(const x of (state.monteurs||[]))await del("goedgekeurd/"+x.id)}
     state.lmBackup=false;$("#lm-bok").textContent="";m.className="msg ok";m.textContent=`Klaar: ${n} items gewist. Je begint met een lege administratie. Herlaad de pagina als er nog iets zichtbaar is.`}
   catch(err){m.className="msg err";m.textContent=`Er ging iets mis na ${n} items. Probeer het opnieuw.`}finally{lmCheck()}};
@@ -2404,7 +2417,7 @@ let kSel=null,kZoek="";
 function renderKoppel(){
   const B=blokIds();const mons=(state.monteurs||[]).slice().sort((a,b)=>(B.has(a.id)-B.has(b.id))||String(a.monteur).localeCompare(b.monteur,"nl"));
   const hid=(w,id)=>Array.isArray(w.verborgen)&&w.verborgen.includes(id);const cnt=id=>state.werken.filter(w=>w.actief!==false&&hid(w,id)).length;
-  $("#k-mon").innerHTML=mons.length?mons.map(x=>`<button type="button" data-mid="${esc(x.id)}" aria-pressed="${x.id===kSel}"${B.has(x.id)?' class="blok"':""}><span>${B.has(x.id)?'<span class="pill over" style="padding:0 6px;font-size:10px">geblokkeerd</span> ':""}${esc(x.monteur||"Naam onbekend")}${(!ALW.heeftLogin(x.id)?' <small>· nog geen pincode</small>':"")+ALW.slotLabel(x.id)}</span><small>${bestelAan(x.id)?"bestellen · ":""}${kantoorAan(x.id)?"kantoor · ":""}${!(state.cfg&&state.cfg.reistijd)&&(state.cfg&&state.cfg.reisMonteurs||[]).includes(x.id)?"reistijd · ":""}${(()=>{const sp=spelVoor(x.monteur||"");return sp.streak?`<span class="gstreak">${sp.streak} wk op rij</span> · `:""})()}${x.weekUren?nl(x.weekUren).replace(",00","")+" u/wk · ":""}${cnt(x.id)?cnt(x.id)+" verborgen":"ziet alles"}</small></button>`).join(""):'<div class="empty">Nog geen monteurs. Voeg ze hierboven toe en geef ze een pincode.</div>';
+  $("#k-mon").innerHTML=mons.length?mons.map(x=>`<button type="button" data-mid="${esc(x.id)}" aria-pressed="${x.id===kSel}"${B.has(x.id)?' class="blok"':""}><span>${B.has(x.id)?'<span class="pill over" style="padding:0 6px;font-size:10px">geblokkeerd</span> ':""}${esc(x.monteur||"Naam onbekend")}${(!ALW.heeftLogin(x.id)?' <small>· nog geen pincode</small>':"")+ALW.slotLabel(x.id)}</span><small>${bestelAan(x.id)?"bestellen · ":""}${kantoorAan(x.id)?"kantoor · ":""}${taalUA(x.id)?'<span class="ua">УКР</span> · ':""}${!(state.cfg&&state.cfg.reistijd)&&(state.cfg&&state.cfg.reisMonteurs||[]).includes(x.id)?"reistijd · ":""}${(()=>{const sp=spelVoor(x.monteur||"");return sp.streak?`<span class="gstreak">${sp.streak} wk op rij</span> · `:""})()}${x.weekUren?nl(x.weekUren).replace(",00","")+" u/wk · ":""}${cnt(x.id)?cnt(x.id)+" verborgen":"ziet alles"}</small></button>`).join(""):'<div class="empty">Nog geen monteurs. Voeg ze hierboven toe en geef ze een pincode.</div>';
   const p=$("#k-panel");const mon=mons.find(x=>x.id===kSel);
   if(!mon){p.innerHTML='<div class="empty">Kies links een monteur.</div>';return}
   const act=state.werken.filter(w=>w.actief!==false).sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true}));
@@ -2418,6 +2431,7 @@ function renderKoppel(){
    <label class="schak"><input type="checkbox" id="k-reis" role="switch" ${reisAan(mon.id)?"checked":""} ${state.cfg&&state.cfg.reistijd?"disabled":""}><span class="sw" aria-hidden="true"></span><span><b>Reistijd invullen</b><small>${state.cfg&&state.cfg.reistijd?"Staat aan voor alle monteurs (zie Instellingen hierboven).":"Aan: deze monteur vult per dag zijn reistijd in."}</small></span></label>
    <label class="schak"><input type="checkbox" id="k-best" role="switch" ${bestelAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag materiaal bestellen</b><small>Aan: deze monteur krijgt de kaart "Materiaal bestellen" om met een foto schroeven, kleding, schoenen en ander materiaal aan te vragen.</small></span></label>
    <label class="schak"><input type="checkbox" id="k-kant" role="switch" ${kantoorAan(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Mag kantooruren schrijven</b><small>Aan: deze monteur krijgt naast B en W ook de knop K (kantoor).</small></span></label>
+   <label class="schak"><input type="checkbox" id="k-taal" role="switch" ${taalUA(mon.id)?"checked":""}><span class="sw" aria-hidden="true"></span><span><b>Oekraïense vertaling</b><small>Aan: de app staat voor deze monteur in het Oekraïens, ook de standaard toolboxen. Hij kan zelf terugschakelen naar Nederlands met de knop rechtsboven. Wat hij invult, zie jij gewoon in het Nederlands; vrije tekst die hij in het Oekraïens typt krijgt een knop "Vertalen".</small></span></label>
    <label class="allw" style="cursor:default">Verjaardag<select id="k-vjd" style="width:auto;height:auto"><option value="">dag</option>${Array.from({length:31},(_,i)=>`<option ${vjVan(mon.id).dag===i+1?"selected":""}>${i+1}</option>`).join("")}</select><select id="k-vjm" style="width:auto;height:auto"><option value="">maand</option>${MNDL.map((m,i)=>`<option value="${i+1}" ${vjVan(mon.id).maand===i+1?"selected":""}>${m}</option>`).join("")}</select><small style="color:var(--muted)">alleen dag en maand</small></label>
    <label class="allw" style="cursor:default">Standaard week<input type="number" id="k-norm" min="1" max="80" step="0.5" value="${mon.weekUren||""}" placeholder="${nl(norm()).replace(",00","")}" style="width:90px;height:auto"> uur <small style="color:var(--muted)">leeg = standaard (${nl(norm()).replace(",00","")} u)</small></label>
    ${ALW.pinRij(mon)}
@@ -2440,6 +2454,8 @@ $("#k-panel").addEventListener("change",async e=>{if(e.target.id==="k-vjd"||e.ta
     try{await state.db.doc("kantoor/config/extra/verjaardagen").set({lijst});const k=$("#k-msg");k.className="msg ok";k.textContent=d?`Verjaardag ${mon.monteur}: ${d} ${MNDL[m-1]}.`:"Verjaardag verwijderd."}catch(err){}return}
   if(e.target.id==="k-best"){const set=new Set(state.cfg.bestelMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,bestelMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
+  if(e.target.id==="k-taal"){const set=new Set(state.cfg.taalUA||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
+    try{await state.db.doc("kantoor/config").set({...state.cfg,taalUA:[...set]});const k=$("#k-msg"),mon=(state.monteurs||[]).find(x=>x.id===kSel);k.className="msg ok";k.textContent=aan?`${mon?mon.monteur:"De monteur"} ziet de app nu in het Oekraïens (na verversen of binnen een halve minuut).`:`${mon?mon.monteur:"De monteur"} ziet de app weer in het Nederlands.`}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-kant"){const set=new Set(state.cfg.kantoorMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
     try{await state.db.doc("kantoor/config").set({...state.cfg,kantoorMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}
   if(e.target.id==="k-reis"){const set=new Set(state.cfg.reisMonteurs||[]),aan=e.target.checked;aan?set.add(kSel):set.delete(kSel);
@@ -2814,6 +2830,318 @@ $("#kop-tb").addEventListener("click",async e=>{const k=e.target.dataset&&e.targ
   try{for(const r of rows){await state.db.doc(r._path).update({werkId:w.id,werkNr:w.nr,werkNaam:w.naam});n++}m.className="msg ok";m.textContent=n+" regels gekoppeld aan "+w.nr+"."}
   catch(err){m.className="msg err";m.textContent=n+" van "+rows.length+" regels gekoppeld; probeer de rest opnieuw."}finally{e.target.disabled=false}});
 
+/* ---------- taal: Oekraïens voor monteurs ----------
+   Kantoor zet per monteur "Oekraïense vertaling" aan (cfg.taalUA). Die monteur ziet de app dan in het
+   Oekraïens en kan zelf terugschakelen naar Nederlands (knop rechtsboven). De vertaling gebeurt op de
+   schermteksten zelf; opgeslagen gegevens (soort, eenheid, status) blijven Nederlands, zodat kantoor
+   alles gewoon in het Nederlands ziet. */
+const I18N=(()=>{
+  const DK={zo:"нд",ma:"пн",di:"вт",wo:"ср",do:"чт",vr:"пт",za:"сб"};
+  const DL={zondag:"неділя",maandag:"понеділок",dinsdag:"вівторок",woensdag:"середа",donderdag:"четвер",vrijdag:"пʼятниця",zaterdag:"субота"};
+  const MG={januari:"січня",februari:"лютого",maart:"березня",april:"квітня",mei:"травня",juni:"червня",juli:"липня",augustus:"серпня",september:"вересня",oktober:"жовтня",november:"листопада",december:"грудня"};
+  const MK={jan:"січ",feb:"лют",maa:"бер",apr:"кві",mei:"тра",jun:"чер",jul:"лип",aug:"сер",sep:"вер",okt:"жов",nov:"лис",dec:"гру"};
+  const D={
+  /* algemeen en navigatie */
+  "Urenregistratie":"Облік годин","Monteurs & kantoor":"Монтажники та офіс","Monteurs":"Монтажники","Uitloggen":"Вийти","Onderdelen":"Розділи",
+  "Uren invullen":"Внести години","Materiaal bestellen":"Замовити матеріали","Bonnetjes":"Чеки","Documenten":"Документи","Alwiti nieuws":"Новини Alwiti",
+  "Verjaardagen":"Дні народження","Toolbox":"Інструктаж","Topper van de week":"Найкращий тижня","Alwiti bv – aluminium geveltechniek":"Alwiti bv – алюмінієві фасадні системи",
+  "Je account is geblokkeerd voor het invullen van uren. Neem contact op met kantoor.":"Ваш обліковий запис заблоковано для внесення годин. Зверніться до офісу.",
+  "Geen verbinding met de opslag. Controleer je internet en ververs de pagina.":"Немає зʼєднання зі сховищем. Перевірте інтернет і оновіть сторінку.",
+  "🎈 Vandaag is er iemand jarig!":"🎈 Сьогодні в когось день народження!","Feliciteren":"Привітати","Melding sluiten":"Закрити повідомлення",
+  "Er staat een toolbox voor je klaar":"На вас чекає інструктаж (toolbox)","Lezen en aftekenen":"Прочитати і підписати",
+  "Kantoor heeft een vraag over je bestelling":"В офісу є питання щодо вашого замовлення","Bekijken en antwoorden":"Переглянути і відповісти",
+  "Annuleren":"Скасувати","Opslaan":"Зберегти","Verwijderen":"Видалити","Sluiten":"Закрити","Bekijken":"Переглянути","Ja":"Так","Nee":"Ні","Weet je het zeker?":"Ви впевнені?",
+  "Bezig…":"Зачекайте…","Laden…":"Завантаження…","Versturen":"Надіслати","Versturen…":"Надсилання…","Uploaden…":"Завантаження…","Foto":"Фото","FOTO":"ФОТО","Project":"Проєкт","Datum":"Дата",
+  /* inloggen */
+  "Je naam":"Ваше імʼя","Kies je naam…":"Виберіть своє імʼя…","Pincode":"PIN-код","Inloggen":"Увійти",
+  "Staat je naam er niet bij of ben je je pincode vergeten? Vraag het kantoor.":"Вашого імені немає в списку або ви забули PIN-код? Запитайте в офісі.",
+  "Kies je naam.":"Виберіть своє імʼя.","Vul je pincode in.":"Введіть PIN-код.","Kies je naam en vul je pincode in.":"Виберіть імʼя та введіть PIN-код.",
+  "Naam of pincode klopt niet.":"Імʼя або PIN-код неправильні.","Je account is geblokkeerd. Neem contact op met kantoor.":"Ваш обліковий запис заблоковано. Зверніться до офісу.",
+  "Te vaak een verkeerde pincode. Je account is vergrendeld; vraag kantoor om het vrij te geven.":"Забагато разів введено неправильний PIN-код. Обліковий запис заблоковано; попросіть офіс розблокувати його.",
+  "Geen verbinding.":"Немає зʼєднання.","Er ging iets mis.":"Щось пішло не так.","Geen verbinding — je ziet de laatst bekende gegevens.":"Немає зʼєднання — ви бачите останні відомі дані.",
+  "Geen verbinding — gegevens worden ververst zodra je weer online bent.":"Немає зʼєднання — дані оновляться, щойно ви знову будете онлайн.",
+  "Niet alles is opgeslagen: je mag dit niet (meer) wijzigen.":"Не все збережено: вам (більше) не можна це змінювати.","Document laden…":"Завантаження документа…","Foto kon niet worden geladen":"Не вдалося завантажити фото",
+  /* uren invullen */
+  "Naam monteur":"Імʼя монтажника","Voor- en achternaam":"Імʼя та прізвище","Vorige dag":"Попередній день","Volgende dag":"Наступний день","Kies een dag":"Виберіть день",
+  "VANDAAG":"СЬОГОДНІ","GISTEREN":"ВЧОРА","MORGEN":"ЗАВТРА","EERGISTEREN":"ПОЗАВЧОРА","OVERMORGEN":"ПІСЛЯЗАВТРА",
+  "Terug naar vandaag":"Назад до сьогодні","Andere datum":"Інша дата",
+  "B = buiten (op de bouw) · W = werkplaats":"B = на обʼєкті (будівництво) · W = майстерня","B = buiten (op de bouw) · W = werkplaats · K = kantoor":"B = на обʼєкті (будівництво) · W = майстерня · K = офіс",
+  "+ Nog een regel (bijv. ziek, ander project)":"+ Ще один рядок (напр. хвороба, інший проєкт)","Opmerking voor kantoor":"Примітка для офісу",
+  "Bijv. materiaal op, wachten op steiger, regen, eerder weg":"Напр. закінчився матеріал, чекали на риштування, дощ, пішов раніше","Netjes maken":"Виправити текст",
+  "Inspreken: tik in een tekstveld en dan op het microfoontje van je toetsenbord.":"Голосом: торкніться текстового поля, а потім мікрофона на клавіатурі.",
+  "Inspreken: tik in het tekstvak en gebruik de microfoon van je toetsenbord (Windows: Windows-toets + H).":"Голосом: торкніться текстового поля й скористайтеся мікрофоном клавіатури (Windows: клавіша Windows + H).",
+  "Reistijd deze dag (uur)":"Час у дорозі цього дня (год)","Reistijd (uur)":"Час у дорозі (год)","Totaal deze dag":"Разом за день","Uren opslaan":"Зберегти години","Wijzigingen opslaan":"Зберегти зміни","Dag aanpassen":"Змінити день",
+  "Type uren":"Тип годин","Werk (normaal)":"Робота (звичайна)","Normaal":"Звичайні","Overwerk":"Понаднормові","Meerwerk":"Додаткові роботи","Service":"Сервіс","Ziek":"Хворий",
+  "Vrij / verlof":"Вихідний / відпустка","Vrij":"Вихідний","Dokter":"Лікар","Tandarts":"Стоматолог","uren":"години","Aantal uren":"Кількість годин","uur":"год","Uren":"Години",
+  "Regel verwijderen":"Видалити рядок","Regel wijzigen":"Змінити рядок","Buiten, werkplaats of kantoor":"Обʼєкт, майстерня чи офіс","Buiten":"На обʼєкті","Werkplaats":"Майстерня","Kantoor":"Офіс",
+  "buiten":"на обʼєкті","werkplaats":"майстерня","kantoor":"офіс","Route naar project":"Маршрут до проєкту",
+  "Welk project? (naam, adres of nummer)":"Який проєкт? (назва, адреса або номер)","Omschrijving werkzaamheden (optioneel)":"Опис робіт (необовʼязково)",
+  "Kies een project…":"Виберіть проєкт…","Kies project…":"Виберіть проєкт…","Nog geen projecten — vraag kantoor":"Ще немає проєктів — запитайте в офісі","Project staat er niet bij…":"Проєкту немає в списку…",
+  "Geen uren":"Немає годин","+ invullen":"+ внести","+ uren toevoegen":"+ додати години","Tik om deze dag aan te passen":"Торкніться, щоб змінити цей день",
+  "Goedgekeurd — niet meer aan te passen":"Затверджено — змінити вже не можна","Goedgekeurd door kantoor":"Затверджено офісом","Klik nogmaals om te verwijderen":"Натисніть ще раз, щоб видалити",
+  "Vorige week":"Попередній тиждень","‹ Vorige week":"‹ Назад","Volgende week":"Наступний тиждень","Volgende ›":"Далі ›","‹ Vorige":"‹ Попередній","naar deze week":"до цього тижня",
+  "Week":"Тиждень","Mijn uren":"Мої години","Mijn uren · totaal":"Мої години · разом","Vorige week kopiëren naar deze week":"Скопіювати попередній тиждень у цей",
+  "Je account is geblokkeerd.":"Ваш обліковий запис заблоковано.","Opslaan kan hier niet: de gedeelde opslag is niet bereikbaar.":"Тут не можна зберегти: спільне сховище недоступне.",
+  "Vul je naam en de datum in.":"Вкажіть своє імʼя та дату.","Samen meer dan 24 uur op één dag. Controleer de uren.":"Разом понад 24 години за один день. Перевірте години.",
+  "Log opnieuw in om uren op te slaan.":"Увійдіть знову, щоб зберегти години.","Je hebt geen schrijfrechten op deze app. Vraag kantoor je als bijdrager toe te voegen.":"У вас немає прав на запис. Попросіть офіс додати вас.",
+  "Opslaan mislukt, probeer het opnieuw.":"Не вдалося зберегти, спробуйте ще раз.","Opslaan mislukt, probeer opnieuw.":"Не вдалося зберегти, спробуйте ще раз.","Opslaan mislukt.":"Не вдалося зберегти.",
+  "Verwijderen mislukt.":"Не вдалося видалити.","Vul eerst je naam in.":"Спершу вкажіть своє імʼя.","Vul eerst je naam in bovenaan.":"Спершу вкажіть своє імʼя вгорі.",
+  "Vorige week heeft geen uren om te kopiëren.":"У попередньому тижні немає годин для копіювання.","Alle dagen van deze week hebben al uren.":"Усі дні цього тижня вже мають години.",
+  "Er staat nog geen tekst om netjes te maken.":"Ще немає тексту для виправлення.","Netjes maken lukte niet. Probeer het opnieuw.":"Не вдалося виправити текст. Спробуйте ще раз.",
+  "Oorspronkelijke tekst teruggezet.":"Початковий текст відновлено.","Terugzetten":"Повернути","Tekst is netjes gemaakt.":"Текст виправлено.","Even te vaak gebruikt. Probeer het zo opnieuw.":"Забагато спроб. Спробуйте трохи згодом.",
+  /* bonnetjes */
+  "Bonnetjes & declaraties":"Чеки та витрати","Bonnetjes toevoegen kan in deze weergave niet. Lever ze in bij kantoor.":"Тут не можна додати чеки. Здайте їх в офіс.",
+  "Foto van bonnetje maken":"Сфотографувати чек","Voorbeeld bonnetje":"Попередній перегляд чека","Bonnetje":"Чек","Soort":"Вид","Tankbon":"Пальне (заправка)","Parkeren":"Паркування",
+  "Materiaal":"Матеріал","Gereedschap":"Інструмент","Eten / drinken":"Їжа / напої","Overig":"Інше","Kenteken":"Номерний знак","bijv. VXK-12-B":"напр. VXK-12-B","Km-stand":"Пробіг (км)",
+  "bijv. 128450":"напр. 128450","Bedrag (€)":"Сума (€)","Project (optioneel)":"Проєкт (необовʼязково)","Omschrijving":"Опис","Bijv. diesel bus, kitspuiten":"Напр. дизель для бусу, герметик",
+  "Bonnetje indienen":"Подати чек","Mijn bonnetjes":"Мої чеки","Bonnetje verwijderen":"Видалити чек","Bonnetje verwijderen?":"Видалити чек?","Ja, verwijderen":"Так, видалити",
+  "Ingediend":"Подано","Akkoord":"Схвалено","Afgewezen":"Відхилено","Bonnetje kan nu niet worden opgeslagen.":"Чек зараз неможливо зберегти.","Vul het bedrag in.":"Вкажіть суму.",
+  "Vul het kenteken in.":"Вкажіть номерний знак.","Vul de km-stand in.":"Вкажіть пробіг.","Bonnetje ingediend. Kantoor beoordeelt het.":"Чек подано. Офіс його перевірить.",
+  "De foto is te groot.":"Фото завелике.","De opslag is vol. Neem contact op met kantoor.":"Сховище заповнене. Зверніться до офісу.","Uploaden mislukt, probeer het opnieuw.":"Не вдалося завантажити, спробуйте ще раз.",
+  "Dit is geen geldige foto.":"Це не дійсне фото.","Deze foto kan niet gelezen worden. Kies een JPG of PNG.":"Це фото неможливо прочитати. Виберіть JPG або PNG.",
+  /* materiaal bestellen */
+  "Schroeven, kit, gereedschap, kleding of schoenen nodig? Maak een foto, vul in hoeveel je nodig hebt en verstuur. Kantoor ziet het direct.":"Потрібні шурупи, герметик, інструмент, одяг чи взуття? Зробіть фото, вкажіть кількість і надішліть. Офіс побачить одразу.",
+  "Foto maken":"Зробити фото","Foto van wat je wilt bestellen":"Фото того, що хочете замовити","Wat heb je nodig?":"Що вам потрібно?",
+  "bijv. RVS boorschroeven 4,8×19 of werkschoenen S3":"напр. саморізи з нержавійки 4,8×19 або робоче взуття S3",
+  "Schroeven & bevestiging":"Шурупи та кріплення","Kit & lijm":"Герметик і клей","Kleding":"Одяг","Schoenen":"Взуття","Veiligheid (PBM)":"Безпека (ЗІЗ)",
+  "Aantal":"Кількість","bijv. 2":"напр. 2","Eenheid":"Одиниця","stuks":"шт.","doos":"коробка","pak":"пачка","koker":"туба","rol":"рулон","paar":"пара",
+  "Maat":"Розмір","bijv. 43 of XL":"напр. 43 або XL","Nodig vóór (optioneel)":"Потрібно до (необовʼязково)","Opmerking (optioneel)":"Примітка (необовʼязково)",
+  "bijv. merk, kleur of waar het moet worden afgeleverd":"напр. марка, колір або куди доставити","Bestelling versturen":"Надіслати замовлення","Foto weghalen":"Прибрати фото","— geen —":"— немає —",
+  "Mijn bestellingen":"Мої замовлення","Nieuw":"Нове","Besteld":"Замовлено","Geleverd":"Доставлено","geen foto":"без фото","(zie foto)":"(див. фото)",
+  "Bestelling intrekken":"Скасувати замовлення","Bestelling intrekken?":"Скасувати замовлення?","Ja, intrekken":"Так, скасувати","Intrekken mislukt.":"Не вдалося скасувати.",
+  "Bestellen kan nu niet. Probeer het later opnieuw.":"Зараз неможливо замовити. Спробуйте пізніше.","Maak een foto of vul in wat je nodig hebt.":"Зробіть фото або напишіть, що вам потрібно.",
+  "Vul het aantal in.":"Вкажіть кількість.","Vul de maat in.":"Вкажіть розмір.","Bestelling verstuurd. Kantoor ziet hem direct.":"Замовлення надіслано. Офіс побачить його одразу.",
+  "Versturen mislukt. Probeer het opnieuw.":"Не вдалося надіслати. Спробуйте ще раз.","Versturen mislukt.":"Не вдалося надіслати.",
+  "Vraag kantoor:":"Питання офісу:","Typ of spreek je antwoord in":"Напишіть або надиктуйте відповідь","Antwoord inspreken":"Надиктувати відповідь",
+  "Typ of spreek eerst je antwoord in.":"Спершу напишіть або надиктуйте відповідь.","Antwoord verstuurd naar kantoor.":"Відповідь надіслано до офісу.",
+  "🔊 Voorlezen":"🔊 Прочитати вголос","Voorlezen":"Прочитати вголос","⏹ Stoppen":"⏹ Зупинити","🎤 Inspreken":"🎤 Надиктувати",
+  /* documenten */
+  "V&G-plannen, RI&E, werkinstructies en andere documenten van kantoor. Tik op Openen om het document te bekijken.":"Плани з охорони праці (V&G), оцінка ризиків (RI&E), робочі інструкції та інші документи від офісу. Натисніть «Відкрити», щоб переглянути документ.",
+  "Toon":"Показати","Alle documenten":"Усі документи","Alleen algemene documenten":"Лише загальні документи","Openen":"Відкрити",
+  "Geen documenten bij deze keuze.":"Немає документів для цього вибору.","Er zijn nog geen documenten voor je gedeeld.":"Вам ще не надіслали жодного документа.",
+  "V&G-plan":"План V&G (охорона праці)","RI&E":"RI&E (оцінка ризиків)","LMRA / rode kaart":"LMRA / червона картка","Werkinstructie":"Робоча інструкція","Tekening":"Креслення",
+  "Veiligheidsinformatieblad (VIB)":"Паспорт безпеки (VIB)","Keuring / certificaat":"Перевірка / сертифікат","Document":"Документ",
+  /* nieuws */
+  "Bericht van kantoor":"Повідомлення від офісу","Nieuw ·":"Нове ·","Schrijf een reactie…":"Напишіть коментар…","Reactie inspreken":"Надиктувати коментар","Plaatsen":"Опублікувати",
+  "Smiley toevoegen":"Додати смайлик","Reageer met een emoji":"Відреагувати емодзі","Reactie verwijderen":"Видалити коментар","Nog geen nieuws van kantoor.":"Поки що немає новин від офісу.",
+  "Weet je zeker dat je deze reactie wilt verwijderen?":"Ви впевнені, що хочете видалити цей коментар?","Reactie verwijderen?":"Видалити коментар?","Plaatsen mislukt.":"Не вдалося опублікувати.",
+  /* verjaardagen */
+  "🎂 Vandaag jarig":"🎂 Сьогодні день народження","Fijne verjaardag van iedereen bij Alwiti!":"З днем народження від усіх в Alwiti!","Wees de eerste die feliciteert!":"Будьте першим, хто привітає!",
+  "✓ Jij hebt gefeliciteerd":"✓ Ви привітали","Gefeliciteerd! (typ of spreek een berichtje in)":"Вітаю! (напишіть або надиктуйте повідомлення)","🎉 Feliciteren":"🎉 Привітати",
+  "Gefeliciteerd!":"Вітаю!","Komende verjaardagen":"Найближчі дні народження","🎂 vandaag":"🎂 сьогодні","morgen":"завтра","Nog geen verjaardagen ingesteld.":"Дні народження ще не вказані.",
+  "🎈 Gefeliciteerd met je verjaardag!":"🎈 Вітаємо з днем народження!",
+  /* toolbox */
+  "Lees de toolbox goed door. Bespreek vragen met je uitvoerder of kantoor en teken daarna af.":"Уважно прочитайте інструктаж. Питання обговоріть з виконробом або офісом, а потім підпишіть.",
+  "Afspraken":"Домовленості","Afspraken.":"Домовленості.","Kernpunten.":"Основні пункти.","Ik heb deze toolbox gelezen, begrijp de afspraken en houd me eraan.":"Я прочитав(ла) цей інструктаж, розумію домовленості та дотримуватимусь їх.",
+  "Vraag of opmerking (optioneel)":"Питання або примітка (необовʼязково)","bijv. vraag over de afspraken":"напр. питання щодо домовленостей","Aftekenen":"Підписати","Opnieuw lezen":"Прочитати ще раз",
+  "Er staan nog geen toolboxen voor je klaar.":"Поки що немає інструктажів для вас.","Vink eerst aan dat je de toolbox hebt gelezen.":"Спершу позначте, що ви прочитали інструктаж.",
+  "Afgetekend. Dank je wel!":"Підписано. Дякуємо!","Aftekenen mislukt. Probeer het opnieuw.":"Не вдалося підписати. Спробуйте ще раз.",
+  /* topper / spel */
+  "Punten verdien je met weken die compleet én op tijd zijn ingevuld (uiterlijk maandag 12:00): 10 per week, +5 als je week al vóór zaterdag klaar was, plus een bonus voor je reeks. Een toolbox aftekenen levert 10 punten op (5 als je te laat bent).":"Бали ви отримуєте за тижні, заповнені повністю та вчасно (не пізніше понеділка 12:00): 10 за тиждень, +5 якщо тиждень був готовий ще до суботи, плюс бонус за серію. Підписаний інструктаж дає 10 балів (5, якщо із запізненням).",
+  "week op rij compleet":"тиждень поспіль повністю","weken op rij compleet":"тижнів поспіль повністю","punten":"балів","Het overzicht wordt bijgewerkt zodra kantoor de app opent.":"Огляд оновиться, щойно офіс відкриє застосунок.",
+  "Nog niemand met een complete week.":"Ще ніхто не має повного тижня.","Deze week:":"Цей тиждень:","Deze week is compleet. Goed bezig!":"Цей тиждень заповнено. Так тримати!","Deze week is compleet. Goed bezig! Nog":"Цей тиждень заповнено. Так тримати! Ще",
+  "week tot de badge":"тиждень до значка","weken tot de badge":"тиж. до значка",
+  "Eerste week":"Перший тиждень","Maand-topper":"Топ місяця","Twee maanden":"Два місяці","Kwartaalkanjer":"Герой кварталу","Halfjaar-held":"Герой півроку","Jaarkampioen":"Чемпіон року",
+  /* standaard toolboxen */
+  "Werken op hoogte en valbeveiliging":"Роботи на висоті та захист від падіння",
+  "Vallen van hoogte is de grootste oorzaak van ernstige ongevallen in de gevelbouw. Vanaf 2,5 meter werkhoogte is valbeveiliging verplicht.":"Падіння з висоти — найчастіша причина тяжких нещасних випадків у фасадному будівництві. Починаючи з робочої висоти 2,5 метра захист від падіння обовʼязковий.",
+  "Werk vanaf 2,5 meter hoogte altijd met collectieve beveiliging (leuning, randbeveiliging) of, als dat niet kan, met een harnas en vast aanslagpunt.":"На висоті від 2,5 метра завжди працюйте з колективним захистом (поручні, огородження краю), а якщо це неможливо — зі страхувальною привʼяззю та надійною точкою кріплення.",
+  "Controleer je harnas, vanglijn en valdemper vóór gebruik op beschadigingen, roest en slijtage. Kapot of na een val gebruikt? Direct uit gebruik nemen.":"Перед використанням перевірте привʼязь, страхувальний строп і амортизатор на пошкодження, іржу та знос. Пошкоджене або вже було падіння? Негайно вилучіть з використання.",
+  "Haak aan op een goedgekeurd ankerpunt boven je, nooit aan leuningen of gevelprofielen die daar niet voor bedoeld zijn.":"Кріпіться до затвердженої анкерної точки над собою, ніколи — до поручнів чи фасадних профілів, які для цього не призначені.",
+  "Laat gereedschap en materiaal niet los op hoogte liggen: gebruik gereedschapslijnen en zet een afzetting onder de werkplek.":"Не залишайте інструмент і матеріал незакріпленими на висоті: використовуйте страхувальні шнури для інструменту й огороджуйте зону під робочим місцем.",
+  "Open gevelvakken, sparingen en vloerranden altijd afzetten of afdekken voordat je wegloopt.":"Відкриті фасадні прорізи, отвори та краї перекриттів завжди огороджуйте або закривайте, перш ніж піти.",
+  "Werk nooit alleen op hoogte: er moet altijd iemand zijn die alarm kan slaan en kan helpen.":"Ніколи не працюйте на висоті самі: поруч завжди має бути хтось, хто може підняти тривогу й допомогти.",
+  "Geen harnas of randbeveiliging = niet werken op hoogte.":"Немає привʼязі чи огородження краю = не працюємо на висоті.",
+  "Defect valbeveiligingsmateriaal meld je meteen bij kantoor of de uitvoerder.":"Про несправне спорядження для захисту від падіння одразу повідомляйте офіс або виконроба.",
+  "Onder de werkplek wordt afgezet als er boven gewerkt wordt.":"Коли нагорі ведуться роботи, зону під робочим місцем огороджують.",
+  "Hoogwerker en schaarlift":"Автовишка та ножичний підйомник",
+  "Bij het monteren van gevelelementen werken we veel met hoogwerkers en schaarliften. Veilig werken begint bij een goede controle vooraf.":"Під час монтажу фасадних елементів ми часто працюємо з автовишками та ножичними підйомниками. Безпечна робота починається з ретельної перевірки заздалегідь.",
+  "Bedien alleen een hoogwerker als je daarvoor bent opgeleid en geïnstrueerd (bijvoorbeeld IPAF of een interne instructie).":"Керуйте автовишкою лише тоді, коли ви пройшли навчання та інструктаж (наприклад, IPAF або внутрішній інструктаж).",
+  "Doe vóór gebruik de dagelijkse controle: keuringssticker, noodstop, noodbediening, banden, hydrauliek en lekkage.":"Перед використанням зробіть щоденну перевірку: наклейка про огляд, аварійна зупинка, аварійне керування, шини, гідравліка та протікання.",
+  "Draag in een knikarmhoogwerker altijd een harnas met korte vanglijn aangehaakt aan het aanslagpunt in de bak.":"У колінчастій автовишці завжди носіть страхувальну привʼязь із коротким стропом, пристебнутим до точки кріплення в кошику.",
+  "Let op de draagkracht van de ondergrond: stempels op schotten, niet op putdeksels, kabelsleuven of verse grond.":"Зважайте на несучу здатність ґрунту: опори ставте на підкладки, а не на кришки люків, кабельні траншеї чи свіжий ґрунт.",
+  "Houd je aan de maximale windsnelheid van de fabrikant (vaak windkracht 6 / 12,5 m/s) en stop bij onweer.":"Дотримуйтесь максимальної швидкості вітру за вказівкою виробника (часто 6 балів / 12,5 м/с) і зупиняйте роботу під час грози.",
+  "Overschrijd nooit het maximale werklastgewicht in de bak: tel personen, gereedschap en gevelelementen bij elkaar op.":"Ніколи не перевищуйте максимальне робоче навантаження кошика: додайте разом людей, інструмент і фасадні елементи.",
+  "Zet de werkplek rond de machine af en let op bovengrondse leidingen en overhangende delen.":"Огородіть робочу зону навколо машини та зважайте на повітряні лінії й виступаючі частини.",
+  "Geen dagelijkse controle = niet de lucht in.":"Немає щоденної перевірки = не піднімаємося.",
+  "Bij twijfel over wind of ondergrond overleg je eerst met de uitvoerder.":"Якщо є сумніви щодо вітру чи ґрунту, спершу порадьтеся з виконробом.",
+  "Schade of storing meld je direct en de machine wordt niet meer gebruikt.":"Про пошкодження чи несправність повідомляйте одразу, і машину більше не використовують.",
+  "Tillen en plaatsen van glas en gevelelementen":"Підіймання та встановлення скла і фасадних елементів",
+  "Glas, panelen en kozijnen zijn zwaar, groot en kwetsbaar. Verkeerd tillen geeft rugklachten en breukgevaar.":"Скло, панелі та віконні рами важкі, великі й крихкі. Неправильне підіймання спричиняє проблеми зі спиною та ризик розбиття.",
+  "Til met een rechte rug en gebogen knieën, houd de last dicht bij je lichaam en draai niet met je romp.":"Підіймайте з рівною спиною та зігнутими колінами, тримайте вантаж близько до тіла й не повертайте корпус.",
+  "Is een last zwaarder dan ongeveer 23 kg of groot en onhandig? Til met twee personen of gebruik een hulpmiddel.":"Вантаж важчий за приблизно 23 кг або великий і незручний? Піднімайте вдвох або використовуйте допоміжний засіб.",
+  "Gebruik bij glas en grote panelen een vacuümheffer of glasrobot. Controleer vooraf de vacuümindicator en de zuignappen.":"Для скла та великих панелей використовуйте вакуумний підіймач або робот для скла. Заздалегідь перевірте вакуумний індикатор і присоски.",
+  "Loop nooit onder een hangende last en spreek duidelijke signalen af met de machinist of collega.":"Ніколи не проходьте під підвішеним вантажем і домовтеся про чіткі сигнали з машиністом або колегою.",
+  "Draag snijbestendige handschoenen en veiligheidsschoenen bij het verplaatsen van glas en profielen.":"Під час переміщення скла та профілів носіть порізостійкі рукавиці та захисне взуття.",
+  "Zet glas en elementen altijd stabiel weg in een bok of rek, nooit los tegen een muur.":"Завжди ставте скло та елементи стійко на козли або стелаж, ніколи просто під стіну.",
+  "Zware lasten nooit alleen tillen.":"Важкі вантажі ніколи не піднімаємо самі.",
+  "Vacuümheffer alleen gebruiken als de indicator in het groen staat.":"Вакуумний підіймач використовуємо лише тоді, коли індикатор у зеленій зоні.",
+  "Beschadigd glas direct afzetten en melden.":"Пошкоджене скло одразу огороджуємо та повідомляємо про нього.",
+  "Elektrisch gereedschap: zagen, boren en slijpen":"Електроінструмент: різання, свердління та шліфування",
+  "Afkortzaag, haakse slijper, boor- en schroefmachine gebruiken we dagelijks. Ongelukken ontstaan vooral door haast en ontbrekende bescherming.":"Торцювальною пилкою, кутовою шліфмашиною (болгаркою), дрилем і шурупокрутом ми користуємося щодня. Нещасні випадки трапляються переважно через поспіх і відсутність захисту.",
+  "Controleer snoer, stekker en behuizing vóór gebruik. Gebruik alleen goedgekeurd gereedschap met keuringssticker.":"Перед використанням перевірте кабель, вилку та корпус. Використовуйте лише перевірений інструмент із наклейкою про огляд.",
+  "Gebruik bij de haakse slijper altijd de beschermkap en de juiste schijf voor het materiaal en toerental.":"На болгарці завжди використовуйте захисний кожух і правильний диск для матеріалу та обертів.",
+  "Klem aluminium profielen vast bij het zagen en houd je handen buiten de zaaglijn.":"Під час різання затискайте алюмінієві профілі та тримайте руки поза лінією різу.",
+  "Draag een veiligheidsbril en gehoorbescherming bij zagen, slijpen en boren in metaal of beton.":"Під час різання, шліфування та свердління металу чи бетону носіть захисні окуляри та засоби захисту слуху.",
+  "Haal de stekker eruit of de accu los bij het wisselen van zaagblad, schijf of bit.":"Під час заміни пиляльного полотна, диска чи біти витягніть вилку з розетки або відʼєднайте акумулятор.",
+  "Laat draaiend gereedschap nooit onbeheerd achter en leg het pas weg als het stilstaat.":"Ніколи не залишайте працюючий інструмент без нагляду та кладіть його лише після повної зупинки.",
+  "Geen beschermkap of bril = niet slijpen.":"Немає захисного кожуха чи окулярів = не шліфуємо.",
+  "Defect gereedschap gaat direct terug naar de werkplaats met een briefje erop.":"Несправний інструмент одразу повертається в майстерню із запискою.",
+  "Elektrische kabels niet over scherpe randen of door water leggen.":"Не прокладайте електричні кабелі через гострі краї або воду.",
+  "Persoonlijke beschermingsmiddelen (PBM)":"Засоби індивідуального захисту (ЗІЗ)",
+  "PBM zijn je laatste verdediging. Ze werken alleen als je ze draagt, ze passen en ze in orde zijn.":"ЗІЗ — ваш останній захист. Вони діють лише тоді, коли ви їх носите, вони підходять за розміром і справні.",
+  "Op de bouwplaats draag je altijd veiligheidsschoenen (S3), een helm en werkkleding met lange mouwen of zoals de bouwplaats voorschrijft.":"На будмайданчику завжди носіть захисне взуття (S3), каску та робочий одяг із довгими рукавами або згідно з правилами майданчика.",
+  "Draag een veiligheidsbril bij zagen, boren, slijpen en werken boven je hoofd.":"Носіть захисні окуляри під час різання, свердління, шліфування та роботи над головою.",
+  "Gebruik gehoorbescherming bij lawaaiige werkzaamheden of als je elkaar op een meter afstand niet meer kunt verstaan.":"Використовуйте засоби захисту слуху під час шумних робіт або коли вже не чуєте одне одного на відстані одного метра.",
+  "Draag snijbestendige handschoenen bij glas en plaatwerk, en nitrilhandschoenen bij kit, primer en reinigers.":"Носіть порізостійкі рукавиці при роботі зі склом і листовим металом та нітрилові рукавиці при роботі з герметиком, праймером і очисниками.",
+  "Controleer je PBM regelmatig. Kapot of versleten? Bestel nieuwe via de app (Materiaal bestellen).":"Регулярно перевіряйте свої ЗІЗ. Пошкоджені чи зношені? Замовте нові через застосунок («Замовити матеріали»).",
+  "Houd je aan de extra regels van de bouwplaats, bijvoorbeeld een veiligheidshesje.":"Дотримуйтесь додаткових правил будмайданчика, наприклад щодо сигнального жилета.",
+  "Zonder PBM begin je niet aan het werk.":"Без ЗІЗ роботу не починаємо.","Versleten PBM vervang je meteen.":"Зношені ЗІЗ замінюємо одразу.",
+  "Iedereen spreekt elkaar aan als PBM ontbreken.":"Кожен робить зауваження іншим, якщо бракує ЗІЗ.",
+  "Kit, primer, PU-schuim en andere gevaarlijke stoffen":"Герметик, праймер, монтажна піна та інші небезпечні речовини",
+  "Bij het afkitten en afdichten van kozijnen werken we met stoffen die schadelijk kunnen zijn voor huid, ogen en longen.":"Під час герметизації та ущільнення віконних рам ми працюємо з речовинами, що можуть шкодити шкірі, очам і легеням.",
+  "Lees het etiket en weet waar het veiligheidsinformatieblad (VIB) te vinden is.":"Прочитайте етикетку та знайте, де знайти паспорт безпеки (VIB).",
+  "Zorg voor goede ventilatie bij primers, reinigers en PU-schuim, vooral binnen.":"Забезпечте добру вентиляцію при роботі з праймерами, очисниками та монтажною піною, особливо в приміщенні.",
+  "Draag nitrilhandschoenen en een veiligheidsbril. Bij spatgevaar ook beschermende kleding.":"Носіть нітрилові рукавиці та захисні окуляри. Якщо є ризик бризок — також захисний одяг.",
+  "Krijg je een stof in je ogen? Spoel minstens 15 minuten met water en meld het.":"Речовина потрапила в очі? Промивайте водою щонайменше 15 хвилин і повідомте про це.",
+  "Bewaar spuitbussen en oplosmiddelen koel, gesloten en nooit in de cabine van de bus in de zon.":"Зберігайте аерозольні балони та розчинники в прохолоді, закритими й ніколи не в кабіні бусу на сонці.",
+  "Gooi lege kokers, bussen en poetsdoeken weg in de juiste afvalbak; niet bij het restafval.":"Порожні туби, балони та ганчірки викидайте у відповідний контейнер, а не до загального сміття.",
+  "Geen eten, drinken of roken tijdens het werken met deze stoffen.":"Під час роботи з цими речовинами не їмо, не пʼємо і не куримо.",
+  "Huidklachten of benauwdheid meld je direct.":"Про подразнення шкіри чи задишку повідомляйте одразу.",
+  "Producten alleen in de originele verpakking bewaren.":"Продукти зберігаємо лише в оригінальній упаковці.",
+  "Ladders, trappen en rolsteigers":"Драбини, стремʼянки та пересувні риштування",
+  "Een ladder is bedoeld om te klimmen en voor kort, licht werk. Veel valongevallen gebeuren van lage hoogte.":"Драбина призначена для підйому та для короткої, легкої роботи. Багато падінь стається з невеликої висоти.",
+  "Controleer de ladder vóór gebruik op beschadigde sporten, voeten en vergrendeling.":"Перед використанням перевірте драбину на пошкоджені щаблі, опори та фіксатори.",
+  "Zet een ladder onder de juiste hoek (ongeveer 75 graden, 1 op 4) op een vlakke, stevige ondergrond en zet hem vast of laat hem vasthouden.":"Ставте драбину під правильним кутом (приблизно 75 градусів, 1 до 4) на рівну, міцну основу та закріпіть її або попросіть потримати.",
+  "Laat een opstapladder minstens 1 meter boven het uitstappunt uitsteken.":"Приставна драбина має виступати щонайменше на 1 метр над місцем сходження.",
+  "Houd altijd drie contactpunten: twee voeten en een hand.":"Завжди тримайте три точки опори: дві ноги й одна рука.",
+  "Een rolsteiger alleen opbouwen volgens de handleiding, met wielen op de rem en stabilisatoren uit.":"Пересувне риштування збирайте лише згідно з інструкцією, з колесами на гальмах і висунутими стабілізаторами.",
+  "Gebruik een steiger alleen als er een groene kaart of goedkeuring op hangt en wijzig hem niet zelf.":"Користуйтеся риштуванням лише тоді, коли на ньому висить зелена картка або дозвіл, і не змінюйте його самостійно.",
+  "Een ladder is geen werkplek voor langdurig of zwaar werk.":"Драбина — не робоче місце для тривалої чи важкої роботи.",
+  "Rode kaart of geen kaart op de steiger = niet op.":"Червона картка або немає картки на риштуванні = не піднімаємося.",
+  "Beschadigde ladders worden direct afgekeurd.":"Пошкоджені драбини одразу бракуються.",
+  "Werken bij wind, regen, hitte en kou":"Робота під час вітру, дощу, спеки та холоду",
+  "Bij gevelmontage werken we buiten. Het weer bepaalt mede of we veilig kunnen werken.":"Під час монтажу фасадів ми працюємо надворі. Погода також визначає, чи можемо ми працювати безпечно.",
+  "Grote panelen en glas vangen veel wind. Stop met plaatsen als je het element niet meer veilig kunt houden.":"Великі панелі та скло мають велику парусність. Припиніть монтаж, якщо вже не можете безпечно втримати елемент.",
+  "Volg de windgrenzen van hoogwerker, kraan en vacuümheffer.":"Дотримуйтесь граничної швидкості вітру для автовишки, крана та вакуумного підіймача.",
+  "Bij onweer stop je direct met werken op hoogte en in hoogwerkers.":"Під час грози одразу припиняйте роботи на висоті та в автовишках.",
+  "Bij hitte: drink genoeg water, neem extra pauzes in de schaduw en let op elkaar.":"У спеку: пийте достатньо води, робіть додаткові перерви в тіні та наглядайте одне за одним.",
+  "Bij kou en regen: draag warme, droge kleding en let op gladde steigers, vloeren en ladders.":"У холод і дощ: носіть теплий, сухий одяг і остерігайтеся слизьких риштувань, підлог і драбин.",
+  "Natte profielen en glas zijn glad: gebruik handschoenen met grip en een vacuümheffer.":"Мокрі профілі та скло слизькі: використовуйте рукавиці з добрим зчепленням і вакуумний підіймач.",
+  "Bij twijfel over het weer overleg je met de uitvoerder voordat je verdergaat.":"Якщо є сумніви щодо погоди, порадьтеся з виконробом, перш ніж продовжувати.",
+  "Niemand werkt bij onweer op hoogte.":"Під час грози ніхто не працює на висоті.","We houden elkaar in de gaten bij extreme temperaturen.":"За екстремальних температур ми наглядаємо одне за одним.",
+  "Orde en netheid op de bouwplaats en in de bus":"Порядок і чистота на будмайданчику та в бусі",
+  "Struikelen en uitglijden komt veel voor. Een opgeruimde werkplek is een veilige werkplek.":"Спотикання та послизання трапляються часто. Прибране робоче місце — безпечне робоче місце.",
+  "Ruim snijresten, folie, schroeven en verpakkingen direct op.":"Одразу прибирайте обрізки, плівку, шурупи та упаковку.",
+  "Houd looproutes, trappen en vluchtwegen vrij van materiaal en kabels.":"Тримайте проходи, сходи та евакуаційні шляхи вільними від матеріалів і кабелів.",
+  "Zet profielen en glas stabiel weg in rekken of bokken, nooit los in een looproute.":"Ставте профілі та скло стійко на стелажі або козли, ніколи не залишайте їх у проході.",
+  "Zet materiaal in de bus vast met spanbanden. Losse lading is levensgevaarlijk bij remmen.":"Закріплюйте матеріал у бусі стяжними ременями. Незакріплений вантаж смертельно небезпечний під час гальмування.",
+  "Laat aan het einde van de dag een veilige werkplek achter: afgezet, opgeruimd en stroom eraf.":"Наприкінці дня залишайте безпечне робоче місце: огороджене, прибране та знеструмлене.",
+  "Wie rommel maakt, ruimt het op.":"Хто насмітив, той і прибирає.","De bus wordt niet overladen en lading zit altijd vast.":"Бус не перевантажуємо, вантаж завжди закріплений.",
+  "Gevaarlijke situaties meld je, ook als ze niet van ons zijn.":"Про небезпечні ситуації повідомляйте, навіть якщо вони не наші.",
+  "Melden van ongevallen en gevaarlijke situaties":"Повідомлення про нещасні випадки та небезпечні ситуації",
+  "Van bijna-ongevallen kunnen we leren voordat er echt iets gebeurt. Melden is geen verklikken.":"На ледь не нещасних випадках ми вчимося, поки нічого серйозного не сталося. Повідомити — це не донести.",
+  "Meld elk ongeval, bijna-ongeval en elke gevaarlijke situatie bij de uitvoerder en bij kantoor.":"Повідомляйте виконроба та офіс про кожен нещасний випадок, ледь не нещасний випадок і кожну небезпечну ситуацію.",
+  "Bij een ongeval: eerst de situatie veilig maken, dan hulp inschakelen (112 bij ernstig letsel) en BHV waarschuwen.":"У разі нещасного випадку: спершу зробіть ситуацію безпечною, потім викличте допомогу (112 при тяжкій травмі) та попередьте відповідального з першої допомоги (BHV).",
+  "Weet waar de verbandtrommel, brandblusser en verzamelplaats op de bouwplaats zijn.":"Знайте, де на будмайданчику аптечка, вогнегасник і місце збору.",
+  "Leg na een melding kort vast wat er gebeurde. Een foto helpt.":"Після повідомлення коротко запишіть, що сталося. Фото допомагає.",
+  "Spreek collega's aan op onveilig gedrag, en accepteer het ook als jij wordt aangesproken.":"Робіть колегам зауваження щодо небезпечної поведінки й приймайте зауваження, коли їх роблять вам.",
+  "Elk (bijna-)ongeval wordt dezelfde dag gemeld.":"Про кожен (ледь не) нещасний випадок повідомляємо того ж дня.",
+  "Iedereen kent het alarmnummer en de verzamelplaats van het project.":"Кожен знає номер екстреної служби та місце збору на проєкті.",
+  "We stoppen het werk als het niet veilig is.":"Ми зупиняємо роботу, якщо вона небезпечна."
+  };
+  Object.entries(DK).forEach(([k,v])=>D[k]=v);Object.entries(DL).forEach(([k,v])=>{D[k]=v;D[k.toUpperCase()]=v.toUpperCase()});Object.entries(MK).forEach(([k,v])=>{if(!D[k])D[k]=v});
+  const DAGRE="(zo|ma|di|wo|do|vr|za)",MRE="(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)";
+  const n=(x,een,meer)=>x+" "+(Number(x)===1?een:meer);
+  /* patronen voor teksten met getallen, namen en datums; de eerste die past wint */
+  const R=[
+    [new RegExp("^"+DAGRE+" (\\d{1,2}-\\d{1,2})(?: (\\d{1,2}:\\d{2}))?$"),(m,d,dt,t)=>DK[d]+" "+dt+(t?" "+t:"")],
+    [new RegExp("^(?:(zondag|maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag) )?(\\d{1,2}) "+MRE+"$"),(m,d,dg,mn)=>(d?DL[d]+", ":"")+dg+" "+MG[mn]],
+    [/^Week (\d+)$/,(m,w)=>"Тиждень "+w],[/^week (\d+)$/,(m,w)=>"тиждень "+w],
+    [/^(\d{1,2}-\d{1,2}) t\/m (\d{1,2}-\d{1,2})$/,(m,a,b)=>a+" – "+b],
+    [/^Uren van (.+) · totaal$/,(m,x)=>"Години: "+x+" · разом"],
+    [/^van ([\d.,]+) uur$/,(m,x)=>"з "+x+" год"],
+    [/^van ([\d.,]+) uur\. Nog ([\d.,]+) uur om je reeks (vast te houden|te starten)\.( Vergeet vorige week niet af te maken vóór 12:00\.)?$/,(m,a,b,c,v)=>"з "+a+" год. Ще "+b+" год, щоб "+(c==="te starten"?"почати":"зберегти")+" серію."+(v?" Не забудьте завершити попередній тиждень до 12:00.":"")],
+    [/^(\d+) (week|weken) op rij compleet en op tijd$/,(m,x)=>x+" тиж. поспіль повністю і вчасно"],
+    [/^(Deze week|Vorige week) · week (\d+)$/,(m,a,w)=>(a==="Deze week"?"Цей тиждень":"Попередній тиждень")+" · тиждень "+w],
+    [/^(.+) \(jij\)$/,(m,x)=>x+" (ви)"],[/^(\d+) wk op rij$/,(m,x)=>x+" тиж. поспіль"],[/^(\d+) pnt$/,(m,x)=>x+" б."],
+    [/^(Opgeslagen|Aangepast): ([\d.,]+) uur op (.+?)\.( Je week is compleet!)?$/,(m,a,u,d,c)=>(a==="Opgeslagen"?"Збережено: ":"Змінено: ")+u+" год за "+(tr(d)||d)+"."+(c?" Ваш тиждень заповнено!":"")],
+    [/^Vul het aantal uren in(?: \(regel (\d+)\))?\.$/,(m,r)=>"Вкажіть кількість годин"+(r?" (рядок "+r+")":"")+"."],
+    [/^Kies een project(?: \(regel (\d+)\))?\.?$/,(m,r)=>"Виберіть проєкт"+(r?" (рядок "+r+")":"")+"."],
+    [/^Omschrijf bij welk project je was(?: \(regel (\d+)\))?\.$/,(m,r)=>"Опишіть, на якому проєкті ви були"+(r?" (рядок "+r+")":"")+"."],
+    [/^(\d+) regels opgeslagen, de rest niet\. Probeer opnieuw\.$/,(m,x)=>"Збережено рядків: "+x+", решту — ні. Спробуйте ще раз."],
+    [/^(\d+) regels kopiëren\? Klik nogmaals$/,(m,x)=>"Скопіювати рядки ("+x+")? Натисніть ще раз"],
+    [/^(\d+) regels gekopieerd\. Controleer ze en pas aan waar nodig\.$/,(m,x)=>"Скопійовано рядків: "+x+". Перевірте їх і за потреби змініть."],
+    [/^(\d+) van (\d+) gekopieerd; probeer opnieuw\.$/,(m,a,b)=>"Скопійовано "+a+" з "+b+"; спробуйте ще раз."],
+    [/^(\d+) (?:regel is|regels zijn) al goedgekeurd door kantoor en staan hier niet bij; die kun je niet meer aanpassen\.$/,(m,x)=>"Рядків, уже затверджених офісом: "+x+". Їх тут немає, і змінити їх уже не можна."],
+    [/^(\d+) (stuks|doos|pak|koker|rol|paar)$/,(m,x,e)=>x+" "+D[e]],
+    [/^maat (.+)$/,(m,x)=>"розмір "+x],[/^kantoor: (.+)$/,(m,x)=>"офіс: "+x],[/^([\d.]+) km$/,(m,x)=>x+" км"],
+    [/^aftekenen vóór (.+)$/,(m,x)=>"підписати до "+(tr(x)||x)],
+    [/^✓ Afgetekend op (.+)$/,(m,x)=>"✓ Підписано "+(tr(x)||x)],
+    [/^Antwoord (.*):$/,(m,x)=>"Відповідь"+(x?" "+x:"")+":"],
+    [/^Kantoor heeft (\d+) vragen over je bestellingen$/,(m,x)=>"В офісу є питання щодо ваших замовлень: "+x],
+    [/^Materiaal bestellen, (\d+) open (?:vraag|vragen) van kantoor$/,(m,x)=>"Замовити матеріали, відкриті питання від офісу: "+x],
+    [/^Er staan (\d+) toolboxen voor je klaar$/,(m,x)=>"На вас чекають інструктажі: "+x],
+    [/^Toolbox, (\d+) nog af te tekenen$/,(m,x)=>"Інструктаж, ще підписати: "+x],
+    [/^Documenten, (\d+) nieuw$/,(m,x)=>"Документи, нових: "+x],
+    [/^Documenten (\S+) \((\d+)\)$/,(m,p,x)=>"Документи "+p+" ("+x+")"],
+    [/^(📁 )?Project (.+)$/,(m,i,x)=>(i||"")+"Проєкт "+x],
+    [/^Route naar (.+)$/,(m,x)=>"Маршрут: "+x],
+    [/^(\d+) (?:reactie|reacties)$/,(m,x)=>"Коментарів: "+x],
+    [/^Reageer met (.+)$/,(m,x)=>"Відреагувати "+x],[/^Voeg (.+) toe$/,(m,x)=>"Додати "+x],
+    [/^Gefeliciteerd, (.+)!$/,(m,x)=>"Вітаємо, "+x+"!"],
+    [/^(\d+) (?:collega feliciteerde|collega's feliciteerden) je al\.$/,(m,x)=>"Вас уже привітали колеги: "+x+"."],
+    [/^(\d+)× gefeliciteerd$/,(m,x)=>"Привітань: "+x],
+    [/^over (\d+) dagen$/,(m,x)=>"через "+x+" дн."],
+    [/^🎈 Vandaag jarig: (.+)$/,(m,x)=>"🎈 Сьогодні день народження: "+x.replace(/ en /g," і ")],
+    [/^(.+) van (€ [\d.,]+) op (.+) verwijderen\?$/,(m,s,b,d)=>"Видалити: "+(D[s]||s)+", "+b+", "+(tr(d)||d)+"?"],
+    [/^(\d+ \S+) (.+) intrekken\?$/,(m,a,w)=>"Скасувати замовлення: "+(tr(a)||a)+" "+w+"?"],
+    [/^Pincode klopt niet\. Nog (\d+) (?:poging|pogingen), daarna wordt je account vergrendeld\.$/,(m,x)=>"Неправильний PIN-код. Залишилось спроб: "+x+", після цього обліковий запис буде заблоковано."],
+    [/^Je account is vergrendeld na (\d+) foute pincodes\. Vraag kantoor om het vrij te geven\.$/,(m,x)=>"Обліковий запис заблоковано після "+x+" неправильних PIN-кодів. Попросіть офіс розблокувати його."],
+    [/^(.*?) ?Probeer het zo opnieuw\.$/,(m,x)=>(x?(tr(x)||x)+" ":"")+"Спробуйте трохи згодом."],
+    [/^1 wijziging wordt verzonden…( \(geen verbinding, wordt opnieuw geprobeerd\))?$/,(m,g)=>"Надсилається 1 зміна…"+(g?" (немає зʼєднання, повторна спроба)":"")],
+    [/^(\d+) wijzigingen worden verzonden…( \(geen verbinding, wordt opnieuw geprobeerd\))?$/,(m,x,g)=>"Надсилається змін: "+x+"…"+(g?" (немає зʼєднання, повторна спроба)":"")],
+    [/^Er zijn nog (\d+) wijzigingen niet verzonden\. Toch uitloggen\?$/,(m,x)=>"Не надіслано змін: "+x+". Все одно вийти?"]
+  ];
+  function trCore(s){if(Object.prototype.hasOwnProperty.call(D,s))return D[s];
+    for(const [re,f] of R){const m=s.match(re);if(m)return f(...m)}
+    if(s.includes(" · ")){const p=s.split(" · ");let ok=false;const q=p.map(x=>{const t=tr(x);if(t!=null){ok=true;return t}return x});if(ok)return q.join(" · ")}
+    return null}
+  /* geeft de vertaling, of null als de tekst onbekend is */
+  function tr(s){if(s==null)return null;const m=String(s).match(/^(\s*)([\s\S]*?)(\s*)$/);const kern=m[2].replace(/\s+/g," ");if(!kern||/[Ѐ-ӿ]/.test(kern)||!/[A-Za-z]/.test(kern))return null;
+    const t=trCore(kern);return t==null?null:m[1]+t+m[3]}
+  const CYR=/[Ѐ-ӿ]/;
+  let aan=false,obs=null;
+  const SKIP=new Set(["SCRIPT","STYLE","TEXTAREA","CODE"]);
+  function overslaan(el){for(let e=el;e&&e!==document.body;e=e.parentElement){if(SKIP.has(e.tagName)||e.getAttribute&&e.getAttribute("translate")==="no")return true}return false}
+  function doeTekst(t){const p=t.parentElement;if(!p||overslaan(p))return;const v=t.nodeValue;const u=tr(v);if(u==null||u===v)return;
+    if(p.tagName==="OPTION"&&!p.hasAttribute("value"))p.setAttribute("value",v.trim());t.nodeValue=u}
+  const ATTR=["placeholder","title","aria-label","alt"];
+  function doeAttr(el,a){if(overslaan(el.tagName==="TEXTAREA"?el.parentElement:el))return;const v=el.getAttribute(a);const u=tr(v);if(u!=null&&u!==v)el.setAttribute(a,u)}
+  function doeNode(n){if(n.nodeType===3){doeTekst(n);return}if(n.nodeType!==1)return;if(n.tagName==="TEXTAREA"){ATTR.forEach(a=>{if(n.hasAttribute(a))doeAttr(n,a)});return}if(overslaan(n))return;ATTR.forEach(a=>{if(n.hasAttribute(a))doeAttr(n,a)});
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);let x;while(x=w.nextNode()){if(x.nodeType===3)doeTekst(x);else ATTR.forEach(a=>{if(x.hasAttribute(a))doeAttr(x,a)})}}
+  function start(){if(aan)return;aan=true;document.documentElement.lang="uk";document.body.classList.add("taal-ua");doeNode(document.body);
+    obs=new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")doeTekst(m.target);else if(m.type==="attributes")doeAttr(m.target,m.attributeName);else m.addedNodes.forEach(doeNode)}});
+    obs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR})}
+  const lsg=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lss=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  function toegestaan(){return !!(state.uid&&!state.office&&((state.cfg&&state.cfg.taalUA)||[]).includes(state.uid))}
+  function knop(){const b=document.getElementById("b-taal");if(!b)return;const t=state.uid?toegestaan():false;b.hidden=!t;if(!t)return;
+    b.textContent=aan?"🇳🇱 NL":"🇺🇦 УКР";b.title=aan?"Nederlands":"Українська мова";b.setAttribute("aria-label",b.title)}
+  /* wordt aangeroepen zodra instellingen binnen zijn; schakelt in, of herlaadt om terug te gaan naar Nederlands */
+  function update(){if(!state.uid){knop();return}if(!state.office&&!state.cfgOk){knop();return}
+    const t=toegestaan(),wil=t&&(lsg("alw-taal-"+state.uid)||"uk")==="uk";if(t)lss("alw-taal-ok","1");
+    lss("alw-taal",wil?"uk":null);if(wil&&!aan){start();try{renderNieuws();renderMijnBest();renderVerj();renderTbMonteur();renderRegels()}catch(e){}}
+    else if(!wil&&aan){location.reload();return}knop()}
+  function wissel(){if(!state.uid)return;lss("alw-taal-"+state.uid,aan?"nl":"uk");lss("alw-taal",aan?null:"uk");location.reload()}
+  /* link naar Google Translate voor vrije tekst (nieuws, vragen, antwoorden) */
+  function link(tekst){tekst=String(tekst||"").trim();if(!tekst)return"";const cyr=CYR.test(tekst);let naar,lbl;
+    if(aan&&!cyr){naar="uk";lbl="🌐 Перекласти"}else if(!aan&&cyr){naar="nl";lbl="🌐 Vertalen"}else return"";
+    return ` <a class="gtlink" translate="no" target="_blank" rel="noopener" href="https://translate.google.com/?sl=auto&tl=${naar}&op=translate&text=${encodeURIComponent(tekst.slice(0,4000))}">${lbl}</a>`}
+  if(lsg("alw-taal")==="uk")start();
+  return{tr:s=>{const t=tr(s);return t==null?s:t},kent:s=>tr(s)!=null,get actief(){return aan},update,wissel,link,knop}
+})();
+document.getElementById("b-taal").addEventListener("click",()=>I18N.wissel());
+
 /* ---------- boot ---------- */
 window.addEventListener("alw-monteurs",()=>{if(state.office)renderKoppel()});
 loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerkSelects();
@@ -2832,7 +3160,7 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
   if(!db){$("#offline").hidden=false;return}
   state.db=db;
   if(state.office)db.doc("kantoor/config").collection("imports").onSnapshot(s=>{state.imports=s.docs.map(d=>({id:d.id,...d.data()}));renderImports()},()=>{});
-  db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
+  db.doc("kantoor/config").onSnapshot(d=>{state.cfg=d.exists?{...d.data()}:{};state.cfgOk=true;pasInstellingenToe();fillWerkSelects();renderWeek();checkBlok();if(state.office){renderWeekcontrole();renderKoppel();renderAanlevering();renderWeekstaten();renderRanglijst()}},()=>{});
   db.collection(WERK_COL).onSnapshot(s=>{state.werken=s.docs.map(d=>({id:d.id,...d.data()}));fillWerkSelects();bestVis();if(scanRows.length)renderScan();renderWerken();if(state.office)renderKoppel();renderOffice();renderWeek()},()=>{});
   const per=new Map(),subs=new Map();
   db.collection("kantoor/config/documenten").onSnapshot(s=>{state.docs=s.docs.map(d=>({id:d.id,...d.data()}));renderDocs();if(typeof renderRegels==="function"&&!state.office)renderRegels()},()=>{});
