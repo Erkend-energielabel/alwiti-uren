@@ -553,6 +553,34 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 .bonrow .vrbox{grid-column:1/-1}
 .vstat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;white-space:nowrap}
 .vstat.open{color:var(--red)}.vstat.ant{color:var(--ok)}
+
+/* ---------- urenlijsten per monteur (A4) ---------- */
+.pllijst{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px 12px;max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px}
+.pllijst label,#pl-ovl label.chk{display:flex!important;flex-direction:row!important;gap:8px;align-items:center;font-weight:400;text-transform:none;letter-spacing:0;font-size:14px;color:var(--fg)}.pllijst input,#pl-ovl label.chk input{width:auto;height:auto;margin:0}
+#pl-out{display:none}
+.plpag{font:12px/1.35 var(--f-body);color:#111;background:#fff}
+.plpag .plkop{display:flex;align-items:center;gap:16px;border-bottom:3px solid #c8102e;padding-bottom:8px;margin-bottom:10px}
+.plpag .plkop img{height:40px}
+.plpag .plkop h1{font:700 20px var(--f-display);margin:0;text-transform:uppercase;letter-spacing:.02em}
+.plpag .plkop div{flex:1}.plpag .plkop small{display:block;color:#555;font-size:12px}
+.plpag .plst{font-weight:700;font-size:12px;padding:3px 8px;border-radius:4px;border:1px solid #999;white-space:nowrap}
+.plpag table{width:100%;border-collapse:collapse;margin:6px 0}
+.plpag th,.plpag td{border:1px solid #bbb;padding:4px 6px;text-align:left;vertical-align:top}
+.plpag th{background:#f1f1f1;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.plpag td.n,.plpag th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.plpag tr.dagtot td{background:#fafafa;font-weight:700}
+.plpag .plsum{display:flex;flex-wrap:wrap;gap:6px 18px;margin:8px 0;font-size:12px}
+.plpag .plsum b{font-variant-numeric:tabular-nums}
+.plpag .plopm{margin:8px 0;font-size:12px}.plpag .plopm p{margin:2px 0}
+.plpag .plteken{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:22px}
+.plpag .plteken div{border-top:1px solid #333;padding-top:4px;font-size:11px;color:#444}
+.plpag .plvoet{margin-top:10px;font-size:10px;color:#777}
+@media print{
+  body.print-lijst>*:not(#pl-out){display:none!important}
+  body.print-lijst #pl-out{display:block!important}
+  body.print-lijst .plpag{break-after:page;page-break-after:always}
+  body.print-lijst .plpag:last-child{break-after:auto;page-break-after:auto}
+}
 /* ---------- afdrukken op A3 ---------- */
 .printkop{display:none}
 #b-print{margin-left:auto;align-self:center}
@@ -759,6 +787,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="toolbar">
       <h2 style="margin-right:auto">Weekstaten</h2>
       <button class="btn ghost sm" id="ws-backup" type="button">Backup downloaden</button>
+      <button class="btn ghost sm" id="ws-pdf" type="button">Urenlijsten naar PDF</button>
       <button class="btn ghost sm" id="ws-xlsx" type="button">Exporteer naar Excel</button>
       <button class="btn ok-btn" id="ws-ok" type="button" disabled>Akkoord geven</button>
     </div>
@@ -1116,6 +1145,22 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   </section>
 </main>
 <div class="ovl" id="lb-ovl" hidden style="z-index:45"><figure class="lb"><img id="lb-img" alt="Bonnetje"><figcaption id="lb-cap"></figcaption><button class="btn" type="button" id="lb-x">Sluiten</button></figure></div>
+<div class="ovl" id="pl-ovl" hidden style="z-index:35">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="pl-t" style="width:min(620px,100%)">
+    <h2 id="pl-t">Urenlijsten naar PDF</h2>
+    <p class="hint" style="margin:0">Per monteur één A4 per week, met handtekeningvak. Kies in het afdrukvenster "Opslaan als PDF".</p>
+    <div class="form">
+      <label>Van week<select id="pl-van"></select></label>
+      <label>Tot en met week<select id="pl-tot"></select></label>
+    </div>
+    <div class="toolbar"><b style="margin-right:auto">Monteurs</b><button class="linkbtn" type="button" id="pl-alle">Alles aan</button><button class="linkbtn" type="button" id="pl-geen">Alles uit</button></div>
+    <div class="pllijst" id="pl-mon"></div>
+    <label class="chk"><input type="checkbox" id="pl-leeg"> Ook weken zonder uren afdrukken (leeg formulier)</label>
+    <div class="msg" id="pl-msg" role="status"></div>
+    <div class="toolbar" style="justify-content:flex-end"><button class="btn ghost" type="button" id="pl-x">Sluiten</button><button class="btn" type="button" id="pl-go">Maak PDF</button></div>
+  </div>
+</div>
+<div id="pl-out" aria-hidden="true"></div>
 <div class="ovl" id="vr-ovl" hidden style="z-index:35">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="vr-t" style="width:min(560px,100%)">
     <h2 id="vr-t">Vraag aan monteur</h2>
@@ -2748,6 +2793,48 @@ $("#ws-ok").addEventListener("click",async e=>{const b=e.target,m=$("#ws-msg"),k
   try{for(const k of keys){const [naam,ws]=k.split("|");b.textContent=`Bezig… ${n+1}/${keys.length}`;await akkoordWeek(naam,parse(ws));wsSel.delete(k);n++}
     m.className="msg ok";m.textContent=`${n} ${n===1?"weekstaat":"weekstaten"} akkoord en opgeslagen in het archief.`}
   catch(err){m.className="msg err";m.textContent=`${n} van ${keys.length} gelukt; probeer de rest opnieuw.`}finally{renderWeekstaten()}});
+
+/* ---------- urenlijsten per monteur naar PDF (A4, één pagina per monteur per week) ---------- */
+function plWeken(){const w=monday(new Date());return Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
+function plMonteurs(){const n=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)&&!blokIds().has(x.id)).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>{if(r.monteur)n.add(r.monteur)});return [...n].sort((a,b)=>a.localeCompare(b,"nl"))}
+$("#ws-pdf").onclick=()=>{const o=plWeken();$("#pl-van").innerHTML=o;$("#pl-tot").innerHTML=o;
+  /* standaard: de periode die in Weekstaten gekozen is */
+  const per=$("#ws-per").value,tm=monday(new Date());let van=tm,tot=tm;if(per==="vweek"){van=tot=addDays(tm,-7)}else if(per==="2week")van=addDays(tm,-7);else if(per==="4"||per==="8")van=addDays(tm,-7*(+per-1));else if(per==="kweek"){van=tot=parse($("#ws-wk").value||iso(tm))}
+  $("#pl-van").value=iso(van);$("#pl-tot").value=iso(tot);
+  const zoek=$("#ws-zoek").value.trim().toLowerCase();$("#pl-mon").innerHTML=plMonteurs().map(n=>`<label><input type="checkbox" value="${esc(n)}" ${!zoek||n.toLowerCase().includes(zoek)?"checked":""}> ${esc(n)}</label>`).join("")||'<div class="empty">Nog geen monteurs.</div>';
+  $("#pl-msg").textContent="";$("#pl-ovl").hidden=false};
+$("#pl-x").onclick=()=>{$("#pl-ovl").hidden=true};$("#pl-ovl").addEventListener("click",e=>{if(e.target.id==="pl-ovl")$("#pl-ovl").hidden=true});
+$("#pl-alle").onclick=()=>document.querySelectorAll("#pl-mon input").forEach(i=>i.checked=true);$("#pl-geen").onclick=()=>document.querySelectorAll("#pl-mon input").forEach(i=>i.checked=false);
+function plPagina(naam,ws,rows,logo){const we=addDays(ws,6),wsI=iso(ws),norm=normVan(naam),tot=rows.reduce((s,r)=>s+(r.uren||0),0),reis=rows.reduce((s,r)=>s+(r.reis||0),0);
+  const akk=rows.length&&rows.every(r=>r.status==="ok"),op=klaarVan(naam,wsI);const st=akk?"Akkoord kantoor":op?"Klaar gemeld door monteur":rows.length?"Nog niet akkoord":"Niet ingevuld";
+  let body="";for(let i=0;i<7;i++){const d=addDays(ws,i),ds=iso(d),dr=rows.filter(r=>r.datum===ds);if(i>=5&&!dr.length)continue;
+    const dag=`${DAGLANG[d.getDay()]} ${d.getDate()}-${d.getMonth()+1}`;
+    if(!dr.length){body+=`<tr><td>${dag}</td><td colspan="4" style="color:#888">–</td><td class="n"></td>${reis?'<td class="n"></td>':""}</tr>`;continue}
+    dr.forEach((r,j)=>{const t=tp(r);body+=`<tr><td>${j?"":dag}</td><td>${r.werkId?esc((r.werkNr||"")+" "+(r.werkNaam||"")):r.werkVrij?esc(r.werkVrij):"–"}</td><td>${afw(t)?"":esc(soortLbl(r.soort||"buiten"))}</td><td>${esc(TYPES[t]||t)}</td><td>${esc(r.omschrijving||"")}</td><td class="n">${nl(r.uren)}</td>${reis?`<td class="n">${r.reis?nl(r.reis):""}</td>`:""}</tr>`});
+    if(dr.length>1)body+=`<tr class="dagtot"><td></td><td colspan="4">Totaal ${DAGLANG[d.getDay()]}</td><td class="n">${nl(dr.reduce((s,r)=>s+(r.uren||0),0))}</td>${reis?'<td class="n"></td>':""}</tr>`}
+  const per=t=>rows.filter(r=>tp(r)===t).reduce((s,r)=>s+(r.uren||0),0),plek=p=>rows.filter(r=>!afw(tp(r))&&(r.soort||"buiten")===p).reduce((s,r)=>s+(r.uren||0),0);
+  const sum=[["Totaal",tot],["Norm",norm],["Buiten",plek("buiten")],["Werkplaats",plek("binnen")],["Kantoor",plek("kantoor")],["Overwerk",per("overwerk")],["Meerwerk",per("meerwerk")],["Ziek",per("ziek")],["Vrij",per("vrij")],["Dokter/tandarts",per("dokter")+per("tandarts")],["Reistijd",reis]].filter(([l,v],i)=>i<2||v>0);
+  const opm=rows.filter(r=>r.opmerking).sort((a,b)=>a.datum.localeCompare(b.datum));
+  return `<section class="plpag"><div class="plkop">${logo?`<img src="${logo}" alt="">`:""}<div><h1>Urenlijst week ${isoWeek(ws)}</h1><small>${esc(naam)} · ${ws.getDate()}-${ws.getMonth()+1} t/m ${we.getDate()}-${we.getMonth()+1}-${we.getFullYear()}</small></div><span class="plst">${st}${op&&!akk?" · "+esc(tijdKort(op)):""}</span></div>
+    <table><thead><tr><th style="width:110px">Dag</th><th>Project</th><th style="width:80px">Plek</th><th style="width:90px">Type</th><th>Omschrijving</th><th class="n" style="width:56px">Uren</th>${reis?'<th class="n" style="width:56px">Reis</th>':""}</tr></thead><tbody>${body}</tbody></table>
+    <div class="plsum">${sum.map(([l,v])=>`<span>${l}: <b>${nl(v)}</b></span>`).join("")}</div>
+    ${opm.length?`<div class="plopm"><b>Opmerkingen</b>${opm.map(r=>`<p>${DAGLANG[parse(r.datum).getDay()]} ${parse(r.datum).getDate()}-${parse(r.datum).getMonth()+1}: ${esc(r.opmerking)}</p>`).join("")}</div>`:""}
+    <div class="plteken"><div>Handtekening monteur</div><div>Handtekening Alwiti bv</div></div>
+    <div class="plvoet">Alwiti bv · aluminium geveltechniek · afgedrukt op ${new Date().toLocaleDateString("nl-NL")}</div></section>`}
+$("#pl-go").onclick=()=>{const m=$("#pl-msg");let van=$("#pl-van").value,tot=$("#pl-tot").value;if(van>tot)[van,tot]=[tot,van];
+  const mons=[...document.querySelectorAll("#pl-mon input:checked")].map(i=>i.value),leeg=$("#pl-leeg").checked;
+  if(!mons.length){m.className="msg err";m.textContent="Kies minstens één monteur.";return}
+  const weken=[];for(let d=parse(van);iso(d)<=tot;d=addDays(d,7))weken.push(new Date(d));
+  const logo=($("#print-kop img")||{}).src||"";let html="",n=0;
+  mons.forEach(naam=>weken.forEach(ws=>{const wsI=iso(ws),we=iso(addDays(ws,6)),rows=state.uren.filter(r=>r.monteur===naam&&r.datum>=wsI&&r.datum<=we).sort((a,b)=>a.datum.localeCompare(b.datum));if(!rows.length&&!leeg)return;html+=plPagina(naam,ws,rows,logo);n++}));
+  if(!n){m.className="msg err";m.textContent="Geen uren gevonden voor deze monteurs in deze weken.";return}
+  $("#pl-out").innerHTML=html;$("#pl-ovl").hidden=true;
+  const st=document.createElement("style");st.id="pl-page";st.textContent="@media print{@page{size:A4 portrait;margin:12mm}}";document.body.appendChild(st);
+  const root=document.documentElement,oudT=document.title,oudTh=root.getAttribute("data-theme");
+  document.title=`Alwiti urenlijsten week ${isoWeek(parse(van))}${van!==tot?"-"+isoWeek(parse(tot)):""} ${mons.length===1?mons[0]:mons.length+" monteurs"}`.replace(/[\\/:*?"<>|&]+/g," ");root.setAttribute("data-theme","light");document.body.classList.add("print-lijst");
+  let klaar=false;const herstel=()=>{if(klaar)return;klaar=true;document.title=oudT;oudTh==null?root.removeAttribute("data-theme"):root.setAttribute("data-theme",oudTh);document.body.classList.remove("print-lijst");st.remove();$("#pl-out").innerHTML=""};
+  window.addEventListener("afterprint",herstel,{once:true});setTimeout(()=>{try{window.print()}catch(e){}setTimeout(herstel,1500)},80);
+  $("#ws-msg").className="msg ok";$("#ws-msg").textContent=`${n} urenlijst${n===1?"":"en"} klaargezet. Kies in het afdrukvenster "Opslaan als PDF".`};
 /* ---------- locaties ---------- */
 const LOC=[["buiten","Buiten","var(--c-buiten)"],["binnen","Werkplaats","var(--c-binnen)"],["kantoor","Kantoor","var(--c-kantoor)"]];
 function renderLocaties(){if(!state.office)return;const ms=$("#lc-mon"),js=$("#lc-jaar");
