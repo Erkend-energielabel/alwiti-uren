@@ -355,7 +355,7 @@ function write_(body) {
     if (nieuw.length) data.sh.getRange(data.sh.getLastRow() + 1, 1, nieuw.length, breed)
       .setValues(nieuw.map(function (x) { return rij_(x.p, x.json, x.ts, breed); }));
     props.setProperty('lastTs', String(ts));
-    if (werken) bouwWerken_(data.docs);
+    if (werken || overzicht) bouwWerken_(data.docs);
     if (overzicht) bouwUren_(data.docs);
     if (bonnen) bouwBonnen_(data.docs);
     if (best) bouwBestellingen_(data.docs);
@@ -476,14 +476,28 @@ function bouwUren_(docs) {
 }
 
 function bouwWerken_(docs) {
+  // gerealiseerd per project: meerwerk = type meerwerk, de rest naar plek (buiten / werkplaats / kantoor)
+  var real = {};
+  Object.keys(docs).forEach(function (p) {
+    var r = docs[p].d;
+    if (!r || !r.werkId || !/^(uren|goedgekeurd)\/[^\/]+\/items\/[^\/]+$/.test(p)) return;
+    var g = real[r.werkId] || (real[r.werkId] = { b: 0, w: 0, m: 0, k: 0 }), u = Number(r.uren) || 0;
+    if (r.type === 'meerwerk') g.m += u; else if (r.soort === 'binnen') g.w += u; else if (r.soort === 'kantoor') g.k += u; else g.b += u;
+  });
   var rijen = [];
   Object.keys(docs).forEach(function (p) {
-    if (!/^kantoor\/config\/werken\/[^\/]+$/.test(p) || !docs[p].d) return;
-    var w = docs[p].d;
-    rijen.push([w.nr || '', w.naam || '', w.plaats || '', w.adres || '', Number(w.budget) || 0, w.actief === false ? 'Nee' : 'Ja']);
+    var m = p.match(/^kantoor\/config\/werken\/([^\/]+)$/);
+    if (!m || !docs[p].d) return;
+    var w = docs[p].d, g = real[m[1]] || { b: 0, w: 0, m: 0, k: 0 }, r2 = function (x) { return Math.round(x * 100) / 100; };
+    var bb = Number(w.budgetBuiten) || 0, bw = Number(w.budgetWerkplaats) || 0, bm = Number(w.budgetMeerwerk) || 0, verd = bb || bw || bm;
+    var tot = verd ? bb + bw + bm : (Number(w.budget) || 0), gt = g.b + g.w + g.m + g.k;
+    rijen.push([w.nr || '', w.naam || '', w.plaats || '', w.adres || '',
+      verd ? bb : '', r2(g.b), verd ? bw : '', r2(g.w), verd ? bm : '', r2(g.m), r2(g.k),
+      tot, r2(gt), tot ? r2(tot - gt) : '', tot ? Math.round(gt / tot * 100) + '%' : '', w.actief === false ? 'Nee' : 'Ja']);
   });
   rijen.sort(function (a, b) { return String(b[0]).localeCompare(String(a[0]), 'nl', { numeric: true }); });
-  schrijfTab_(SH_WERK, ['Projectnummer', 'Naam', 'Plaats', 'Adres', 'Urenbudget', 'Actief'], rijen);
+  schrijfTab_(SH_WERK, ['Projectnummer', 'Naam', 'Plaats', 'Adres', 'Budget buiten', 'Gerealiseerd buiten', 'Budget werkplaats', 'Gerealiseerd werkplaats',
+    'Budget meerwerk', 'Gerealiseerd meerwerk', 'Gerealiseerd kantoor', 'Urenbudget totaal', 'Gerealiseerd totaal', 'Resterend', '% van budget', 'Actief'], rijen);
 }
 
 function bouwBonnen_(docs) {
