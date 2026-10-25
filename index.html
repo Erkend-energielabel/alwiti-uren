@@ -1284,7 +1284,8 @@ const Store=(()=>{
   function start(){if(started)return started;started=(async()=>{
     try{queue=JSON.parse(lsg(qkey())||"[]")||[]}catch(e){queue=[]}
     const cached=loadCache();if(cached){ready=true}
-    try{await sync(!cached)}catch(e){if(!cached)throw e;lastErr="Geen verbinding — je ziet de laatst bekende gegevens.";status()}
+    /* bij elke start volledig verversen: wat niet (meer) in de Sheet staat, verdwijnt ook uit het geheugen van dit apparaat */
+    try{await sync(true)}catch(e){if(!cached)throw e;lastErr="Geen verbinding — je ziet de laatst bekende gegevens.";status()}
     if(queue.length)schedule(100);
     setInterval(()=>{if(document.visibilityState==="visible")sync().catch(e=>{lastErr=e.code==="net"?"Geen verbinding — gegevens worden ververst zodra je weer online bent.":e.message;status()})},20000);
     document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){sync().catch(()=>{});flush()}});
