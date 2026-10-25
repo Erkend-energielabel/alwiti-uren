@@ -755,7 +755,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     </div>
     <div class="wsf">
       <input type="search" id="ws-zoek" placeholder="Zoek monteur" aria-label="Zoek monteur">
-      <select id="ws-per" aria-label="Periode"><option value="8">Laatste 8 weken</option><option value="4">Laatste 4 weken</option><option value="jaar">Dit jaar</option><option value="alles">Alles</option></select>
+      <select id="ws-per" aria-label="Periode"><option value="week" selected>Deze week</option><option value="vweek">Vorige week</option><option value="2week">Afgelopen 2 weken</option><option value="kweek">Kies een week…</option><option value="4">Laatste 4 weken</option><option value="8">Laatste 8 weken</option><option value="jaar">Dit jaar</option><option value="alles">Alles</option></select><select id="ws-wk" aria-label="Week" hidden></select>
       <select id="ws-st" aria-label="Status"><option value="">Alle statussen</option><option value="todo">Te controleren</option><option value="compleet">Compleet</option><option value="onvolledig">Onvolledig / niet ingevuld</option><option value="akkoord">Akkoord</option><option value="opm">Met opmerking</option></select>
     </div>
     <div class="msg" id="ws-msg" role="status"></div>
@@ -2662,11 +2662,13 @@ function teVerwerkenWeken(){const cur=iso(monday(new Date())),g=new Map();
   state.uren.forEach(r=>{if(isBlok(r.monteur))return;const k=r.monteur+"|"+iso(monday(parse(r.datum)));const o=g.get(k)||{naam:r.monteur,ws:k.split("|")[1],tot:0,open:0};o.tot+=r.uren||0;if((r.status||"open")!=="ok")o.open++;g.set(k,o)});
   return [...g.values()].filter(o=>o.open&&(o.ws<cur||o.tot+0.001>=normVan(o.naam))).length}
 function updWsTel(){if(!state.office)return;const n=teVerwerkenWeken();tabTel("#tab-ws","Weekstaten",n,n===1?"weekstaat te verwerken":"weekstaten te verwerken")}
-function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let from="";
+function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let from="",tot="";
   if(per==="8"||per==="4")from=iso(addDays(thisMon,-7*(+per-1)));else if(per==="jaar")from=new Date().getFullYear()+"-01-01";
-  const m=new Map();state.uren.forEach(r=>{if(from&&r.datum<from)return;const ws=iso(monday(parse(r.datum))),k=r.monteur+"|"+ws;if(!m.has(k))m.set(k,{naam:r.monteur,ws,rows:[]});m.get(k).rows.push(r)});
+  else if(per==="week")from=iso(thisMon);else if(per==="vweek"){from=iso(addDays(thisMon,-7));tot=iso(addDays(thisMon,-1))}else if(per==="2week")from=iso(addDays(thisMon,-7));
+  else if(per==="kweek"){from=$("#ws-wk").value||iso(thisMon);tot=iso(addDays(parse(from),6))}
+  const m=new Map();state.uren.forEach(r=>{if((from&&r.datum<from)||(tot&&r.datum>tot))return;const ws=iso(monday(parse(r.datum))),k=r.monteur+"|"+ws;if(!m.has(k))m.set(k,{naam:r.monteur,ws,rows:[]});m.get(k).rows.push(r)});
   const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
-  [iso(thisMon),iso(addDays(thisMon,-7))].forEach(ws=>{if(from&&ws<from)return;names.forEach(n=>{const k=n+"|"+ws;if(!m.has(k))m.set(k,{naam:n,ws,rows:[]})})});
+  [iso(thisMon),iso(addDays(thisMon,-7)),...(per==="kweek"?[from]:[])].forEach(ws=>{if((from&&ws<from)||(tot&&ws>tot))return;names.forEach(n=>{const k=n+"|"+ws;if(!m.has(k))m.set(k,{naam:n,ws,rows:[]})})});
   const cur=iso(thisMon);
   return [...m.values()].map(x=>{const tot=x.rows.reduce((s,r)=>s+(r.uren||0),0),norm=normVan(x.naam),nor=x.rows.filter(r=>tp(r)==="normaal").reduce((s,r)=>s+(r.uren||0),0);
     const open=x.rows.filter(r=>(r.status||"open")!=="ok").length,arch=(state.archief||[]).some(a=>a.id===archId(x.naam,parse(x.ws)));
@@ -2684,7 +2686,9 @@ function renderWeekstaten(){if(!state.office)return;updWsTel();const q=$("#ws-zo
   $("#ws-list").innerHTML=`<div class="wsrow head"><input type="checkbox" id="ws-all" aria-label="Alles selecteren" ${allOn?"checked":""} ${sel.length?"":"disabled"}><span></span><span>Monteur</span><span>Project</span><span>Status</span><span class="wk">Week</span><span>Uren</span><span></span></div>`+
    (L.length?L.map(x=>{const d=parse(x.ws);return `<div class="wsrow${wsSel.has(x.key)?" sel":""}" data-wsk="${esc(x.key)}">${x.kan?`<input type="checkbox" data-wsc="${esc(x.key)}" aria-label="Selecteer ${esc(x.naam)} week ${isoWeek(d)}" ${wsSel.has(x.key)?"checked":""}>`:"<span></span>"}<span class="av" aria-hidden="true">${esc(initials(x.naam).slice(0,1))}</span><span class="nm">${esc(x.naam)}${x.tlN?` <span class="tlb" title="${x.tlN}× te laat (intern)">${x.tlN}× te laat</span>`:""}${x.opm.length?` <span class="opmi" title="${esc(x.opm.join(" · "))}" aria-label="${x.opm.length} opmerking(en)"><svg class="bub" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-3 3v-3H2z" fill="currentColor"/></svg> ${x.opm.length>1?x.opm.length:""}</span>`:""}</span><span class="wn" title="${esc(x.werken.join(", "))}">${x.werken.length?esc(x.werken[0])+(x.werken.length>1?` <b>+${x.werken.length-1}</b>`:""):"–"}</span><span class="st ${x.st}"><i></i>${ST[x.st]}</span><span class="wk">${isoWeek(d)}<small>${d.getDate()}-${d.getMonth()+1}</small></span><span class="ur">${nl(x.nor)} normale<br><span>${nl(x.and)} andere</span></span><span class="wsact">${x.rows.length?`<button type="button" class="rowbtn" data-wsed="${esc(x.key)}">Aanpassen</button><button type="button" class="rowbtn" data-wsdel="${esc(x.key)}" aria-label="Weekstaat verwijderen">Verwijderen</button>`:""}</span></div>`}).join(""):'<div class="wsrow" style="cursor:default"><span></span><span></span><span class="empty" style="grid-column:3/-1">Geen weekstaten in deze selectie.</span></div>');
   const n=wsSel.size;$("#ws-ok").disabled=!n;$("#ws-ok").textContent=n?`Akkoord geven (${n})`:"Akkoord geven";$("#ws-ok").dataset.confirm="";}
-["ws-zoek","ws-per","ws-st"].forEach(id=>$("#"+id).addEventListener(id==="ws-zoek"?"input":"change",renderWeekstaten));
+{const w=monday(new Date());$("#ws-wk").innerHTML=Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
+$("#ws-per").addEventListener("change",()=>{$("#ws-wk").hidden=$("#ws-per").value!=="kweek"});
+["ws-zoek","ws-per","ws-st","ws-wk"].forEach(id=>$("#"+id).addEventListener(id==="ws-zoek"?"input":"change",renderWeekstaten));
 $("#ws-list").addEventListener("click",e=>{const t=e.target;
   if(t.id==="ws-all"){(state.wsVis||[]).filter(x=>x.kan).forEach(x=>t.checked?wsSel.add(x.key):wsSel.delete(x.key));renderWeekstaten();return}
   if(t.dataset&&t.dataset.wsc!=null){t.checked?wsSel.add(t.dataset.wsc):wsSel.delete(t.dataset.wsc);renderWeekstaten();return}
