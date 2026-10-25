@@ -6,6 +6,7 @@
  *               Na 5 foute pincodes komt er in Vergrendeld een datum te staan: het account is dan op slot.
  *               Vrijgeven: in de app (tabblad Monteurs) of hier de cel Vergrendeld leegmaken.
  *               Rol = monteur, kantoor of eigenaar (eigenaar = kantoor + mag de administratie leegmaken)
+ *               Het account met de naam Kantoor is altijd eigenaar.
  *  - Uren     : leesbaar overzicht van alle urenregels (wordt automatisch ververst)
  *  - Werken   : leesbaar overzicht van alle projecten (wordt automatisch ververst)
  *  - Bonnen   : leesbaar overzicht van alle bonnetjes (wordt automatisch ververst)
@@ -100,7 +101,8 @@ function monteurs_() {
       while (gebruikt[kand]) kand = basis + '-' + (n++);
       id = kand; gebruikt[id] = true; r[3] = id; gewijzigd = true;
     }
-    var rol = rolVan_(r[2]);
+    // het account met de naam Kantoor is altijd eigenaar (beheerder), wat er ook bij Rol staat
+    var rol = naam.toLowerCase() === 'kantoor' ? 'eigenaar' : rolVan_(r[2]);
     lijst.push({ rij: i + 2, naam: naam, pin: pinStr_(r[1]), rol: rol === 'monteur' ? 'monteur' : 'kantoor', eigenaar: rol === 'eigenaar', id: id, slot: r[4] !== '' && r[4] !== null });
   });
   if (gewijzigd) sh.getRange(2, 4, vals.length, 1).setValues(vals.map(function (r) { return [r[3]]; }));

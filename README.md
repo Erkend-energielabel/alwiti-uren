@@ -22,7 +22,7 @@ De Google Sheet en `config.js` blijven hetzelfde, dus monteurs en uren blijven b
 2. Selecteer alle code in `Code.gs`, verwijder die en plak de nieuwe **Code.gs** uit deze map. Klik op Opslaan.
 3. Kies bovenaan de functie **installeer** en klik op **Uitvoeren**. Dit maakt de nieuwe tabbladen Bonnen en Fotos aan. Bestaande gegevens blijven staan.
 4. Kies **Implementeren > Implementaties beheren**, klik op het potloodje, kies bij Versie **Nieuwe versie** en klik op **Implementeren**. De link blijft hetzelfde.
-5. Zet in het tabblad **Monteurs** bij jezelf de Rol op **eigenaar**. Alleen de eigenaar kan de administratie leegmaken.
+5. Zet in het tabblad **Monteurs** bij jezelf de Rol op **eigenaar**. Alleen de eigenaar kan de administratie leegmaken. Het account met de naam **Kantoor** is altijd eigenaar (beheerder).
 
 ## Nieuwe installatie
 
