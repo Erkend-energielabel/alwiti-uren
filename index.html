@@ -804,7 +804,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       <div class="msg" id="kop-msg" role="status"></div>
     </div>
     <div class="card">
-      <div class="toolbar"><h2>Weekcontrole</h2><label style="flex-direction:row;align-items:center;gap:8px">Norm per week<input id="wk-norm" type="number" min="1" max="80" step="0.5" value="38" style="width:80px"> uur</label></div>
+      <div class="toolbar"><h2>Weekcontrole</h2><label style="flex-direction:row;align-items:center;gap:8px">Periode<select id="wc-per" style="width:auto"><option value="week">Deze week</option><option value="vweek">Vorige week</option><option value="2week">Afgelopen 2 weken</option><option value="kweek">Kies een week…</option><option value="4" selected>Laatste 4 weken</option><option value="8">Laatste 8 weken</option></select></label><select id="wc-wk" aria-label="Week" hidden style="width:auto"></select><button class="btn ghost sm" type="button" id="wc-nu">Deze week</button><label style="flex-direction:row;align-items:center;gap:8px">Norm per week<input id="wk-norm" type="number" min="1" max="80" step="0.5" value="38" style="width:80px"> uur</label></div>
       <div class="legend"><span><span class="wc ok">✓ 38</span> klopt</span><span><span class="wc low">▼ 32</span> minder</span><span><span class="wc high">▲ 42</span> meer</span><span><span class="wc run">30</span> week loopt nog</span></div>
       <div class="tablewrap"><table id="wc-tab"></table></div>
       <p class="hint">De norm hierboven is de standaard; per monteur stel je een afwijkende week in bij het tabblad Monteurs. Alle uren tellen mee (ook ziek, dokter, tandarts, vrij en overwerk), reistijd niet. Klik op een cel om die week van die monteur te bekijken.</p>
@@ -1642,7 +1642,7 @@ function kiesSub(t,stil){const v=$("#v-monteur");v.dataset.sub=t;document.queryS
   if(t==="topper"){renderSpel();renderTopperWeek()}if(t==="bestellen")renderMijnBest();renderVraagMelding();renderTbMonteur();if(t==="nieuws"){nwSessieGezien=lsg(nwGezienKey())||"";renderNieuws();nwMarkeerGezien();setTimeout(updNwDot,0)}else updNwDot();renderVerj();renderDocs();if(!stil)window.scrollTo({top:0})}
 $("#msub").addEventListener("click",e=>{const b=e.target.closest("[data-ms]");if(b)kiesSub(b.dataset.ms)});
 /* topper van de week: kantoor zet een overzicht klaar dat monteurs mogen zien */
-function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+function topperData(){const now=new Date(),wk=monday(now),vw=addDays(wk,-7);const names=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
   const perW=k=>[...names].map(n=>{const sp=spelVoor(n),p=sp.perWeek.filter(([x])=>x===k).reduce((t,[,v])=>t+v,0);return{naam:n,punten:p,reeks:sp.streak}}).filter(x=>x.punten>0).sort((a,b)=>b.punten-a.punten||b.reeks-a.reeks||a.naam.localeCompare(b.naam,"nl"));
   return{deze:{week:isoWeek(wk),lijst:perW(iso(wk))},vorige:{week:isoWeek(vw),lijst:perW(iso(vw))}}}
 let topperT=null,topperLaatst="";
@@ -2053,6 +2053,8 @@ $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$(
   try{await state.db.doc("kantoor/config").set({...state.cfg,toolbox:aan});m.className="msg ok";m.textContent=aan?"Toolbox staat aan. Je vindt hem in het tabblad Toolbox.":"Toolbox staat uit."}catch(err){e.target.checked=!aan;m.className="msg err";m.textContent="Opslaan mislukt."}});
 /* ---------- instellingen ---------- */
 function kantoorAan(id){return (state.cfg&&state.cfg.kantoorMonteurs||[]).includes(id)}
+/* kantooraccounts (rol kantoor/eigenaar) zijn geen monteurs: niet in weekcontrole, weekstaten en ranglijst */
+function isKantoorAcc(id){return typeof ALW!=="undefined"&&!!ALW.isKantoor&&ALW.isKantoor(id)}
 function taalUA(id){return (state.cfg&&state.cfg.taalUA||[]).includes(id)}
 function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
@@ -2321,7 +2323,7 @@ function fillYears(){const ys=new Set([new Date().getFullYear()]);state.uren.for
 function niceMax(v){if(v<=0)return 10;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
 function tipFor(el){let t=el.querySelector(".tip");if(!t){t=document.createElement("div");t.className="tip";t.hidden=true;el.appendChild(t)}return t}
 function renderZiek(y){if(!state.office)return;$("#zk-jaar").textContent=y;
-  const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+  const names=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
   const TL=Object.values(state.telaat||{}).filter(t=>String(t.datum).startsWith(y+"-"));
   const L=[...names].map(n=>{const R=state.uren.filter(r=>r.monteur===n&&String(r.datum).startsWith(y+"-"));const zk=R.filter(r=>tp(r)==="ziek"),dk=R.filter(r=>tp(r)==="dokter"||tp(r)==="tandarts");
     return{n,zu:zk.reduce((s,r)=>s+(r.uren||0),0),du:dk.reduce((s,r)=>s+(r.uren||0),0),zd:new Set(zk.map(r=>r.datum)).size,dd:new Set(dk.map(r=>r.datum)).size,tl:TL.filter(t=>t.monteur===n).length}});
@@ -2602,7 +2604,7 @@ function renderRanglijst(){if(!state.office)return;
   const now=new Date();if(!rlM)rlM=now.getFullYear()+"-"+pad(now.getMonth()+1);
   const opts=[];for(let i=0;i<18;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);opts.push(d.getFullYear()+"-"+pad(d.getMonth()+1))}
   const sel=$("#rl-maand");sel.innerHTML=opts.map(o=>`<option value="${o}">${MNDL[+o.slice(5)-1]} ${o.slice(0,4)}</option>`).join("");sel.value=rlM;
-  const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+  const names=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
   const L=[...names].map(n=>{const sp=spelVoor(n),pw=sp.perWeek.filter(([k])=>k.slice(0,7)===rlM);return{n,sp,mp:pw.reduce((s,[,p])=>s+p,0),mw:pw.length,badges:BADGES.filter(b=>sp.best>=b[0]).length}})
     .sort((a,b)=>b.mp-a.mp||b.sp.streak-a.sp.streak||b.sp.pts-a.sp.pts||a.n.localeCompare(b.n,"nl"));
   const top=L.filter(x=>x.mp>0).slice(0,3);const isNu=rlM===now.getFullYear()+"-"+pad(now.getMonth()+1);
@@ -2677,7 +2679,7 @@ function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let f
   else if(per==="week")from=iso(thisMon);else if(per==="vweek"){from=iso(addDays(thisMon,-7));tot=iso(addDays(thisMon,-1))}else if(per==="2week")from=iso(addDays(thisMon,-7));
   else if(per==="kweek"){from=$("#ws-wk").value||iso(thisMon);tot=iso(addDays(parse(from),6))}
   const m=new Map();state.uren.forEach(r=>{if((from&&r.datum<from)||(tot&&r.datum>tot))return;const ws=iso(monday(parse(r.datum))),k=r.monteur+"|"+ws;if(!m.has(k))m.set(k,{naam:r.monteur,ws,rows:[]});m.get(k).rows.push(r)});
-  const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+  const names=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)).map(x=>x.monteur).filter(Boolean));state.uren.forEach(r=>names.add(r.monteur));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
   [iso(thisMon),iso(addDays(thisMon,-7)),...(per==="kweek"?[from]:[])].forEach(ws=>{if((from&&ws<from)||(tot&&ws>tot))return;names.forEach(n=>{const k=n+"|"+ws;if(!m.has(k))m.set(k,{naam:n,ws,rows:[]})})});
   const cur=iso(thisMon);
   return [...m.values()].map(x=>{const tot=x.rows.reduce((s,r)=>s+(r.uren||0),0),norm=normVan(x.naam),nor=x.rows.filter(r=>tp(r)==="normaal").reduce((s,r)=>s+(r.uren||0),0);
@@ -2765,15 +2767,21 @@ function normVan(naam){if(!state.office)return Number(state.mijnNorm)||norm();co
 function wkClass(tot,cur,n){n=n||norm();t=Math.round(tot*100)/100;if(Math.abs(t-n)<0.01)return["ok","✓ "];if(cur&&t<n)return["run",""];return t<n?["low","▼ "]:["high","▲ "]}
 function renderWeekcontrole(){
   if(!state.office)return;const ni=$("#wk-norm");if(document.activeElement!==ni)ni.value=norm();
-  const thisMon=monday(new Date());const weeks=[];for(let i=7;i>=0;i--)weeks.push(addDays(thisMon,-7*i));
-  const keys=weeks.map(iso),from=keys[0];
-  const tot=new Map();state.uren.forEach(r=>{if(r.datum<from)return;if(fl.mon.value&&r.monteur!==fl.mon.value)return;const k=iso(monday(parse(r.datum)));const mk=r.monteur;if(!tot.has(mk))tot.set(mk,{});const o=tot.get(mk);o[k]=(o[k]||0)+(r.uren||0)});
-  (state.monteurs||[]).forEach(x=>{if(x.monteur&&!tot.has(x.monteur)&&!blokIds().has(x.id)&&(!fl.mon.value||fl.mon.value===x.monteur))tot.set(x.monteur,{})});
+  const thisMon=monday(new Date()),per=$("#wc-per").value;let weeks=[];
+  if(per==="week")weeks=[thisMon];else if(per==="vweek")weeks=[addDays(thisMon,-7)];else if(per==="2week")weeks=[addDays(thisMon,-7),thisMon];
+  else if(per==="kweek")weeks=[parse($("#wc-wk").value||iso(thisMon))];else{const n=+per||8;for(let i=n-1;i>=0;i--)weeks.push(addDays(thisMon,-7*i))}
+  const keys=weeks.map(iso),from=keys[0],tm=iso(addDays(weeks[weeks.length-1],6));$("#wc-nu").disabled=per==="week";
+  const tot=new Map();state.uren.forEach(r=>{if(r.datum<from||r.datum>tm)return;if(fl.mon.value&&r.monteur!==fl.mon.value)return;const k=iso(monday(parse(r.datum)));const mk=r.monteur;if(!tot.has(mk))tot.set(mk,{});const o=tot.get(mk);o[k]=(o[k]||0)+(r.uren||0)});
+  (state.monteurs||[]).forEach(x=>{if(x.monteur&&!tot.has(x.monteur)&&!blokIds().has(x.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(x.id))&&(!fl.mon.value||fl.mon.value===x.monteur))tot.set(x.monteur,{})});
   const names=[...tot.keys()].sort((a,b)=>a.localeCompare(b,"nl"));
   const head=`<thead><tr><th>Monteur</th>${weeks.map(w=>`<th>Wk ${isoWeek(w)}<br><small style="font-weight:400">${w.getDate()}-${w.getMonth()+1}</small></th>`).join("")}</tr></thead>`;
-  const body=names.length?names.map(n=>`<tr><td><button type="button" class="linkbtn" data-wcn="${esc(n)}">${esc(n)}</button> <small style="color:var(--muted)">${nl(normVan(n)).replace(",00","")} u</small></td>${keys.map((k,i)=>{const t=tot.get(n)[k]||0,cur=i===keys.length-1;if(!t&&cur)return'<td><span class="wc none">–</span></td>';const [c,sym]=wkClass(t,cur,normVan(n));return `<td><button type="button" class="wc ${c}" data-wcm="${esc(n)}" data-wck="${k}" title="${esc(n)} · week ${isoWeek(parse(k))}: ${nl(t)} uur">${sym}${nl(t).replace(",00","")}</button></td>`}).join("")}</tr>`).join(""):`<tr><td colspan="${keys.length+1}" class="empty">Nog geen monteurs.</td></tr>`;
+  const body=names.length?names.map(n=>`<tr><td><button type="button" class="linkbtn" data-wcn="${esc(n)}">${esc(n)}</button> <small style="color:var(--muted)">${nl(normVan(n)).replace(",00","")} u</small></td>${keys.map((k,i)=>{const t=tot.get(n)[k]||0,cur=k===iso(thisMon);if(!t&&cur)return'<td><span class="wc none">–</span></td>';const [c,sym]=wkClass(t,cur,normVan(n));return `<td><button type="button" class="wc ${c}" data-wcm="${esc(n)}" data-wck="${k}" title="${esc(n)} · week ${isoWeek(parse(k))}: ${nl(t)} uur">${sym}${nl(t).replace(",00","")}</button></td>`}).join("")}</tr>`).join(""):`<tr><td colspan="${keys.length+1}" class="empty">Nog geen monteurs.</td></tr>`;
   $("#wc-tab").innerHTML=head+"<tbody>"+body+"</tbody>";
 }
+{const w=monday(new Date());$("#wc-wk").innerHTML=Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
+$("#wc-per").addEventListener("change",()=>{$("#wc-wk").hidden=$("#wc-per").value!=="kweek";renderWeekcontrole()});
+$("#wc-wk").addEventListener("change",renderWeekcontrole);
+$("#wc-nu").onclick=()=>{$("#wc-per").value="week";$("#wc-wk").hidden=true;renderWeekcontrole()};
 $("#wk-norm").addEventListener("change",async e=>{const v=Number(e.target.value);if(!(v>0)||!state.db)return;try{await state.db.doc("kantoor/config").set({...state.cfg,weekUren:v})}catch(err){}});
 $("#wc-tab").addEventListener("click",e=>{const b=e.target.closest("[data-wck]");if(b){openWeek(b.dataset.wcm,parse(b.dataset.wck));return}const n=e.target.closest("[data-wcn]");if(n)openWeek(n.dataset.wcn,new Date())});
 /* ---------- uren wijzigen / toevoegen (kantoor) ---------- */
@@ -2857,7 +2865,7 @@ function renderAanlevering(){
   if(!state.office)return;const ws=addDays(monday(new Date()),alVorige?-7:0),k=iso(ws),ke=iso(addDays(ws,6));
   $("#al-v").setAttribute("aria-pressed",alVorige);$("#al-d").setAttribute("aria-pressed",!alVorige);
   const tot=new Map();state.uren.forEach(r=>{if(r.datum>=k&&r.datum<=ke)tot.set(r.monteur,(tot.get(r.monteur)||0)+(r.uren||0))});
-  const names=new Set((state.monteurs||[]).map(x=>x.monteur).filter(Boolean));tot.forEach((v,n)=>names.add(n));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
+  const names=new Set((state.monteurs||[]).filter(x=>!isKantoorAcc(x.id)).map(x=>x.monteur).filter(Boolean));tot.forEach((v,n)=>names.add(n));[...names].forEach(n=>{if(isBlok(n))names.delete(n)});
   const list=[...names].sort((a,b)=>a.localeCompare(b,"nl")).map(n=>{const t=tot.get(n)||0,nn=normVan(n);return{n,t,nn,st:!t?"none":t+0.001>=nn?"ok":"low"}});
   const ok=list.filter(x=>x.st==="ok").length,none=list.filter(x=>x.st==="none").length;
   $("#al-sum").innerHTML=`Week ${isoWeek(ws)} (${ws.getDate()}-${ws.getMonth()+1} t/m ${addDays(ws,6).getDate()}-${addDays(ws,6).getMonth()+1}): <b>${ok} van ${list.length}</b> monteurs compleet${none?` · <b>${none}</b> nog niets ingevuld`:""}.`;
