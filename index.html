@@ -961,7 +961,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="card">
       <h2>Monteurs &amp; projecten</h2>
       <p class="hint">Iedere monteur ziet standaard alle open projecten, ook nieuwe. Kies een monteur en vink de projecten uit die hij <b>niet</b> mag zien. Voeg een monteur toe en geef hem een pincode; daarmee logt hij in met zijn naam. Namen en pincodes staan ook in de Google Sheet, tabblad Monteurs.</p>
-      <form class="toolbar" id="f-mon" autocomplete="off"><input id="k-new" placeholder="Voor- en achternaam monteur" style="flex:1;min-width:0;width:auto"><button class="btn" type="submit">Monteur toevoegen</button></form>
+      <form class="toolbar" id="f-mon" autocomplete="off"><input id="k-new" placeholder="Voor- en achternaam monteur" style="flex:1;min-width:0;width:auto"><input id="k-newpin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="Pincode (4-6 cijfers)" style="width:170px;flex:none"><button class="btn" type="submit">Monteur toevoegen</button></form>
       <div class="msg" id="k-newmsg" role="status"></div>
       <details class="more"><summary>Lijst met monteurs inlezen (Excel)</summary>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
@@ -1375,13 +1375,15 @@ const ALW=(()=>{
     catch(err){if(m){m.className="msg err";m.textContent=err.message}b.disabled=false}});
   async function verwijderLogin(mid){try{const r=await Store.call("verwijderMonteur",{mid});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}catch(e){Store.toast("Inlog niet verwijderd: "+e.message,true)}}
   function isKantoor(id){const m=info(id);return !!(m&&m.rol==="kantoor")}
+  /* nieuwe monteur direct met pincode in de Sheet zetten (meteen bij de server, zodat een fout direct zichtbaar is) */
+  async function nieuwePin(mid,naam,pin){const r=await Store.call("setPin",{mid,naam,nieuwePin:pin});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}
   /* document openen: ophalen uit de Sheet en tonen (PDF in nieuw tabblad, anders downloaden) */
   async function openBestand(fid,naam,type){const w=window.open("","_blank");if(w){try{w.document.title=naam||"Document";w.document.body.innerHTML='<p style="font:16px system-ui;padding:20px">Document laden…</p>'}catch(e){}}
     try{const r=await Store.call("foto",{fid});const bin=atob(r.data.split(",")[1]),buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
       const blob=new Blob([buf],{type:type||r.data.slice(5,r.data.indexOf(";"))}),url=URL.createObjectURL(blob);
       if(w&&!w.closed)w.location.href=url;else{const a=document.createElement("a");a.href=url;a.download=naam||"document";document.body.appendChild(a);a.click();a.remove()}setTimeout(()=>URL.revokeObjectURL(url),120000)}
     catch(e){if(w&&!w.closed)w.close();Store.toast("Openen mislukt: "+e.message,true)}}
-  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor,openBestand};
+  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor,openBestand,nieuwePin};
 })();
 </script>
 
@@ -2524,10 +2526,10 @@ $("#mi-go").onclick=async()=>{const m=$("#mi-msg"),f=$("#mi-file").files[0];m.cl
     m.className="msg ok";m.textContent=`${nieuw.length} monteurs toegevoegd${upd.length?`, ${upd.length} bijgewerkt`:""}.`;$("#mi-file").value=""}
   catch(e){m.className="msg err";m.textContent=`${n} gelukt, daarna ging het mis. Lees het bestand opnieuw in; wat er al staat wordt overgeslagen.`}finally{$("#mi-go").disabled=!$("#mi-file").files.length}};
 $("#f-mon").addEventListener("submit",async e=>{e.preventDefault();const m=$("#k-newmsg"),n=$("#k-new").value.trim();m.className="msg";
-  if(!n){m.className="msg err";m.textContent="Vul een naam in.";return}
+  if(!n){m.className="msg err";m.textContent="Vul een naam in.";return}const pin=$("#k-newpin").value.trim();if(!/^\d{4,6}$/.test(pin)){m.className="msg err";m.textContent="Vul een pincode van 4 tot 6 cijfers in.";$("#k-newpin").focus();return}
   const id="papier-"+slug(n);if((state.monteurs||[]).some(x=>x.id===id||slug(x.monteur||"")===slug(n))){m.className="msg err";m.textContent=n+" staat er al.";return}
-  try{await state.db.doc(UREN_COL+"/"+id).set({monteur:n,handmatig:true,papier:true,bijgewerkt:new Date().toISOString()});$("#k-new").value="";kSel=id;m.className="msg ok";m.textContent=n+" toegevoegd. Vink rechts zijn projecten aan."}
-  catch(err){m.className="msg err";m.textContent="Toevoegen mislukt. Alleen kantoor kan monteurs toevoegen."}});
+  m.textContent="Bezig…";try{await ALW.nieuwePin(id,n,pin);await state.db.doc(UREN_COL+"/"+id).set({monteur:n,handmatig:true,papier:true,bijgewerkt:new Date().toISOString()});$("#k-new").value="";$("#k-newpin").value="";kSel=id;m.className="msg ok";m.textContent=`${n} toegevoegd. Hij logt in met zijn naam en pincode ${pin}. Vink rechts zijn projecten aan.`}
+  catch(err){m.className="msg err";m.textContent="Toevoegen mislukt: "+(err&&err.message||"alleen kantoor kan monteurs toevoegen.")}});
 $("#ws-backup").addEventListener("click",()=>{const m=$("#m-xlsx");$("#b-backup").click();setTimeout(()=>{$("#ws-msg").className=m.className;$("#ws-msg").textContent=m.textContent},600)});
 $("#ws-xlsx").addEventListener("click",async()=>{const m=$("#ws-msg"),L=state.wsVis||[];m.className="msg";
   if(!state.dl||typeof XLSX==="undefined"){m.className="msg err";m.textContent="Downloaden is in deze weergave niet beschikbaar.";return}
