@@ -146,6 +146,7 @@ table.edit tr.unsure td{background:var(--buiten-soft)}
 .bud-row .val{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.over{background:var(--red-soft);color:var(--red)}
 .werk .bi{width:110px;flex:none}
+.regel .rzoek{width:100%;margin:0 0 6px;padding:8px 10px;font-size:15px}
 .bud3{display:flex;gap:6px;align-items:flex-end;flex:none}.bud3 label{display:flex;flex-direction:column;gap:2px;font-weight:400}.bud3 small{font-size:11px;color:var(--muted)}.bud3 input{width:76px;height:auto;padding:6px 8px}.bud3 .bi{width:76px}.budtot{text-transform:none;display:block;min-width:64px;padding:6px 0;font-variant-numeric:tabular-nums}
 .bud-sub{grid-column:1/-1;display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:12px;margin:-2px 0 6px}.bud-sub .track{height:10px}.bud-sub .val{font-size:12px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .bud-sub .pill{font-size:10px;padding:0 6px}
@@ -1449,12 +1450,13 @@ showTab("monteur",true);
 const fi={naam:$("#i-naam"),datum:$("#i-datum"),week:$("#i-week"),reis:$("#i-reis"),opm:$("#i-opm")};
 fi.naam.value=ls("alw-naam")||"";
 fi.datum.value=iso(new Date());
-let werkOpts='<option value="">Kies een project…</option>';
+let werkOpts='<option value="">Kies een project…</option>',werkLijst=[];
 const nieuweRegel=()=>({type:"normaal",werk:ls("alw-werk")||"",vrij:"",soort:"buiten",uren:"",oms:""});
 state.regels=[nieuweRegel()];
 function regelHTML(r,i){const tOpts=Object.entries(TYPES).map(([k,v])=>`<option value="${k}"${r.type===k?" selected":""}>${v==="Vrij"?"Vrij / verlof":v==="Normaal"?"Werk (normaal)":v}</option>`).join("");
   return `<div class="regel" data-i="${i}">
    <div class="rtop"><select data-f="type" aria-label="Type uren">${tOpts}</select><input data-f="uren" type="number" min="0.25" max="24" step="0.25" inputmode="decimal" placeholder="uren" value="${esc(r.uren)}" aria-label="Aantal uren"><span class="ul">uur</span>${state.regels.length>1?`<button type="button" class="rx" data-rm="${i}" aria-label="Regel verwijderen">×</button>`:""}</div>
+   <input class="rzoek" data-zoek="${i}" type="search" autocomplete="off" placeholder="Zoek op werknummer, naam of plaats" aria-label="Zoek project">
    <div class="rw"><select data-f="werk" aria-label="Project">${werkOpts}</select><div class="bk" role="group" aria-label="Buiten, werkplaats of kantoor"><button type="button" data-bk="buiten" aria-pressed="${r.soort!=="binnen"&&r.soort!=="kantoor"}" title="Buiten">B</button><button type="button" data-bk="binnen" aria-pressed="${r.soort==="binnen"}" title="Werkplaats">W</button>${kantoorAan(mijnId())||r.soort==="kantoor"?`<button type="button" data-bk="kantoor" aria-pressed="${r.soort==="kantoor"}" title="Kantoor">K</button>`:""}</div></div>
    <a class="navbtn" target="_blank" rel="noopener" hidden><svg viewBox="0 0 16 16" aria-hidden="true" class="mic"><path d="M15 1 1 7.2l5.6 1.9L8.5 15z" fill="currentColor"/></svg> <span>Route naar project</span></a>
    <button class="navbtn dcknop" type="button" hidden style="background:var(--c-buiten);border:0;cursor:pointer">📄 <span>Documenten</span></button>
@@ -1465,8 +1467,16 @@ function renderRegels(){const bh=$("#bk-hint");if(bh)bh.textContent="B = buiten 
   box.querySelectorAll(".regel").forEach(el=>{const r=state.regels[+el.dataset.i];const sel=el.querySelector('[data-f="werk"]');sel.value=r.werk;if(sel.value!==r.werk){r.werk="";sel.value=""}regelVis(el,r)});updCalc()}
 function navUrl(w){const q=[w.adres,w.plaats].filter(Boolean).join(", ");return q?"https://www.google.com/maps/dir/?api=1&travelmode=driving&destination="+encodeURIComponent(q):""}
 function regelVis(el,r){const a=afw(r.type);{const nb=el.querySelector(".navbtn"),w=!a&&r.werk&&r.werk!=="__vrij"?state.werken.find(x=>x.id===r.werk):null,u=w?navUrl(w):"";nb.hidden=!u;if(u){nb.href=u;nb.querySelector("span").textContent="Route naar "+(w.adres?w.adres+(w.plaats?", "+w.plaats:""):w.plaats)}
-    const dk=el.querySelector(".dcknop");if(dk){const n=w?dcVanProject(w.id).length:0;dk.hidden=!n;if(n){dk.dataset.proj=w.id;dk.querySelector("span").textContent=`Documenten ${w.nr} (${n})`}}}Object.keys(TYPES).forEach(k=>el.classList.toggle("t-"+k,r.type===k&&k!=="normaal"));el.classList.toggle("k",r.soort==="binnen");el.classList.toggle("ko",r.soort==="kantoor");el.querySelector(".rw").hidden=a;el.querySelector(".rv").hidden=a||r.werk!=="__vrij";el.classList.toggle("afw",a)}
+    const dk=el.querySelector(".dcknop");if(dk){const n=w?dcVanProject(w.id).length:0;dk.hidden=!n;if(n){dk.dataset.proj=w.id;dk.querySelector("span").textContent=`Documenten ${w.nr} (${n})`}}}Object.keys(TYPES).forEach(k=>el.classList.toggle("t-"+k,r.type===k&&k!=="normaal"));el.classList.toggle("k",r.soort==="binnen");el.classList.toggle("ko",r.soort==="kantoor");el.querySelector(".rw").hidden=a;{const z=el.querySelector(".rzoek");if(z)z.hidden=a||werkLijst.length<2}el.querySelector(".rv").hidden=a||r.werk!=="__vrij";el.classList.toggle("afw",a)}
 $("#regels").addEventListener("input",e=>{const el=e.target.closest(".regel"),f=e.target.dataset.f;if(!el||!f)return;const r=state.regels[+el.dataset.i];r[f]=e.target.value;if(f==="type"||f==="werk"){regelVis(el,r);if(f==="werk"&&r.werk==="__vrij")el.querySelector(".rv").focus()}updCalc();saveConcept()});
+/* project zoeken op werknummer (ook zonder streepje), naam, plaats of adres */
+const zkNorm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function werkOptie(w){const grens=new Date(Date.now()-14*864e5).toISOString();return `<option value="${esc(w.id)}">${w.aangemaakt&&w.aangemaakt>grens?"NIEUW · ":""}${esc(w.nr)} – ${esc(w.naam)}${w.plaats?" ("+esc(w.plaats)+")":""}</option>`}
+$("#regels").addEventListener("input",e=>{const z=e.target.closest&&e.target.closest(".rzoek");if(!z)return;const el=z.closest(".regel"),r=state.regels[+el.dataset.i],sel=el.querySelector('[data-f="werk"]');
+  const q=zkNorm(z.value).trim();if(!q){sel.innerHTML=werkOpts;sel.value=r.werk||"";return}
+  const qc=q.replace(/[^a-z0-9]/g,""),hit=werkLijst.filter(w=>{const t=zkNorm([w.nr,w.naam,w.plaats,w.adres].join(" "));return t.includes(q)||(qc&&t.replace(/[^a-z0-9]/g,"").includes(qc))||(qc&&zkNorm(w.nr).replace(/[^a-z0-9]/g,"").startsWith(qc))});
+  sel.innerHTML=`<option value="">${hit.length?hit.length===1?"1 project gevonden":hit.length+" projecten gevonden":"Geen project gevonden"}</option>`+hit.map(werkOptie).join("")+'<option value="__vrij">Project staat er niet bij…</option>';
+  if(hit.length===1){sel.value=hit[0].id;r.werk=hit[0].id;regelVis(el,r);updCalc();saveConcept()}else sel.value=hit.some(w=>w.id===r.werk)?r.werk:""});
 $("#regels").addEventListener("change",e=>{const el=e.target.closest(".regel"),f=e.target.dataset.f;if(!el||!f)return;const r=state.regels[+el.dataset.i];r[f]=e.target.value;regelVis(el,r);updCalc();saveConcept()});
 $("#regels").addEventListener("click",e=>{const bk=e.target.dataset&&e.target.dataset.bk;if(bk){const el=e.target.closest(".regel"),r=state.regels[+el.dataset.i];r.soort=bk;el.querySelectorAll("[data-bk]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.bk===bk));el.classList.toggle("k",bk==="binnen");el.classList.toggle("ko",bk==="kantoor");saveConcept();return}
   const i=e.target.dataset&&e.target.dataset.rm;if(i==null)return;state.regels.splice(+i,1);renderRegels();saveConcept()});
@@ -1485,7 +1495,7 @@ function fillWerkSelects(){
   const pv=state.preview,mijn=pv?[pv.id,"papier-"+slug(pv.naam)]:[state.uid,fi.naam.value.trim()?"papier-"+slug(fi.naam.value.trim()):null].filter(Boolean);
   const act=state.werken.filter(w=>w.actief!==false&&((state.office&&!pv)||!(Array.isArray(w.verborgen)&&w.verborgen.some(id=>mijn.includes(id))))).sort((a,b)=>String(b.aangemaakt||"").localeCompare(String(a.aangemaakt||""))||String(b.nr).localeCompare(String(a.nr),"nl",{numeric:true}));
   const grens=new Date(Date.now()-14*864e5).toISOString();
-  werkOpts='<option value="">'+(act.length?"Kies een project…":"Nog geen projecten — vraag kantoor")+'</option>'+act.map(w=>`<option value="${esc(w.id)}">${w.aangemaakt&&w.aangemaakt>grens?"NIEUW · ":""}${esc(w.nr)} – ${esc(w.naam)}${w.plaats?" ("+esc(w.plaats)+")":""}</option>`).join("")+'<option value="__vrij">Project staat er niet bij…</option>';
+  werkLijst=act;werkOpts='<option value="">'+(act.length?"Kies een project…":"Nog geen projecten — vraag kantoor")+'</option>'+act.map(w=>`<option value="${esc(w.id)}">${w.aangemaakt&&w.aangemaakt>grens?"NIEUW · ":""}${esc(w.nr)} – ${esc(w.naam)}${w.plaats?" ("+esc(w.plaats)+")":""}</option>`).join("")+'<option value="__vrij">Project staat er niet bij…</option>';
   renderRegels();
   const fw=$("#fl-werk"),fcur=fw.value;
   fw.innerHTML='<option value="">Alle projecten</option>'+state.werken.map(w=>`<option value="${esc(w.id)}">${esc(w.nr)} – ${esc(w.naam)}</option>`).join("");fw.value=fcur;
@@ -2916,7 +2926,7 @@ const I18N=(()=>{
   "Regel verwijderen":"Видалити рядок","Regel wijzigen":"Змінити рядок","Buiten, werkplaats of kantoor":"Обʼєкт, майстерня чи офіс","Buiten":"На обʼєкті","Werkplaats":"Майстерня","Kantoor":"Офіс",
   "buiten":"на обʼєкті","werkplaats":"майстерня","kantoor":"офіс","Route naar project":"Маршрут до проєкту",
   "Welk project? (naam, adres of nummer)":"Який проєкт? (назва, адреса або номер)","Omschrijving werkzaamheden (optioneel)":"Опис робіт (необовʼязково)",
-  "Kies een project…":"Виберіть проєкт…","Kies project…":"Виберіть проєкт…","Nog geen projecten — vraag kantoor":"Ще немає проєктів — запитайте в офісі","Project staat er niet bij…":"Проєкту немає в списку…",
+  "Kies een project…":"Виберіть проєкт…","Zoek op werknummer, naam of plaats":"Пошук за номером, назвою або містом","Zoek project":"Пошук проєкту","1 project gevonden":"Знайдено 1 проєкт","Geen project gevonden":"Проєкт не знайдено","Kies project…":"Виберіть проєкт…","Nog geen projecten — vraag kantoor":"Ще немає проєктів — запитайте в офісі","Project staat er niet bij…":"Проєкту немає в списку…",
   "Geen uren":"Немає годин","+ invullen":"+ внести","+ uren toevoegen":"+ додати години","Tik om deze dag aan te passen":"Торкніться, щоб змінити цей день",
   "Goedgekeurd — niet meer aan te passen":"Затверджено — змінити вже не можна","Goedgekeurd door kantoor":"Затверджено офісом","Klik nogmaals om te verwijderen":"Натисніть ще раз, щоб видалити",
   "Vorige week":"Попередній тиждень","‹ Vorige week":"‹ Назад","Volgende week":"Наступний тиждень","Volgende ›":"Далі ›","‹ Vorige":"‹ Попередній","naar deze week":"до цього тижня",
@@ -3127,7 +3137,7 @@ const I18N=(()=>{
     [/^Documenten (\S+) \((\d+)\)$/,(m,p,x)=>"Документи "+p+" ("+x+")"],
     [/^(📁 )?Project (.+)$/,(m,i,x)=>(i||"")+"Проєкт "+x],
     [/^Route naar (.+)$/,(m,x)=>"Маршрут: "+x],
-    [/^(\d+) (?:reactie|reacties)$/,(m,x)=>"Коментарів: "+x],
+    [/^(\d+) projecten gevonden$/,(m,x)=>"Знайдено проєктів: "+x],[/^(\d+) (?:reactie|reacties)$/,(m,x)=>"Коментарів: "+x],
     [/^Reageer met (.+)$/,(m,x)=>"Відреагувати "+x],[/^Voeg (.+) toe$/,(m,x)=>"Додати "+x],
     [/^Gefeliciteerd, (.+)!$/,(m,x)=>"Вітаємо, "+x+"!"],
     [/^(\d+) (?:collega feliciteerde|collega's feliciteerden) je al\.$/,(m,x)=>"Вас уже привітали колеги: "+x+"."],
