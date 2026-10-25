@@ -182,6 +182,13 @@ table.edit tr.unsure td{background:var(--buiten-soft)}
 .vb i{font-style:normal;display:inline-grid;place-items:center;min-width:24px;height:20px;padding:0 4px;margin-left:3px;border-radius:99px;background:var(--red-soft);color:var(--red);font:600 11px var(--f-body);letter-spacing:.03em}
 .wc{display:inline-block;min-width:58px;text-align:center;padding:3px 8px;border-radius:4px;font-weight:600;font-variant-numeric:tabular-nums}
 .wc.ok{background:var(--ok-soft);color:var(--ok)} .wc.low{background:var(--warn-soft);color:var(--warn)} .wc.high{background:var(--red-soft);color:var(--red)} .wc.run{background:var(--bg);color:var(--muted);border:1px dashed var(--line)} .wc.none{color:var(--muted)}
+.wkklaar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:4px 0 10px}
+.wkklaar small{color:var(--muted);flex-basis:100%}
+.wkklaar.ok{border-color:var(--ok);background:var(--ok-soft)}
+.wkklaar.gew{border-color:var(--warn);background:var(--warn-soft)}
+.klaarvlag{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:99px;font-size:10px;font-weight:700;font-style:normal;background:var(--ok);color:#fff;vertical-align:middle;white-space:nowrap}
+.klaarvlag.gew{background:var(--warn)}
+.wcklaar{display:flex;flex-direction:column;align-items:center;gap:2px}
 #wc-tab td,#wc-tab th{text-align:center} #wc-tab td:first-child,#wc-tab th:first-child{text-align:left}
 #wc-tab button.wc{border:0;cursor:pointer;font:inherit;font-weight:600}
 .mainf{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.5fr) minmax(0,1fr);gap:12px}
@@ -702,6 +709,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
         <button class="btn ghost" id="wk-next" type="button" aria-label="Volgende week">Volgende ›</button>
       </div>
       <h3 id="wk-sub">Mijn uren</h3>
+      <div class="wkklaar" id="wk-klaar" hidden></div>
       <div class="toolbar"><button class="btn ghost sm" type="button" id="b-kopie">Vorige week kopiëren naar deze week</button><span class="msg" id="m-kopie" role="status"></span></div>
       <div class="days" id="days"></div>
     </div>
@@ -757,7 +765,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     <div class="wsf">
       <input type="search" id="ws-zoek" placeholder="Zoek monteur" aria-label="Zoek monteur">
       <select id="ws-per" aria-label="Periode"><option value="week" selected>Deze week</option><option value="vweek">Vorige week</option><option value="2week">Afgelopen 2 weken</option><option value="kweek">Kies een week…</option><option value="4">Laatste 4 weken</option><option value="8">Laatste 8 weken</option><option value="jaar">Dit jaar</option><option value="alles">Alles</option></select><select id="ws-wk" aria-label="Week" hidden></select>
-      <select id="ws-st" aria-label="Status"><option value="">Alle statussen</option><option value="todo">Te controleren</option><option value="compleet">Compleet</option><option value="onvolledig">Onvolledig / niet ingevuld</option><option value="akkoord">Akkoord</option><option value="opm">Met opmerking</option></select>
+      <select id="ws-st" aria-label="Status"><option value="">Alle statussen</option><option value="todo">Te controleren</option><option value="klaar">Klaar gemeld door monteur</option><option value="compleet">Compleet</option><option value="onvolledig">Onvolledig / niet ingevuld</option><option value="akkoord">Akkoord</option><option value="opm">Met opmerking</option></select>
     </div>
     <div class="msg" id="ws-msg" role="status"></div>
     <div class="wslist" id="ws-list"></div>
@@ -805,7 +813,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
     </div>
     <div class="card">
       <div class="toolbar"><h2>Weekcontrole</h2><label style="flex-direction:row;align-items:center;gap:8px">Periode<select id="wc-per" style="width:auto"><option value="week">Deze week</option><option value="vweek">Vorige week</option><option value="2week">Afgelopen 2 weken</option><option value="kweek">Kies een week…</option><option value="4" selected>Laatste 4 weken</option><option value="8">Laatste 8 weken</option></select></label><select id="wc-wk" aria-label="Week" hidden style="width:auto"></select><button class="btn ghost sm" type="button" id="wc-nu">Deze week</button><label style="flex-direction:row;align-items:center;gap:8px">Norm per week<input id="wk-norm" type="number" min="1" max="80" step="0.5" value="38" style="width:80px"> uur</label></div>
-      <div class="legend"><span><span class="wc ok">✓ 38</span> klopt</span><span><span class="wc low">▼ 32</span> minder</span><span><span class="wc high">▲ 42</span> meer</span><span><span class="wc run">30</span> week loopt nog</span></div>
+      <div class="legend"><span><span class="wc ok">✓ 38</span> klopt</span><span><span class="wc low">▼ 32</span> minder</span><span><span class="wc high">▲ 42</span> meer</span><span><span class="wc run">30</span> week loopt nog</span><span><i class="klaarvlag">✓ klaar</i> monteur heeft de week klaar gemeld</span><span><i class="klaarvlag gew">gewijzigd</i> daarna nog aangepast</span></div>
       <div class="tablewrap"><table id="wc-tab"></table></div>
       <p class="hint">De norm hierboven is de standaard; per monteur stel je een afwijkende week in bij het tabblad Monteurs. Alle uren tellen mee (ook ziek, dokter, tandarts, vrij en overwerk), reistijd niet. Klik op een cel om die week van die monteur te bekijken.</p>
     </div>
@@ -2057,6 +2065,10 @@ $("#set-tb").addEventListener("change",async e=>{const aan=e.target.checked,m=$(
 function kantoorAan(id){return (state.cfg&&state.cfg.kantoorMonteurs||[]).includes(id)}
 /* kantooraccounts (rol kantoor/eigenaar) zijn geen monteurs: niet in weekcontrole, weekstaten en ranglijst */
 function isKantoorAcc(id){return typeof ALW!=="undefined"&&!!ALW.isKantoor&&ALW.isKantoor(id)}
+/* week klaar gemeld door de monteur: op zijn eigen document, klaar:{maandag:tijdstip} */
+function klaarVan(naam,ws){if(!state.office&&!state.preview)return (state.mijnKlaar||{})[ws]||"";const m=(state.monteurs||[]).find(x=>x.monteur===naam||(state.preview&&x.id===state.preview.id&&!naam));return m&&m.klaar&&m.klaar[ws]||""}
+/* is er na de klaarmelding nog iets gewijzigd door de monteur? */
+function naKlaar(rows,op){return !!op&&rows.some(r=>(r.gewijzigdDoorMonteurOp||r.aangemaakt||"")>op)}
 function taalUA(id){return (state.cfg&&state.cfg.taalUA||[]).includes(id)}
 function mijnId(){return state.preview?state.preview.id:state.uid}
 function reisAan(id){const c=state.cfg||{};return !!c.reistijd||(c.reisMonteurs||[]).includes(id)}
@@ -2174,7 +2186,18 @@ function renderWeek(){
       `<button class="dagadd" type="button" data-dag="${ds}">${dr.some(r=>r.status!=="ok")?"Dag aanpassen":dr.length?"+ uren toevoegen":"+ invullen"}</button></div><div class="tot">${dt?nl(dt):"–"}</div></div>`;
   }
   $("#days").innerHTML=h;renderSpel();try{renderDagnav()}catch(e){}
+  {const kb=$("#wk-klaar"),wsI=iso(ws),toekomst=wsI>iso(monday(new Date())),naam=fi.naam.value.trim();
+   if(state.office&&!state.preview||!rows.length||toekomst){kb.hidden=true}else{kb.hidden=false;const op=state.preview?klaarVan(state.preview.naam,wsI):klaarVan(naam,wsI),akk=rows.every(r=>r.status==="ok"),gew=naKlaar(rows,op);
+    kb.className="wkklaar"+(akk||op&&!gew?" ok":gew?" gew":"");
+    kb.innerHTML=akk?`<b>✓ Week ${isoWeek(ws)} is akkoord gegeven door kantoor</b>`:op&&!gew?`<b>✓ Week ${isoWeek(ws)} klaar gemeld</b><span>${tijdKort(op)}</span><button type="button" class="linkbtn" id="wk-klaar-x">Intrekken</button><small>Kantoor ziet dat je klaar bent. Wijzig je nog iets, meld de week dan opnieuw klaar.</small>`
+     :`<button type="button" class="btn ok-btn" id="wk-klaar-ja">✓ Week ${isoWeek(ws)} klaar melden</button>${gew?`<small>Je hebt na je klaarmelding nog iets gewijzigd. Meld de week opnieuw klaar.</small>`:`<small>Klaar met invullen? Meld het, dan weet kantoor dat je uren van deze week compleet zijn.</small>`}`}}
 }
+$("#wk-klaar").addEventListener("click",async e=>{const t=e.target;if(t.id!=="wk-klaar-ja"&&t.id!=="wk-klaar-x")return;if(state.preview||!state.db||!state.uid)return;
+  const ws=iso(state.weekStart),naam=fi.naam.value.trim(),k={...(state.mijnKlaar||{})};
+  if(t.id==="wk-klaar-ja"){const tot=state.uren.filter(r=>mine(r)&&r.datum>=ws&&r.datum<=iso(addDays(state.weekStart,6))).reduce((s,r)=>s+(r.uren||0),0),nn=normVan(naam);
+    if(tot+0.001<nn&&!await vraag("Week klaar melden?",`Je hebt ${nl(tot)} van ${nl(nn)} uur ingevuld. Toch klaar melden?`,"Ja, klaar melden"))return;
+    k[ws]=new Date().toISOString()}else delete k[ws];
+  t.disabled=true;try{await upsertMon(state.uid,{monteur:naam,klaar:k});state.mijnKlaar=k;renderWeek();if(t.id==="wk-klaar-ja")feest()}catch(err){t.disabled=false;const m=$("#m-kopie");m.className="msg err";m.textContent="Klaar melden mislukt. Probeer het opnieuw."}});
 $("#days").addEventListener("click",async e=>{const dg=(e.target.dataset&&e.target.dataset.dag)||((e.target.closest(".entry.klik")&&!e.target.closest("button"))?e.target.closest(".entry.klik").dataset.edag:"");if(dg){loadDag(dg);return}const id=e.target.dataset&&e.target.dataset.del;if(!id||!state.db||state.preview)return;
   const b=e.target;if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="?";b.title="Klik nogmaals om te verwijderen";setTimeout(()=>{b.dataset.confirm="";b.textContent="×"},3000);return}
   try{const r=state.uren.find(x=>x.id===id);await state.db.doc(r._path).delete()}catch(err){$("#m-save").className="msg err";$("#m-save").textContent="Verwijderen mislukt."}});
@@ -2693,14 +2716,15 @@ function wsRijen(){const per=$("#ws-per").value,thisMon=monday(new Date());let f
     const werken=[...wp.entries()].sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
     const tlN=Object.values(state.telaat||{}).filter(t=>t.monteur===x.naam&&t.datum>=x.ws&&t.datum<=iso(addDays(parse(x.ws),6))).length;
     const opm=x.rows.filter(r=>r.opmerking).sort((a,b)=>a.datum.localeCompare(b.datum)).map(r=>DAGLANG[parse(r.datum).getDay()].slice(0,2)+": "+r.opmerking);
-    return{...x,opm,tlN,key:x.naam+"|"+x.ws,tot,nor,and:tot-nor,norm,st,werken,kan:x.rows.length>0&&st!=="akkoord"}})
+    const klaar=klaarVan(x.naam,x.ws),klaarGew=naKlaar(x.rows,klaar);
+    return{...x,opm,tlN,klaar,klaarGew,key:x.naam+"|"+x.ws,tot,nor,and:tot-nor,norm,st,werken,kan:x.rows.length>0&&st!=="akkoord"}})
    .sort((a,b)=>b.ws.localeCompare(a.ws)||a.naam.localeCompare(b.naam,"nl"))}
 function renderWeekstaten(){if(!state.office)return;updWsTel();const q=$("#ws-zoek").value.trim().toLowerCase(),fs=$("#ws-st").value;
-  const L=wsRijen().filter(x=>(!q||x.naam.toLowerCase().includes(q))&&(!fs||(fs==="todo"?["compleet","gewijzigd","onvolledig"].includes(x.st):fs==="onvolledig"?["onvolledig","leeg"].includes(x.st):fs==="opm"?x.opm.length>0:x.st===fs)));
+  const L=wsRijen().filter(x=>(!q||x.naam.toLowerCase().includes(q))&&(!fs||(fs==="todo"?["compleet","gewijzigd","onvolledig"].includes(x.st):fs==="onvolledig"?["onvolledig","leeg"].includes(x.st):fs==="opm"?x.opm.length>0:fs==="klaar"?!!x.klaar&&x.st!=="akkoord":x.st===fs)));
   state.wsVis=L;[...wsSel].forEach(k=>{if(!L.some(x=>x.key===k&&x.kan))wsSel.delete(k)});
   const sel=L.filter(x=>x.kan),allOn=sel.length&&sel.every(x=>wsSel.has(x.key));
   $("#ws-list").innerHTML=`<div class="wsrow head"><input type="checkbox" id="ws-all" aria-label="Alles selecteren" ${allOn?"checked":""} ${sel.length?"":"disabled"}><span></span><span>Monteur</span><span>Project</span><span>Status</span><span class="wk">Week</span><span>Uren</span><span></span></div>`+
-   (L.length?L.map(x=>{const d=parse(x.ws);return `<div class="wsrow${wsSel.has(x.key)?" sel":""}" data-wsk="${esc(x.key)}">${x.kan?`<input type="checkbox" data-wsc="${esc(x.key)}" aria-label="Selecteer ${esc(x.naam)} week ${isoWeek(d)}" ${wsSel.has(x.key)?"checked":""}>`:"<span></span>"}<span class="av" aria-hidden="true">${esc(initials(x.naam).slice(0,1))}</span><span class="nm">${esc(x.naam)}${x.tlN?` <span class="tlb" title="${x.tlN}× te laat (intern)">${x.tlN}× te laat</span>`:""}${x.opm.length?` <span class="opmi" title="${esc(x.opm.join(" · "))}" aria-label="${x.opm.length} opmerking(en)"><svg class="bub" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-3 3v-3H2z" fill="currentColor"/></svg> ${x.opm.length>1?x.opm.length:""}</span>`:""}</span><span class="wn" title="${esc(x.werken.join(", "))}">${x.werken.length?esc(x.werken[0])+(x.werken.length>1?` <b>+${x.werken.length-1}</b>`:""):"–"}</span><span class="st ${x.st}"><i></i>${ST[x.st]}</span><span class="wk">${isoWeek(d)}<small>${d.getDate()}-${d.getMonth()+1}</small></span><span class="ur">${nl(x.nor)} normale<br><span>${nl(x.and)} andere</span></span><span class="wsact">${x.rows.length?`<button type="button" class="rowbtn" data-wsed="${esc(x.key)}">Aanpassen</button><button type="button" class="rowbtn" data-wsdel="${esc(x.key)}" aria-label="Weekstaat verwijderen">Verwijderen</button>`:""}</span></div>`}).join(""):'<div class="wsrow" style="cursor:default"><span></span><span></span><span class="empty" style="grid-column:3/-1">Geen weekstaten in deze selectie.</span></div>');
+   (L.length?L.map(x=>{const d=parse(x.ws);return `<div class="wsrow${wsSel.has(x.key)?" sel":""}" data-wsk="${esc(x.key)}">${x.kan?`<input type="checkbox" data-wsc="${esc(x.key)}" aria-label="Selecteer ${esc(x.naam)} week ${isoWeek(d)}" ${wsSel.has(x.key)?"checked":""}>`:"<span></span>"}<span class="av" aria-hidden="true">${esc(initials(x.naam).slice(0,1))}</span><span class="nm">${esc(x.naam)}${x.tlN?` <span class="tlb" title="${x.tlN}× te laat (intern)">${x.tlN}× te laat</span>`:""}${x.opm.length?` <span class="opmi" title="${esc(x.opm.join(" · "))}" aria-label="${x.opm.length} opmerking(en)"><svg class="bub" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-3 3v-3H2z" fill="currentColor"/></svg> ${x.opm.length>1?x.opm.length:""}</span>`:""}</span><span class="wn" title="${esc(x.werken.join(", "))}">${x.werken.length?esc(x.werken[0])+(x.werken.length>1?` <b>+${x.werken.length-1}</b>`:""):"–"}</span><span class="st ${x.st}"><i></i>${ST[x.st]}${x.klaar&&x.st!=="akkoord"?` <i class="klaarvlag${x.klaarGew?" gew":""}" title="Klaar gemeld ${tijdKort(x.klaar)}${x.klaarGew?", daarna gewijzigd":""}">${x.klaarGew?"gewijzigd":"klaar"}</i>`:""}</span><span class="wk">${isoWeek(d)}<small>${d.getDate()}-${d.getMonth()+1}</small></span><span class="ur">${nl(x.nor)} normale<br><span>${nl(x.and)} andere</span></span><span class="wsact">${x.rows.length?`<button type="button" class="rowbtn" data-wsed="${esc(x.key)}">Aanpassen</button><button type="button" class="rowbtn" data-wsdel="${esc(x.key)}" aria-label="Weekstaat verwijderen">Verwijderen</button>`:""}</span></div>`}).join(""):'<div class="wsrow" style="cursor:default"><span></span><span></span><span class="empty" style="grid-column:3/-1">Geen weekstaten in deze selectie.</span></div>');
   const n=wsSel.size;$("#ws-ok").disabled=!n;$("#ws-ok").textContent=n?`Akkoord geven (${n})`:"Akkoord geven";$("#ws-ok").dataset.confirm="";}
 {const w=monday(new Date());$("#ws-wk").innerHTML=Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
 $("#ws-per").addEventListener("change",()=>{$("#ws-wk").hidden=$("#ws-per").value!=="kweek"});
@@ -2780,7 +2804,7 @@ function renderWeekcontrole(){
   (state.monteurs||[]).forEach(x=>{if(x.monteur&&!tot.has(x.monteur)&&!blokIds().has(x.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(x.id))&&(!fl.mon.value||fl.mon.value===x.monteur))tot.set(x.monteur,{})});
   const names=[...tot.keys()].sort((a,b)=>a.localeCompare(b,"nl"));
   const head=`<thead><tr><th>Monteur</th>${weeks.map(w=>`<th>Wk ${isoWeek(w)}<br><small style="font-weight:400">${w.getDate()}-${w.getMonth()+1}</small></th>`).join("")}</tr></thead>`;
-  const body=names.length?names.map(n=>`<tr><td><button type="button" class="linkbtn" data-wcn="${esc(n)}">${esc(n)}</button> <small style="color:var(--muted)">${nl(normVan(n)).replace(",00","")} u</small></td>${keys.map((k,i)=>{const t=tot.get(n)[k]||0,cur=k===iso(thisMon);if(!t&&cur)return'<td><span class="wc none">–</span></td>';const [c,sym]=wkClass(t,cur,normVan(n));return `<td><button type="button" class="wc ${c}" data-wcm="${esc(n)}" data-wck="${k}" title="${esc(n)} · week ${isoWeek(parse(k))}: ${nl(t)} uur">${sym}${nl(t).replace(",00","")}</button></td>`}).join("")}</tr>`).join(""):`<tr><td colspan="${keys.length+1}" class="empty">Nog geen monteurs.</td></tr>`;
+  const body=names.length?names.map(n=>`<tr><td><button type="button" class="linkbtn" data-wcn="${esc(n)}">${esc(n)}</button> <small style="color:var(--muted)">${nl(normVan(n)).replace(",00","")} u</small></td>${keys.map((k,i)=>{const t=tot.get(n)[k]||0,cur=k===iso(thisMon);if(!t&&cur)return'<td><span class="wc none">–</span></td>';const [c,sym]=wkClass(t,cur,normVan(n));const op=klaarVan(n,k),gw=op&&naKlaar(state.uren.filter(r=>r.monteur===n&&iso(monday(parse(r.datum)))===k),op);return `<td><span class="wcklaar"><button type="button" class="wc ${c}" data-wcm="${esc(n)}" data-wck="${k}" title="${esc(n)} · week ${isoWeek(parse(k))}: ${nl(t)} uur${op?" · klaar gemeld "+tijdKort(op)+(gw?" (daarna gewijzigd)":""):""}">${sym}${nl(t).replace(",00","")}</button>${op?`<i class="klaarvlag${gw?" gew":""}">${gw?"gewijzigd":"✓ klaar"}</i>`:""}</span></td>`}).join("")}</tr>`).join(""):`<tr><td colspan="${keys.length+1}" class="empty">Nog geen monteurs.</td></tr>`;
   $("#wc-tab").innerHTML=head+"<tbody>"+body+"</tbody>";
 }
 {const w=monday(new Date());$("#wc-wk").innerHTML=Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
@@ -2874,7 +2898,7 @@ function renderAanlevering(){
   const list=[...names].sort((a,b)=>a.localeCompare(b,"nl")).map(n=>{const t=tot.get(n)||0,nn=normVan(n);return{n,t,nn,st:!t?"none":t+0.001>=nn?"ok":"low"}});
   const ok=list.filter(x=>x.st==="ok").length,none=list.filter(x=>x.st==="none").length;
   $("#al-sum").innerHTML=`Week ${isoWeek(ws)} (${ws.getDate()}-${ws.getMonth()+1} t/m ${addDays(ws,6).getDate()}-${addDays(ws,6).getMonth()+1}): <b>${ok} van ${list.length}</b> monteurs compleet${none?` · <b>${none}</b> nog niets ingevuld`:""}.`;
-  $("#al-chips").innerHTML=list.length?list.map(x=>`<button type="button" class="chip ${x.st}" data-alm="${esc(x.n)}" title="${esc(x.n)}: ${nl(x.t)} van ${nl(x.nn)} uur">${x.st==="ok"?"✓":x.st==="low"?"▼":"✕"} ${esc(x.n)}${(()=>{const sp=spelVoor(x.n);return sp.streak>1?` <small title="${sp.streak} weken op rij compleet">· ${sp.streak} wk</small>`:""})()} <b>${nl(x.t).replace(",00","")}/${nl(x.nn).replace(",00","")}</b></button>`).join(""):'<div class="empty">Nog geen monteurs.</div>';
+  $("#al-chips").innerHTML=list.length?list.map(x=>`<button type="button" class="chip ${x.st}" data-alm="${esc(x.n)}" title="${esc(x.n)}: ${nl(x.t)} van ${nl(x.nn)} uur">${x.st==="ok"?"✓":x.st==="low"?"▼":"✕"} ${esc(x.n)}${klaarVan(x.n,k)?' <i class="klaarvlag">klaar</i>':""}${(()=>{const sp=spelVoor(x.n);return sp.streak>1?` <small title="${sp.streak} weken op rij compleet">· ${sp.streak} wk</small>`:""})()} <b>${nl(x.t).replace(",00","")}/${nl(x.nn).replace(",00","")}</b></button>`).join(""):'<div class="empty">Nog geen monteurs.</div>';
 }
 $("#al-v").onclick=()=>{alVorige=true;renderAanlevering()};$("#al-d").onclick=()=>{alVorige=false;renderAanlevering()};
 $("#al-chips").addEventListener("click",e=>{const b=e.target.closest("[data-alm]");if(!b)return;openWeek(b.dataset.alm,addDays(monday(new Date()),alVorige?-7:0))});
@@ -2939,7 +2963,7 @@ const I18N=(()=>{
   "Regel verwijderen":"Видалити рядок","Regel wijzigen":"Змінити рядок","Buiten, werkplaats of kantoor":"Обʼєкт, майстерня чи офіс","Buiten":"На обʼєкті","Werkplaats":"Майстерня","Kantoor":"Офіс",
   "buiten":"на обʼєкті","werkplaats":"майстерня","kantoor":"офіс","Route naar project":"Маршрут до проєкту",
   "Welk project? (naam, adres of nummer)":"Який проєкт? (назва, адреса або номер)","Omschrijving werkzaamheden (optioneel)":"Опис робіт (необовʼязково)",
-  "Kies een project…":"Виберіть проєкт…","Zoek op werknummer, naam of plaats":"Пошук за номером, назвою або містом","Zoek project":"Пошук проєкту","1 project gevonden":"Знайдено 1 проєкт","Geen project gevonden":"Проєкт не знайдено","Kies project…":"Виберіть проєкт…","Nog geen projecten — vraag kantoor":"Ще немає проєктів — запитайте в офісі","Project staat er niet bij…":"Проєкту немає в списку…",
+  "Kies een project…":"Виберіть проєкт…","Intrekken":"Скасувати","Week klaar melden?":"Повідомити, що тиждень готовий?","Ja, klaar melden":"Так, повідомити","Klaar melden mislukt. Probeer het opnieuw.":"Не вдалося повідомити. Спробуйте ще раз.","Kantoor ziet dat je klaar bent. Wijzig je nog iets, meld de week dan opnieuw klaar.":"Офіс бачить, що ви закінчили. Якщо ще щось зміните, повідомте про готовність тижня знову.","Je hebt na je klaarmelding nog iets gewijzigd. Meld de week opnieuw klaar.":"Після повідомлення ви ще щось змінили. Повідомте про готовність тижня знову.","Klaar met invullen? Meld het, dan weet kantoor dat je uren van deze week compleet zijn.":"Закінчили заповнювати? Повідомте, і офіс знатиме, що ваші години за цей тиждень повні.","Zoek op werknummer, naam of plaats":"Пошук за номером, назвою або містом","Zoek project":"Пошук проєкту","1 project gevonden":"Знайдено 1 проєкт","Geen project gevonden":"Проєкт не знайдено","Kies project…":"Виберіть проєкт…","Nog geen projecten — vraag kantoor":"Ще немає проєктів — запитайте в офісі","Project staat er niet bij…":"Проєкту немає в списку…",
   "Geen uren":"Немає годин","+ invullen":"+ внести","+ uren toevoegen":"+ додати години","Tik om deze dag aan te passen":"Торкніться, щоб змінити цей день",
   "Goedgekeurd — niet meer aan te passen":"Затверджено — змінити вже не можна","Goedgekeurd door kantoor":"Затверджено офісом","Klik nogmaals om te verwijderen":"Натисніть ще раз, щоб видалити",
   "Vorige week":"Попередній тиждень","‹ Vorige week":"‹ Назад","Volgende week":"Наступний тиждень","Volgende ›":"Далі ›","‹ Vorige":"‹ Попередній","naar deze week":"до цього тижня",
@@ -3150,7 +3174,7 @@ const I18N=(()=>{
     [/^Documenten (\S+) \((\d+)\)$/,(m,p,x)=>"Документи "+p+" ("+x+")"],
     [/^(📁 )?Project (.+)$/,(m,i,x)=>(i||"")+"Проєкт "+x],
     [/^Route naar (.+)$/,(m,x)=>"Маршрут: "+x],
-    [/^(\d+) projecten gevonden$/,(m,x)=>"Знайдено проєктів: "+x],[/^(\d+) (?:reactie|reacties)$/,(m,x)=>"Коментарів: "+x],
+    [/^✓ Week (\d+) klaar melden$/,(m,x)=>"✓ Тиждень "+x+" готовий"],[/^✓ Week (\d+) klaar gemeld$/,(m,x)=>"✓ Про тиждень "+x+" повідомлено"],[/^✓ Week (\d+) is akkoord gegeven door kantoor$/,(m,x)=>"✓ Тиждень "+x+" затверджено офісом"],[/^Je hebt ([\d.,]+) van ([\d.,]+) uur ingevuld\. Toch klaar melden\?$/,(m,a,b)=>"Ви внесли "+a+" з "+b+" год. Все одно повідомити?"],[/^(\d+) projecten gevonden$/,(m,x)=>"Знайдено проєктів: "+x],[/^(\d+) (?:reactie|reacties)$/,(m,x)=>"Коментарів: "+x],
     [/^Reageer met (.+)$/,(m,x)=>"Відреагувати "+x],[/^Voeg (.+) toe$/,(m,x)=>"Додати "+x],
     [/^Gefeliciteerd, (.+)!$/,(m,x)=>"Вітаємо, "+x+"!"],
     [/^(\d+) (?:collega feliciteerde|collega's feliciteerden) je al\.$/,(m,x)=>"Вас уже привітали колеги: "+x+"."],
@@ -3252,7 +3276,7 @@ loadConcept();renderRegels();renderWeek();renderOffice();renderWerken();fillWerk
     db.collection("goedgekeurd").onSnapshot(s=>{s.docs.forEach(d=>watchIn("goedgekeurd",d.id))},()=>{});
     db.collection("archief/telaat/items").onSnapshot(s=>{state.telaat=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));renderYear();renderWeekstaten();if(!$("#ed-ovl").hidden)renderEdWeek()},()=>{});
     db.collection("archief/weekstaten/items").onSnapshot(s=>{state.archief=s.docs.map(d=>({id:d.id,...d.data()}));renderArchief();renderWeekstaten();if(!$("#ed-ovl").hidden)renderEdWeek()},()=>{});
-  }else if(state.uid){watch(state.uid);registreer();db.doc(UREN_COL+"/"+state.uid).onSnapshot(d=>{state.mijnNorm=d.exists?(d.data().weekUren||0):0;const oud=state.mijnPlek;state.mijnPlek=d.exists?(d.data().plek||""):"";
+  }else if(state.uid){watch(state.uid);registreer();db.doc(UREN_COL+"/"+state.uid).onSnapshot(d=>{state.mijnNorm=d.exists?(d.data().weekUren||0):0;const oud=state.mijnPlek;state.mijnPlek=d.exists?(d.data().plek||""):"";state.mijnKlaar=d.exists?(d.data().klaar||{}):{};
       if(oud!==state.mijnPlek&&!state.editDag&&state.regels.length===1&&!state.regels[0].uren){state.regels[0].soort=stdPlek();renderRegels();saveConcept()}renderWeek()},()=>{})}
 })();
 })();
