@@ -774,9 +774,10 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
         <label class="bigmon">Monteur<span class="monrow"><select id="fl-mon"><option value="">Alle monteurs</option></select><button type="button" class="btn sm" id="b-openweek" disabled>Week openen</button></span></label>
         <label class="bigmon">Project<span class="wq"><input id="fl-werkq" list="dl-werken" type="search" placeholder="Alle projecten — typ nummer of naam"><datalist id="dl-werken"></datalist></span></label>
         <label>Periode<select id="fl-per">
-          <option value="week">Deze week</option><option value="vweek">Vorige week</option>
-          <option value="maand" selected>Deze maand</option><option value="vmaand">Vorige maand</option>
+          <option value="week" selected>Deze week</option><option value="vweek">Vorige week</option><option value="2week">Afgelopen 2 weken</option><option value="kweek">Kies een week…</option>
+          <option value="maand">Deze maand</option><option value="vmaand">Vorige maand</option>
           <option value="jaar">Dit jaar</option><option value="vjaar">Vorig jaar</option><option value="alles">Alles</option><option value="eigen">Eigen periode</option></select></label>
+        <label id="fl-wkl" hidden>Week<select id="fl-wk"></select></label>
       </div>
       <details class="more"><summary>Meer filters</summary><div class="filters">
         
@@ -2167,13 +2168,18 @@ $("#days").addEventListener("click",async e=>{const dg=(e.target.dataset&&e.targ
 /* ---------- kantoor ---------- */
 const fl={per:$("#fl-per"),van:$("#fl-van"),tot:$("#fl-tot"),mon:$("#fl-mon"),werk:$("#fl-werk"),soort:$("#fl-soort"),st:$("#fl-st"),type:$("#fl-type")};
 function setPeriod(){const t=new Date();let a,b;
-  switch(fl.per.value){case"week":a=monday(t);b=addDays(a,6);break;case"vweek":a=addDays(monday(t),-7);b=addDays(a,6);break;
+  switch(fl.per.value){case"week":a=monday(t);b=addDays(a,6);break;case"vweek":a=addDays(monday(t),-7);b=addDays(a,6);break;case"2week":a=addDays(monday(t),-7);b=addDays(monday(t),6);break;
+    case"kweek":a=parse($("#fl-wk").value||iso(monday(t)));b=addDays(a,6);break;
     case"maand":a=new Date(t.getFullYear(),t.getMonth(),1);b=new Date(t.getFullYear(),t.getMonth()+1,0);break;
     case"vmaand":a=new Date(t.getFullYear(),t.getMonth()-1,1);b=new Date(t.getFullYear(),t.getMonth(),0);break;
     case"jaar":a=new Date(t.getFullYear(),0,1);b=new Date(t.getFullYear(),11,31);break;case"vjaar":a=new Date(t.getFullYear()-1,0,1);b=new Date(t.getFullYear()-1,11,31);break;case"alles":fl.van.value="";fl.tot.value="";return;default:return}
   fl.van.value=iso(a);fl.tot.value=iso(b)}
-fl.per.addEventListener("change",()=>{setPeriod();renderOffice()});
-[fl.van,fl.tot].forEach(x=>x.addEventListener("input",()=>{fl.per.value="eigen";renderOffice()}));
+/* weekkeuze: deze week en 52 weken terug */
+{const w=monday(new Date());$("#fl-wk").innerHTML=Array.from({length:53},(_,i)=>{const a=addDays(w,-7*i),b=addDays(a,6);return `<option value="${iso(a)}">Week ${isoWeek(a)} · ${a.getDate()}-${a.getMonth()+1} t/m ${b.getDate()}-${b.getMonth()+1}-${b.getFullYear()}</option>`}).join("")}
+function wkVis(){$("#fl-wkl").hidden=fl.per.value!=="kweek"}
+$("#fl-wk").addEventListener("change",()=>{setPeriod();renderOffice()});
+fl.per.addEventListener("change",()=>{wkVis();setPeriod();renderOffice()});
+[fl.van,fl.tot].forEach(x=>x.addEventListener("input",()=>{fl.per.value="eigen";wkVis();renderOffice()}));
 fl.mon.addEventListener("change",()=>{$("#b-openweek").disabled=!fl.mon.value});
 $("#b-openweek").onclick=()=>{if(fl.mon.value)openWeek(fl.mon.value,fl.van.value?parse(fl.van.value):new Date())};
 [fl.mon,fl.werk,fl.soort,fl.st,fl.type].forEach(x=>x.addEventListener("change",renderOffice));
