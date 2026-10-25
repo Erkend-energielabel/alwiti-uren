@@ -2774,7 +2774,8 @@ function renderWeekcontrole(){
   const thisMon=monday(new Date()),per=$("#wc-per").value;let weeks=[];
   if(per==="week")weeks=[thisMon];else if(per==="vweek")weeks=[addDays(thisMon,-7)];else if(per==="2week")weeks=[addDays(thisMon,-7),thisMon];
   else if(per==="kweek")weeks=[parse($("#wc-wk").value||iso(thisMon))];else{const n=+per||8;for(let i=n-1;i>=0;i--)weeks.push(addDays(thisMon,-7*i))}
-  const keys=weeks.map(iso),from=keys[0],tm=iso(addDays(weeks[weeks.length-1],6));$("#wc-nu").disabled=per==="week";
+  weeks.sort((a,b)=>b-a);/* nieuwste week direct naast de naam */
+  const keys=weeks.map(iso),from=keys[keys.length-1],tm=iso(addDays(weeks[0],6));$("#wc-nu").disabled=per==="week";
   const tot=new Map();state.uren.forEach(r=>{if(r.datum<from||r.datum>tm)return;if(fl.mon.value&&r.monteur!==fl.mon.value)return;const k=iso(monday(parse(r.datum)));const mk=r.monteur;if(!tot.has(mk))tot.set(mk,{});const o=tot.get(mk);o[k]=(o[k]||0)+(r.uren||0)});
   (state.monteurs||[]).forEach(x=>{if(x.monteur&&!tot.has(x.monteur)&&!blokIds().has(x.id)&&!(typeof ALW!=="undefined"&&ALW.isKantoor&&ALW.isKantoor(x.id))&&(!fl.mon.value||fl.mon.value===x.monteur))tot.set(x.monteur,{})});
   const names=[...tot.keys()].sort((a,b)=>a.localeCompare(b,"nl"));
