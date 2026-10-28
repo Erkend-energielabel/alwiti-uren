@@ -392,11 +392,12 @@ details.fold[open]>*+*{margin-top:14px}
 .tl{display:flex!important;flex-direction:row!important;align-items:center;gap:4px;margin-top:4px;font:500 11px var(--f-body)!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important;cursor:pointer}
 .tl input{width:14px;height:14px;accent-color:#b87c12}.tl.aan{color:#b87c12!important;font-weight:700!important}
 .tlb{font-size:11px;font-weight:700;color:#b87c12;background:var(--warn-soft);padding:1px 6px;border-radius:99px;white-space:nowrap}
-.bgn{display:inline-block;font-size:12px;color:var(--fg);background:var(--line);padding:1px 7px;border-radius:99px;white-space:nowrap}
-.bgtab{width:100%;border-collapse:collapse;font-size:14px}.bgtab th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:6px 4px;position:sticky;top:0;background:var(--card,#fff);z-index:1}
-.bgtab td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:middle}.bgtab td.nm small{display:block;color:var(--muted);font-size:12px}.bgtab td.num,.bgtab th.num{text-align:right;white-space:nowrap}
-.bgtab input{width:72px;height:auto;padding:6px 8px;text-align:right}.bgtab tr.chg td{background:var(--ok-soft,#eaf6ec)}.bgwrap{max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:0 6px}
-@media (max-width:560px){.bgtab{font-size:13px}.bgtab input{width:46px;padding:6px 3px}.bgtab th{font-size:9px;letter-spacing:0;padding:6px 2px}.bgtab td{padding:5px 2px}.bgtab .inapp{display:none}.bgtab td.nm{word-break:break-word}.bgtab .lng{display:none}.bgtab .krt{display:inline!important}}.bgtab .krt{display:none}
+.bgn{display:inline-block;font-size:14px;font-weight:600;color:#0b5a2a;background:#e3f3e8;border:1px solid #9fd3b0;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.bgmodal{height:calc(100dvh - 32px);display:flex;flex-direction:column}.bgmodal .bgwrap{flex:1;max-height:none!important;min-height:200px}
+.bgtab{width:100%;border-collapse:collapse;font-size:17px}.bgtab th{text-align:left;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:6px 4px;position:sticky;top:0;background:var(--card,#fff);z-index:1}
+.bgtab td{padding:9px 6px;border-top:1px solid var(--line);vertical-align:middle}.bgtab td.nm small{display:block;color:var(--muted);font-size:14px}.bgtab td.num,.bgtab th.num{text-align:right;white-space:nowrap}
+.bgtab input{width:110px;height:auto;padding:10px 12px;font-size:20px;font-weight:600;text-align:right}.bgtab tr.chg td{background:var(--ok-soft,#eaf6ec)}.bgwrap{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:0 6px}
+@media (max-width:560px){.bgtab{font-size:15px}.bgmodal{padding:14px}.bgtab input{width:54px;padding:9px 3px;font-size:17px}.bgtab td.nm{max-width:118px;white-space:normal;overflow-wrap:anywhere;font-size:14px}.bgtab th{font-size:11px;letter-spacing:0;padding:6px 2px}.bgtab td{padding:8px 2px}.bgtab .inapp{display:none}.bgtab td.nm{word-break:break-word}.bgtab .lng{display:none}.bgtab .krt{display:inline!important}}.bgtab .krt{display:none}
 .budh{display:inline-block;font-size:12px;color:var(--warn);background:var(--warn-soft);padding:1px 7px;border-radius:99px;cursor:help;white-space:nowrap}
 .lcjaar{display:flex;flex-direction:column;gap:10px}
 .lcrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center}
@@ -1172,7 +1173,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 </div>
 <div id="pl-out" aria-hidden="true"></div>
 <div class="ovl" id="bg-ovl" hidden style="z-index:35">
-  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="bg-t" style="width:min(760px,100%)">
+  <div class="card modal bgmodal" role="dialog" aria-modal="true" aria-labelledby="bg-t" style="width:min(1100px,100%)">
     <h2 id="bg-t">Uren tot nu toe per project</h2>
     <p class="hint" style="margin:0">Vul per project de uren in die <b>nog niet</b> in de app staan. Weet je de verdeling niet? Zet alles bij Buiten. Een leeg vak of 0 haalt de beginstand weg.</p>
     <div class="form">
