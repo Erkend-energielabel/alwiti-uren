@@ -392,6 +392,11 @@ details.fold[open]>*+*{margin-top:14px}
 .tl{display:flex!important;flex-direction:row!important;align-items:center;gap:4px;margin-top:4px;font:500 11px var(--f-body)!important;color:var(--muted)!important;text-transform:none!important;letter-spacing:0!important;cursor:pointer}
 .tl input{width:14px;height:14px;accent-color:#b87c12}.tl.aan{color:#b87c12!important;font-weight:700!important}
 .tlb{font-size:11px;font-weight:700;color:#b87c12;background:var(--warn-soft);padding:1px 6px;border-radius:99px;white-space:nowrap}
+.bgn{display:inline-block;font-size:12px;color:var(--fg);background:var(--line);padding:1px 7px;border-radius:99px;white-space:nowrap}
+.bgtab{width:100%;border-collapse:collapse;font-size:14px}.bgtab th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;padding:6px 4px;position:sticky;top:0;background:var(--card,#fff);z-index:1}
+.bgtab td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:middle}.bgtab td.nm small{display:block;color:var(--muted);font-size:12px}.bgtab td.num,.bgtab th.num{text-align:right;white-space:nowrap}
+.bgtab input{width:72px;height:auto;padding:6px 8px;text-align:right}.bgtab tr.chg td{background:var(--ok-soft,#eaf6ec)}.bgwrap{max-height:52vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:0 6px}
+@media (max-width:560px){.bgtab{font-size:13px}.bgtab input{width:46px;padding:6px 3px}.bgtab th{font-size:9px;letter-spacing:0;padding:6px 2px}.bgtab td{padding:5px 2px}.bgtab .inapp{display:none}.bgtab td.nm{word-break:break-word}.bgtab .lng{display:none}.bgtab .krt{display:inline!important}}.bgtab .krt{display:none}
 .budh{display:inline-block;font-size:12px;color:var(--warn);background:var(--warn-soft);padding:1px 7px;border-radius:99px;cursor:help;white-space:nowrap}
 .lcjaar{display:flex;flex-direction:column;gap:10px}
 .lcrow{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center}
@@ -1133,8 +1138,13 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
       </form>
       <div class="msg" id="m-werk" role="status"></div>
       <div class="imp">
+        <h3>Uren tot nu toe</h3>
+        <p class="hint">Uren die al op een project zijn gemaakt voordat ze in de app werden ingevuld. Vul ze per project in één keer in; ze tellen mee in het urenbudget, de grafiek en de Excel-export.</p>
+        <div class="toolbar"><button class="btn" type="button" id="b-begin">Uren tot nu toe invoeren</button></div>
+      </div>
+      <div class="imp">
         <h3>Projecten importeren uit Excel</h3>
-        <p class="hint">Kolommen: <b>Projectnummer</b>, <b>Naam</b>, Adres, Plaats, Budget buiten, Budget werkplaats, Budget meerwerk, Urenbudget (totaal, alleen als je niet verdeelt). De eerste rij zijn de kolomnamen. Bestaande projectnummers worden bijgewerkt, nieuwe toegevoegd.</p>
+        <p class="hint">Kolommen: <b>Projectnummer</b>, <b>Naam</b>, Adres, Plaats, Budget buiten, Budget werkplaats, Budget meerwerk, Urenbudget (totaal, alleen als je niet verdeelt), Tot nu toe buiten, Tot nu toe werkplaats, Tot nu toe meerwerk. De eerste rij zijn de kolomnamen. Bestaande projectnummers worden bijgewerkt, nieuwe toegevoegd.</p>
         <div class="toolbar"><input type="file" id="imp-file" accept=".xlsx,.xls,.csv" style="width:auto;flex:1;min-width:0"><button class="btn" id="imp-go" type="button" disabled>Importeren</button></div>
         <div class="msg" id="imp-msg" role="status"></div>
         <div id="imp-log"></div>
@@ -1161,6 +1171,20 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
   </div>
 </div>
 <div id="pl-out" aria-hidden="true"></div>
+<div class="ovl" id="bg-ovl" hidden style="z-index:35">
+  <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="bg-t" style="width:min(760px,100%)">
+    <h2 id="bg-t">Uren tot nu toe per project</h2>
+    <p class="hint" style="margin:0">Vul per project de uren in die <b>nog niet</b> in de app staan. Weet je de verdeling niet? Zet alles bij Buiten. Een leeg vak of 0 haalt de beginstand weg.</p>
+    <div class="form">
+      <label>Uren tot en met<input type="date" id="bg-tm"></label>
+      <label>Zoek project<input type="search" id="bg-zoek" placeholder="Projectnummer, naam of plaats"></label>
+    </div>
+    <label class="chk" style="display:flex;flex-direction:row;gap:8px;align-items:center;font-weight:400;text-transform:none;letter-spacing:0;font-size:14px"><input type="checkbox" id="bg-alle" style="width:auto;height:auto;margin:0"> Ook afgesloten projecten tonen</label>
+    <div class="bgwrap"><table class="bgtab"><thead><tr><th>Project</th><th class="num inapp">Al in app</th><th class="num">Buiten</th><th class="num"><span class="lng">Werkplaats</span><span class="krt">Werkpl.</span></th><th class="num"><span class="lng">Meerwerk</span><span class="krt">Meerw.</span></th></tr></thead><tbody id="bg-rows"></tbody></table></div>
+    <div class="msg" id="bg-msg" role="status"></div>
+    <div class="toolbar" style="justify-content:flex-end"><span class="hint" id="bg-som" style="margin-right:auto"></span><button class="btn ghost" type="button" id="bg-x">Sluiten</button><button class="btn" type="button" id="bg-go">Opslaan</button></div>
+  </div>
+</div>
 <div class="ovl" id="vr-ovl" hidden style="z-index:35">
   <div class="card modal" role="dialog" aria-modal="true" aria-labelledby="vr-t" style="width:min(560px,100%)">
     <h2 id="vr-t">Vraag aan monteur</h2>
@@ -2305,7 +2329,10 @@ $("#tb").addEventListener("click",async e=>{const t=e.target;if(!state.db)return
 const BUD_D=[["b","budgetBuiten","Buiten","var(--c-buiten)"],["w","budgetWerkplaats","Werkplaats","var(--c-binnen)"],["m","budgetMeerwerk","Meerwerk","var(--ti-mw,#7a3fb0)"]];
 function budDeel(w){w=w||{};const o={b:Number(w.budgetBuiten)||0,w:Number(w.budgetWerkplaats)||0,m:Number(w.budgetMeerwerk)||0};o.verdeeld=!!(o.b||o.w||o.m);o.tot=o.verdeeld?o.b+o.w+o.m:(Number(w.budget)||0);return o}
 /* gerealiseerd: meerwerk = type meerwerk; buiten/werkplaats/kantoor = de overige uren naar plek */
-function budReal(id,rows){const g={b:0,w:0,m:0,k:0,tot:0};(rows||state.uren).forEach(r=>{if(r.werkId!==id)return;const u=r.uren||0;g.tot+=u;if(tp(r)==="meerwerk")g.m+=u;else if(r.soort==="binnen")g.w+=u;else if(r.soort==="kantoor")g.k+=u;else g.b+=u});return g}
+/* uren tot nu toe: door kantoor per project ingevoerd, voor uren die niet in de app staan */
+function beginDeel(w){w=w||{};const o={b:Math.max(0,Number(w.beginBuiten)||0),w:Math.max(0,Number(w.beginWerkplaats)||0),m:Math.max(0,Number(w.beginMeerwerk)||0)};o.tot=o.b+o.w+o.m;o.tm=w.beginTm||"";return o}
+function beginBadge(w){const b=beginDeel(w);if(!b.tot)return"";const tm=b.tm?" t/m "+b.tm.split("-").reverse().join("-"):"";return `<span class="bgn" title="${esc(`Uren tot nu toe${tm}: buiten ${nl(b.b)}, werkplaats ${nl(b.w)}, meerwerk ${nl(b.m)}`)}">+${nl(b.tot).replace(",00","")} u tot nu toe</span>`}
+function budReal(id,rows){const g={b:0,w:0,m:0,k:0,tot:0};if(!rows){const bg=beginDeel(state.werken.find(x=>x.id===id));g.b+=bg.b;g.w+=bg.w;g.m+=bg.m;g.tot+=bg.tot}(rows||state.uren).forEach(r=>{if(r.werkId!==id)return;const u=r.uren||0;g.tot+=u;if(tp(r)==="meerwerk")g.m+=u;else if(r.soort==="binnen")g.w+=u;else if(r.soort==="kantoor")g.k+=u;else g.b+=u});return g}
 function budPill(real,bud){if(!bud)return'<span class="pill open">geen budget</span>';const p=real/bud*100;return p>100?`<span class="pill over">▲ ${Math.round(p)}% over</span>`:p>=85?`<span class="pill warn">● ${Math.round(p)}%</span>`:`<span class="pill ok">✓ ${Math.round(p)}%</span>`}
 /* nieuw = getal (alleen totaal) of {b,w,m,tot} */
 function budPatch(w,nieuw,bron){let p;
@@ -2323,7 +2350,7 @@ function renderWerken(){
   const q=($("#w-zoek").value||"").trim().toLowerCase();
   const all=[...state.werken].sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true}));
   const f=q?all.filter(w=>(w.nr+" "+w.naam+" "+(w.plaats||"")).toLowerCase().includes(q)):all;const l=f.slice(0,100);
-  $("#werken").innerHTML=l.length?l.map(w=>`<div class="werk ${w.actief===false?"off":""}"><span class="nr">${esc(w.nr)}</span><span class="nm">${esc(w.naam)}${w.plaats||w.adres?`<small>${esc([w.adres,w.plaats].filter(Boolean).join(", "))}</small>`:""}${verbBadges(w)?`<small>${verbBadges(w)}</small>`:""}</span>${budVelden(w)}${budHist(w)}<button class="rowbtn" data-edit="${esc(w.id)}" type="button">Wijzig</button><button class="rowbtn" data-act="${esc(w.id)}" data-v="${w.actief===false?"1":"0"}" type="button">${w.actief===false?"Activeren":"Afsluiten"}</button></div>`).join(""):'<div class="empty">'+(q?"Geen projecten gevonden.":"Nog geen projecten. Voeg hierboven het eerste project toe of importeer een Excel-lijst.")+'</div>';
+  $("#werken").innerHTML=l.length?l.map(w=>`<div class="werk ${w.actief===false?"off":""}"><span class="nr">${esc(w.nr)}</span><span class="nm">${esc(w.naam)}${w.plaats||w.adres?`<small>${esc([w.adres,w.plaats].filter(Boolean).join(", "))}</small>`:""}${verbBadges(w)?`<small>${verbBadges(w)}</small>`:""}</span>${budVelden(w)}${budHist(w)}${beginBadge(w)}<button class="rowbtn" data-edit="${esc(w.id)}" type="button">Wijzig</button><button class="rowbtn" data-act="${esc(w.id)}" data-v="${w.actief===false?"1":"0"}" type="button">${w.actief===false?"Activeren":"Afsluiten"}</button></div>`).join(""):'<div class="empty">'+(q?"Geen projecten gevonden.":"Nog geen projecten. Voeg hierboven het eerste project toe of importeer een Excel-lijst.")+'</div>';
   if(f.length>100)$("#werken").insertAdjacentHTML("beforeend",`<div class="empty">${f.length-100} meer — verfijn je zoekopdracht.</div>`);
 }
 function budVelden(w){const d=budDeel(w);return `<span class="bud3">${BUD_D.map(([k,f,l])=>`<label><small>${l}</small><input type="number" min="0" step="1" data-budd="${esc(w.id)}" data-k="${k}" value="${d.verdeeld&&d[k]?d[k]:""}" aria-label="Budget ${l.toLowerCase()} ${esc(w.nr)}"></label>`).join("")}<label><small>Totaal</small>${d.verdeeld?`<b class="budtot">${d.tot.toLocaleString("nl-NL")} u</b>`:`<input class="bi" type="number" min="0" step="1" id="bud-${esc(w.id)}" data-bud="${esc(w.id)}" value="${w.budget||""}" placeholder="u" aria-label="Urenbudget totaal ${esc(w.nr)}">`}</label></span>`}
@@ -2351,6 +2378,38 @@ $("#werken").addEventListener("change",async e=>{const t=e.target;if(!t.dataset.
 $("#werken").addEventListener("change",async e=>{const t=e.target;if(!t.dataset.bud||!state.db)return;try{await state.db.collection(WERK_COL).doc(t.dataset.bud).update(budPatch(state.werken.find(x=>x.id===t.dataset.bud),t.value));$("#m-werk").className="msg ok";$("#m-werk").textContent="Budget opgeslagen."}catch(err){$("#m-werk").className="msg err";$("#m-werk").textContent="Alleen kantoor kan budgetten wijzigen."}});
 $("#werken").addEventListener("click",async e=>{const t=e.target;if(!t.dataset.act||!state.db)return;try{await state.db.collection(WERK_COL).doc(t.dataset.act).update({actief:t.dataset.v==="1"})}catch(err){$("#m-werk").className="msg err";$("#m-werk").textContent="Alleen kantoor kan projecten wijzigen."}});
 
+/* uren tot nu toe: in één keer per project */
+const bgEdit=new Map();
+function bgVal(v){const n=Number(String(v).replace(",","."));return isFinite(n)&&n>0?Math.round(n*100)/100:0}
+function renderBegin(){const q=($("#bg-zoek").value||"").trim().toLowerCase(),alle=$("#bg-alle").checked;
+  const inApp=new Map();state.uren.forEach(r=>{if(r.werkId)inApp.set(r.werkId,(inApp.get(r.werkId)||0)+(r.uren||0))});
+  const l=[...state.werken].filter(w=>(alle||w.actief!==false||beginDeel(w).tot)&&(!q||(w.nr+" "+w.naam+" "+(w.plaats||"")).toLowerCase().includes(q))).sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true}));
+  $("#bg-rows").innerHTML=l.length?l.map(w=>{const o=beginDeel(w),e=bgEdit.get(w.id)||{},v=k=>e[k]!==undefined?e[k]:(o[k]?String(o[k]).replace(".",","):"");
+    return `<tr data-id="${esc(w.id)}"${bgEdit.has(w.id)?' class="chg"':""}><td class="nm"><b>${esc(w.nr)}</b> ${esc(w.naam)}${w.plaats||w.actief===false?`<small>${esc(w.plaats||"")}${w.actief===false?(w.plaats?" · ":"")+"afgesloten":""}</small>`:""}</td><td class="num inapp">${inApp.get(w.id)?nl(inApp.get(w.id))+" u":"–"}</td>${["b","w","m"].map(k=>`<td class="num"><input type="text" inputmode="decimal" data-k="${k}" value="${esc(v(k))}" aria-label="${{b:"Buiten",w:"Werkplaats",m:"Meerwerk"}[k]} ${esc(w.nr)}"></td>`).join("")}</tr>`}).join(""):`<tr><td colspan="5" class="empty">${q?"Geen projecten gevonden.":"Nog geen projecten."}</td></tr>`;
+  bgSom()}
+function bgSom(){let n=0,t=0;state.werken.forEach(w=>{const e=bgEdit.get(w.id),o=beginDeel(w);const g=k=>e&&e[k]!==undefined?bgVal(e[k]):o[k];const s=g("b")+g("w")+g("m");if(s)n++;t+=s});
+  $("#bg-som").textContent=(bgEdit.size?bgEdit.size+" gewijzigd · ":"")+(n?`${n} project${n===1?"":"en"}, ${nl(t)} u tot nu toe`:"")}
+$("#b-begin").onclick=()=>{bgEdit.clear();$("#bg-zoek").value="";$("#bg-alle").checked=false;const tms=state.werken.map(w=>w.beginTm).filter(Boolean).sort();$("#bg-tm").value=tms.length?tms[tms.length-1]:new Date().toISOString().slice(0,10);$("#bg-msg").className="msg";$("#bg-msg").textContent="";renderBegin();$("#bg-ovl").hidden=false;setTimeout(()=>{const i=$("#bg-rows input");if(i)i.focus()},50)};
+$("#bg-zoek").addEventListener("input",renderBegin);$("#bg-alle").addEventListener("change",renderBegin);
+$("#bg-rows").addEventListener("input",e=>{const t=e.target,tr=t.closest("tr[data-id]");if(!tr||!t.dataset.k)return;const id=tr.dataset.id,o=beginDeel(state.werken.find(x=>x.id===id)),cur={...(bgEdit.get(id)||{}),[t.dataset.k]:t.value};
+  if(["b","w","m"].every(k=>(cur[k]===undefined?o[k]:bgVal(cur[k]))===o[k]))bgEdit.delete(id);else bgEdit.set(id,cur);tr.classList.toggle("chg",bgEdit.has(id));bgSom()});
+$("#bg-rows").addEventListener("keydown",e=>{if(e.key!=="Enter"||!e.target.dataset.k)return;e.preventDefault();const all=[...$("#bg-rows").querySelectorAll(`input[data-k="${e.target.dataset.k}"]`)],i=all.indexOf(e.target);if(all[i+1]){all[i+1].focus();all[i+1].select()}});
+const bgSluit=()=>{if(bgEdit.size&&!confirm("Je hebt niet-opgeslagen wijzigingen. Toch sluiten?"))return;$("#bg-ovl").hidden=true};
+$("#bg-x").onclick=bgSluit;$("#bg-ovl").addEventListener("click",e=>{if(e.target.id==="bg-ovl")bgSluit()});
+$("#bg-go").onclick=async()=>{const m=$("#bg-msg");m.className="msg";
+  if(!state.db){m.className="msg err";m.textContent="De gedeelde opslag is niet bereikbaar.";return}
+  const tm=$("#bg-tm").value;if(!tm){m.className="msg err";m.textContent="Vul in tot en met welke datum deze uren gelden.";return}
+  const tmWijzig=state.werken.filter(w=>!bgEdit.has(w.id)&&beginDeel(w).tot&&w.beginTm!==tm);
+  if(!bgEdit.size&&!tmWijzig.length){m.className="msg";m.textContent="Er is niets gewijzigd.";return}
+  $("#bg-go").disabled=true;let ok=0,fout=0;const nu=new Date().toISOString();
+  for(const [id,e] of bgEdit){const w=state.werken.find(x=>x.id===id);if(!w)continue;const o=beginDeel(w),g=k=>e[k]!==undefined?bgVal(e[k]):o[k];
+    const p={beginBuiten:g("b"),beginWerkplaats:g("w"),beginMeerwerk:g("m"),beginTm:tm,beginOp:nu};
+    try{await state.db.collection(WERK_COL).doc(id).update(p);ok++}catch(err){fout++;if(err&&err.code==="invalid_argument")break}}
+  for(const w of tmWijzig){try{await state.db.collection(WERK_COL).doc(w.id).update({beginTm:tm})}catch(err){}}
+  $("#bg-go").disabled=false;
+  if(fout){m.className="msg err";m.textContent=`${ok} opgeslagen, ${fout} mislukt. Alleen kantoor kan dit wijzigen.`;return}
+  bgEdit.clear();renderBegin();m.className="msg ok";m.textContent=`${ok} project${ok===1?"":"en"} bijgewerkt. De uren tellen nu mee in het urenbudget.`};
+
 /* excel */
 $("#b-xlsx").addEventListener("click",async()=>{
   const m=$("#m-xlsx");m.className="msg";
@@ -2374,9 +2433,9 @@ $("#b-xlsx").addEventListener("click",async()=>{
   [...mm.entries()].sort().forEach(([k,g],i)=>pmd.push([MND[+k.slice(5,7)-1]+" "+k.slice(0,4),+g.b.toFixed(2),+g.i.toFixed(2),+g.k.toFixed(2),{f:`B${i+2}+C${i+2}+D${i+2}`}]));
   const ws4=XLSX.utils.aoa_to_sheet(pmd);ws4["!cols"]=[{wch:12},{wch:10},{wch:10},{wch:12}];XLSX.utils.book_append_sheet(wb,ws4,"Per maand");
   const per=new Map();state.uren.forEach(r=>{per.set(r.werkId,(per.get(r.werkId)||0)+(r.uren||0))});
-  const bd=[["Projectnummer","Project","Adres","Plaats","Status","Budget buiten","Gerealiseerd buiten","% buiten","Budget werkplaats","Gerealiseerd werkplaats","% werkplaats","Budget meerwerk","Gerealiseerd meerwerk","% meerwerk","Gerealiseerd kantoor","Urenbudget totaal","Gerealiseerd (totaal)","Resterend","% van budget","Oorspronkelijk budget","Budgetwijzigingen"]];
-  [...state.werken].sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true})).forEach((w,i)=>{const r=i+2,d=budDeel(w),g=budReal(w.id),pc=(B,G)=>({f:`IF(${B}${r}>0,${G}${r}/${B}${r},"")`});bd.push([w.nr,w.naam,w.adres||"",w.plaats||"",w.actief===false?"Afgesloten":"Lopend",d.verdeeld?d.b:"",+g.b.toFixed(2),pc("F","G"),d.verdeeld?d.w:"",+g.w.toFixed(2),pc("I","J"),d.verdeeld?d.m:"",+g.m.toFixed(2),pc("L","M"),+g.k.toFixed(2),d.tot,+g.tot.toFixed(2),{f:`P${r}-Q${r}`},pc("P","Q"),(w.budgetHistorie&&w.budgetHistorie.length?w.budgetHistorie[0].van:d.tot),(w.budgetHistorie||[]).map(x=>String(x.op).slice(0,10)+": "+x.van+" → "+x.naar+(x.deel?" ("+x.deel+")":"")).join("; ")])});
-  const ws5=XLSX.utils.aoa_to_sheet(bd);for(let i=2;i<=bd.length;i++){["H","K","N","S"].forEach(c=>{if(ws5[c+i])ws5[c+i].z="0%"});if(ws5["R"+i])ws5["R"+i].z="0.00"}ws5["!cols"]=[{wch:12},{wch:40},{wch:26},{wch:16},{wch:11},{wch:12},{wch:12},{wch:9},{wch:12},{wch:12},{wch:9},{wch:12},{wch:12},{wch:9},{wch:12},{wch:13},{wch:13},{wch:11},{wch:11},{wch:13},{wch:40}];XLSX.utils.book_append_sheet(wb,ws5,"Budget per project");
+  const bd=[["Projectnummer","Project","Adres","Plaats","Status","Budget buiten","Gerealiseerd buiten","% buiten","Budget werkplaats","Gerealiseerd werkplaats","% werkplaats","Budget meerwerk","Gerealiseerd meerwerk","% meerwerk","Gerealiseerd kantoor","Urenbudget totaal","Gerealiseerd (totaal)","Resterend","% van budget","Oorspronkelijk budget","Budgetwijzigingen","Waarvan uren tot nu toe","Tot nu toe t/m"]];
+  [...state.werken].sort((a,b)=>String(a.nr).localeCompare(String(b.nr),"nl",{numeric:true})).forEach((w,i)=>{const r=i+2,d=budDeel(w),g=budReal(w.id),pc=(B,G)=>({f:`IF(${B}${r}>0,${G}${r}/${B}${r},"")`});bd.push([w.nr,w.naam,w.adres||"",w.plaats||"",w.actief===false?"Afgesloten":"Lopend",d.verdeeld?d.b:"",+g.b.toFixed(2),pc("F","G"),d.verdeeld?d.w:"",+g.w.toFixed(2),pc("I","J"),d.verdeeld?d.m:"",+g.m.toFixed(2),pc("L","M"),+g.k.toFixed(2),d.tot,+g.tot.toFixed(2),{f:`P${r}-Q${r}`},pc("P","Q"),(w.budgetHistorie&&w.budgetHistorie.length?w.budgetHistorie[0].van:d.tot),(w.budgetHistorie||[]).map(x=>String(x.op).slice(0,10)+": "+x.van+" → "+x.naar+(x.deel?" ("+x.deel+")":"")).join("; "),(()=>{const bg=beginDeel(w);return bg.tot?+bg.tot.toFixed(2):""})(),beginDeel(w).tm?beginDeel(w).tm.split("-").reverse().join("-"):""])});
+  const ws5=XLSX.utils.aoa_to_sheet(bd);for(let i=2;i<=bd.length;i++){["H","K","N","S"].forEach(c=>{if(ws5[c+i])ws5[c+i].z="0%"});if(ws5["R"+i])ws5["R"+i].z="0.00"}ws5["!cols"]=[{wch:12},{wch:40},{wch:26},{wch:16},{wch:11},{wch:12},{wch:12},{wch:9},{wch:12},{wch:12},{wch:9},{wch:12},{wch:12},{wch:9},{wch:12},{wch:13},{wch:13},{wch:11},{wch:11},{wch:13},{wch:40},{wch:13},{wch:12}];XLSX.utils.book_append_sheet(wb,ws5,"Budget per project");
   const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
   const van=fl.van.value||rows[0].datum,tot=fl.tot.value||rows[rows.length-1].datum;
   try{await state.dl.save({filename:`Alwiti uren ${van} tm ${tot}.xlsx`,data:new Uint8Array(buf)});m.className="msg ok";m.textContent="Excel-bestand opgeslagen."}
@@ -2432,13 +2491,14 @@ function renderYear(){
   $("#ch-tab").innerHTML=`<thead><tr><th>Maand</th>${SER.map(s=>`<th class="num">${s[1]}</th>`).join("")}<th class="num">Totaal</th></tr></thead><tbody>${M.map((o,i)=>mt[i]?`<tr><td>${MND[i]}</td>${SER.map(s=>`<td class="num">${o[s[0]]?nl(o[s[0]]):""}</td>`).join("")}<td class="num"><b>${nl(mt[i])}</b></td></tr>`:"").join("")}</tbody>`;
   // budget per werk (alle jaren)
   const per=new Map();state.uren.filter(r=>r.werkId).forEach(r=>{const g=per.get(r.werkId)||{b:0,i:0,k:0};if(r.soort==="binnen")g.i+=r.uren||0;else if(r.soort==="kantoor")g.k+=r.uren||0;else g.b+=r.uren||0;per.set(r.werkId,g)});
+  state.werken.forEach(w=>{const bg=beginDeel(w);if(!bg.tot)return;const g=per.get(w.id)||{b:0,i:0,k:0};g.b+=bg.b+bg.m;g.i+=bg.w;g.bg=bg.tot;per.set(w.id,g)});
   const list=state.werken.filter(w=>budDeel(w).tot>0||per.has(w.id)).map(w=>({w,g:per.get(w.id)||{b:0,i:0,k:0}})).sort((a,b)=>String(a.w.nr).localeCompare(String(b.w.nr),"nl",{numeric:true}));
   if(!list.length){$("#ch-budget").innerHTML='<div class="empty">Nog geen projecten met budget of uren. Vul bij "Projecten beheren" een urenbudget in.</div>';return}
   const scale=Math.max(...list.map(x=>Math.max(budDeel(x.w).tot,x.g.b+x.g.i+x.g.k)))*1.05||1;
   $("#ch-budget").innerHTML=list.map(({w,g})=>{const tot=g.b+g.i+g.k,dl=budDeel(w),bud=dl.tot,pct=bud?tot/bud*100:null;
     const st=pct==null?'<span class="pill open">geen budget</span>':pct>100?`<span class="pill over">▲ ${Math.round(pct)}% over</span>`:pct>=85?`<span class="pill warn">● ${Math.round(pct)}%</span>`:`<span class="pill ok">✓ ${Math.round(pct)}%</span>`;
     return `<div class="bud-row"><div class="nm">${esc(w.nr)} ${esc(w.naam)}<small>${w.actief===false?"afgesloten":(w.plaats?esc(w.plaats):"lopend")} ${budHist(w)}</small></div>
-    <div class="track" title="Buiten ${nl(g.b)} u · Werkplaats ${nl(g.i)} u · Kantoor ${nl(g.k)} u"><div class="fill" style="width:${tot/scale*100}%">${g.b?`<span style="background:var(--c-buiten);flex:${g.b}"></span>`:""}${g.i?`<span style="background:var(--c-binnen);flex:${g.i}"></span>`:""}${g.k?`<span style="background:var(--c-kantoor);flex:${g.k}"></span>`:""}</div>${bud?`<div class="mark" style="left:${bud/scale*100}%"></div>`:""}</div>
+    <div class="track" title="Buiten ${nl(g.b)} u · Werkplaats ${nl(g.i)} u · Kantoor ${nl(g.k)} u${g.bg?` · waarvan ${nl(g.bg)} u tot nu toe (vóór de app)`:""}"><div class="fill" style="width:${tot/scale*100}%">${g.b?`<span style="background:var(--c-buiten);flex:${g.b}"></span>`:""}${g.i?`<span style="background:var(--c-binnen);flex:${g.i}"></span>`:""}${g.k?`<span style="background:var(--c-kantoor);flex:${g.k}"></span>`:""}</div>${bud?`<div class="mark" style="left:${bud/scale*100}%"></div>`:""}</div>
     <div class="val">${nl(tot)}${bud?" / "+bud.toLocaleString("nl-NL"):""} u ${st}</div>${dl.verdeeld?(()=>{const r=budReal(w.id),sc=Math.max(1,...BUD_D.map(([k])=>Math.max(dl[k],r[k])))*1.05;return `<div class="bud-sub">${BUD_D.map(([k,,l,c])=>`<span>${l}</span><div class="track"><div class="fill" style="width:${r[k]/sc*100}%;background:${c};opacity:.85"></div>${dl[k]?`<div class="mark" style="left:${dl[k]/sc*100}%"></div>`:""}</div><span class="val">${nl(r[k])} / ${dl[k].toLocaleString("nl-NL")} u ${budPill(r[k],dl[k])}</span>`).join("")}${r.k?`<span>Kantoor</span><span style="color:var(--muted)">geen budget</span><span class="val">${nl(r.k)} u</span>`:""}</div>`})():""}</div>`}).join("");
 }
 function barPath(x,y,w,h,r){r=Math.min(r,h,w/2);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
@@ -2511,10 +2571,12 @@ $("#imp-go").onclick=async()=>{
   let rows;try{const wb=XLSX.read(await f.arrayBuffer(),{type:"array"});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:"",raw:false})}catch(e){m.className="msg err";m.textContent="Dit bestand kan niet gelezen worden. Gebruik .xlsx of .csv.";return}
   const hi=rows.findIndex(r=>r.some(c=>String(c).trim()));if(hi<0){m.className="msg err";m.textContent="Het bestand is leeg.";return}
   const head=rows[hi].map(h=>String(h).toLowerCase().trim());
-  const iNr=colIdx(head,["werknummer","projectnummer","werknr","projectnr","nummer","nr","code"]),iNaam=colIdx(head,["naam","omschrijving","titel","project","werk"],[iNr]),iPl=colIdx(head,["plaats","woonplaats","stad","locatie"],[iNr,iNaam]),iAd=colIdx(head,["adres","straat","straatnaam"],[iNr,iNaam,iPl]),iBB=colIdx(head,["budget buiten","buiten"],[iNr,iNaam,iPl,iAd]),iBW=colIdx(head,["budget werkplaats","werkplaats","werkpl"],[iNr,iNaam,iPl,iAd,iBB]),iBM=colIdx(head,["budget meerwerk","meerwerk"],[iNr,iNaam,iPl,iAd,iBB,iBW]),iBu=colIdx(head,["urenbudget","totaal","budget","begroot","uren"],[iNr,iNaam,iPl,iAd,iBB,iBW,iBM]);
+  const iGB=colIdx(head,["tot nu toe buiten","begin buiten","gemaakt buiten"]),iGW=colIdx(head,["tot nu toe werkplaats","begin werkplaats","gemaakt werkplaats"],[iGB]),iGM=colIdx(head,["tot nu toe meerwerk","begin meerwerk","gemaakt meerwerk"],[iGB,iGW]),iGT=colIdx(head,["tot nu toe","beginstand"],[iGB,iGW,iGM]);
+  const GX=[iGB,iGW,iGM,iGT].filter(i=>i>=0);
+  const iNr=colIdx(head,["werknummer","projectnummer","werknr","projectnr","nummer","nr","code"],GX),iNaam=colIdx(head,["naam","omschrijving","titel","project","werk"],[iNr,...GX]),iPl=colIdx(head,["plaats","woonplaats","stad","locatie"],[iNr,iNaam,...GX]),iAd=colIdx(head,["adres","straat","straatnaam"],[iNr,iNaam,iPl,...GX]),iBB=colIdx(head,["budget buiten","buiten"],[iNr,iNaam,iPl,iAd,...GX]),iBW=colIdx(head,["budget werkplaats","werkplaats","werkpl"],[iNr,iNaam,iPl,iAd,iBB,...GX]),iBM=colIdx(head,["budget meerwerk","meerwerk"],[iNr,iNaam,iPl,iAd,iBB,iBW,...GX]),iBu=colIdx(head,["urenbudget","totaal","budget","begroot","uren"],[iNr,iNaam,iPl,iAd,iBB,iBW,iBM,...GX]);
   const getal=(r,i)=>i>=0&&String(r[i]??"").trim()?Number(String(r[i]).replace(/\./g,"").replace(",","."))||0:null;
   if(iNr<0||iNaam<0||iNr===iNaam){m.className="msg err";m.textContent="Kolommen 'Projectnummer' en 'Naam' niet gevonden in de eerste rij. Gebruik het sjabloon.";return}
-  const data=rows.slice(hi+1).map(r=>({nr:String(r[iNr]??"").trim(),naam:String(r[iNaam]??"").trim(),plaats:iPl>=0&&String(r[iPl]??"").trim()?String(r[iPl]).trim():null,adres:iAd>=0&&String(r[iAd]??"").trim()?String(r[iAd]).trim():null,budget:getal(r,iBu),bb:getal(r,iBB),bw:getal(r,iBW),bm:getal(r,iBM)})).filter(r=>r.nr&&r.naam);
+  const data=rows.slice(hi+1).map(r=>({nr:String(r[iNr]??"").trim(),naam:String(r[iNaam]??"").trim(),plaats:iPl>=0&&String(r[iPl]??"").trim()?String(r[iPl]).trim():null,adres:iAd>=0&&String(r[iAd]??"").trim()?String(r[iAd]).trim():null,budget:getal(r,iBu),bb:getal(r,iBB),bw:getal(r,iBW),bm:getal(r,iBM),gb:getal(r,iGB),gw:getal(r,iGW),gm:getal(r,iGM),gt:getal(r,iGT)})).filter(r=>r.nr&&r.naam);
   if(!data.length){m.className="msg err";m.textContent="Geen regels met projectnummer en naam gevonden.";return}
   const byNr=new Map(state.werken.map(w=>[String(w.nr).toLowerCase(),w]));const seen=new Set();
   $("#imp-go").disabled=true;let nieuw=0,upd=0,fout=0,i=0;
@@ -2523,6 +2585,8 @@ $("#imp-go").onclick=async()=>{
     m.textContent=`Bezig… ${i} van ${data.length}`;
     const patch={naam:r.naam};if(r.plaats!==null)patch.plaats=r.plaats;if(r.adres!==null)patch.adres=r.adres;{const ow=byNr.get(k),od=budDeel(ow);if(r.bb!==null||r.bw!==null||r.bm!==null){const v={b:r.bb!==null?r.bb:od.b,w:r.bw!==null?r.bw:od.w,m:r.bm!==null?r.bm:od.m,tot:r.budget!==null?r.budget:od.tot};Object.assign(patch,ow?budPatch(ow,v,"import"):budPatch(null,v))}
       else if(r.budget!==null&&!od.verdeeld)Object.assign(patch,ow?budPatch(ow,r.budget,"import"):{budget:r.budget})}
+    if(r.gb!==null||r.gw!==null||r.gm!==null){const ob=beginDeel(byNr.get(k));Object.assign(patch,{beginBuiten:r.gb!==null?Math.max(0,r.gb):ob.b,beginWerkplaats:r.gw!==null?Math.max(0,r.gw):ob.w,beginMeerwerk:r.gm!==null?Math.max(0,r.gm):ob.m,beginTm:new Date().toISOString().slice(0,10),beginOp:ts})}
+    else if(r.gt!==null)Object.assign(patch,{beginBuiten:Math.max(0,r.gt),beginWerkplaats:0,beginMeerwerk:0,beginTm:new Date().toISOString().slice(0,10),beginOp:ts});
     try{const w=byNr.get(k);if(w){const oud={};Object.keys(patch).forEach(f=>oud[f]=w[f]===undefined?null:w[f]);await state.db.collection(WERK_COL).doc(w.id).update(patch);logOud.push({id:w.id,oud});upd++}else{const ref=await state.db.collection(WERK_COL).add({plaats:"",budget:0,...patch,nr:r.nr,actief:true,aangemaakt:new Date().toISOString(),importId:ts});logNieuw.push(ref.id);nieuw++}}
     catch(e){fout++;if(e&&e.code==="invalid_argument"){break}}}
   m.className=fout?"msg err":"msg ok";m.textContent=`${nieuw} projecten toegevoegd, ${upd} bijgewerkt`+(fout?`, ${fout} mislukt (alleen kantoor/bewerkers kunnen importeren).`:".");

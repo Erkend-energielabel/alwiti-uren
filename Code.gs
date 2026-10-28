@@ -490,16 +490,19 @@ function bouwWerken_(docs) {
   Object.keys(docs).forEach(function (p) {
     var m = p.match(/^kantoor\/config\/werken\/([^\/]+)$/);
     if (!m || !docs[p].d) return;
-    var w = docs[p].d, g = real[m[1]] || { b: 0, w: 0, m: 0, k: 0 }, r2 = function (x) { return Math.round(x * 100) / 100; };
+    var w = docs[p].d, g0 = real[m[1]] || { b: 0, w: 0, m: 0, k: 0 }, r2 = function (x) { return Math.round(x * 100) / 100; };
+    // uren tot nu toe (ingevoerd door kantoor, niet als losse urenregels in de app) tellen mee
+    var gb = Math.max(0, Number(w.beginBuiten) || 0), gw = Math.max(0, Number(w.beginWerkplaats) || 0), gm = Math.max(0, Number(w.beginMeerwerk) || 0);
+    var g = { b: g0.b + gb, w: g0.w + gw, m: g0.m + gm, k: g0.k }, gtot = gb + gw + gm;
     var bb = Number(w.budgetBuiten) || 0, bw = Number(w.budgetWerkplaats) || 0, bm = Number(w.budgetMeerwerk) || 0, verd = bb || bw || bm;
     var tot = verd ? bb + bw + bm : (Number(w.budget) || 0), gt = g.b + g.w + g.m + g.k;
     rijen.push([w.nr || '', w.naam || '', w.plaats || '', w.adres || '',
       verd ? bb : '', r2(g.b), verd ? bw : '', r2(g.w), verd ? bm : '', r2(g.m), r2(g.k),
-      tot, r2(gt), tot ? r2(tot - gt) : '', tot ? Math.round(gt / tot * 100) + '%' : '', w.actief === false ? 'Nee' : 'Ja']);
+      tot, r2(gt), tot ? r2(tot - gt) : '', tot ? Math.round(gt / tot * 100) + '%' : '', w.actief === false ? 'Nee' : 'Ja', gtot ? r2(gtot) : '', gtot && w.beginTm ? String(w.beginTm).split('-').reverse().join('-') : '']);
   });
   rijen.sort(function (a, b) { return String(b[0]).localeCompare(String(a[0]), 'nl', { numeric: true }); });
   schrijfTab_(SH_WERK, ['Projectnummer', 'Naam', 'Plaats', 'Adres', 'Budget buiten', 'Gerealiseerd buiten', 'Budget werkplaats', 'Gerealiseerd werkplaats',
-    'Budget meerwerk', 'Gerealiseerd meerwerk', 'Gerealiseerd kantoor', 'Urenbudget totaal', 'Gerealiseerd totaal', 'Resterend', '% van budget', 'Actief'], rijen);
+    'Budget meerwerk', 'Gerealiseerd meerwerk', 'Gerealiseerd kantoor', 'Urenbudget totaal', 'Gerealiseerd totaal', 'Resterend', '% van budget', 'Actief', 'Waarvan uren tot nu toe', 'Tot nu toe t/m'], rijen);
 }
 
 function bouwBonnen_(docs) {
