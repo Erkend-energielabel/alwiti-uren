@@ -348,6 +348,7 @@ function write_(body) {
       data.docs[op.p] = { d: d, ts: ts };
       if (/^(uren|goedgekeurd)\/[^\/]+\/items\//.test(op.p) || /^(uren|goedgekeurd)\/[^\/]+$/.test(op.p)) overzicht = true;
       if (/^kantoor\/config\/werken\//.test(op.p)) { werken = true; overzicht = true; }
+      if (/^archief\/onderaanneming\//.test(op.p)) werken = true;
       if (/^uren\/[^\/]+\/bonnen\//.test(op.p) || /^kantoor\/config\/bonstatus\//.test(op.p)) bonnen = true;
       if (/^uren\/[^\/]+\/toolbox\//.test(op.p) || /^kantoor\/config\/tbsessies\//.test(op.p) || /^uren\/[^\/]+$/.test(op.p)) tb = true;
       if (/^uren\/[^\/]+\/(bestellingen|antwoorden)\//.test(op.p) || /^kantoor\/config\/bestelstatus\//.test(op.p)) best = true;
@@ -486,6 +487,14 @@ function bouwWerken_(docs) {
     var g = real[r.werkId] || (real[r.werkId] = { b: 0, w: 0, m: 0, k: 0 }), u = Number(r.uren) || 0;
     if (r.type === 'meerwerk') g.m += u; else if (r.soort === 'binnen') g.w += u; else if (r.soort === 'kantoor') g.k += u; else g.b += u;
   });
+  // uren onderaannemers: per project per week op één hoop (archief/onderaanneming/items)
+  var oa = {};
+  Object.keys(docs).forEach(function (p) {
+    var x = docs[p].d;
+    if (!x || !x.werkId || !/^archief\/onderaanneming\/items\/[^\/]+$/.test(p)) return;
+    var o = oa[x.werkId] || (oa[x.werkId] = { b: 0, w: 0, m: 0 });
+    o.b += Math.max(0, Number(x.b) || 0); o.w += Math.max(0, Number(x.w) || 0); o.m += Math.max(0, Number(x.m) || 0);
+  });
   var rijen = [];
   Object.keys(docs).forEach(function (p) {
     var m = p.match(/^kantoor\/config\/werken\/([^\/]+)$/);
@@ -493,16 +502,17 @@ function bouwWerken_(docs) {
     var w = docs[p].d, g0 = real[m[1]] || { b: 0, w: 0, m: 0, k: 0 }, r2 = function (x) { return Math.round(x * 100) / 100; };
     // uren tot nu toe (ingevoerd door kantoor, niet als losse urenregels in de app) tellen mee
     var gb = Math.max(0, Number(w.beginBuiten) || 0), gw = Math.max(0, Number(w.beginWerkplaats) || 0), gm = Math.max(0, Number(w.beginMeerwerk) || 0);
-    var g = { b: g0.b + gb, w: g0.w + gw, m: g0.m + gm, k: g0.k }, gtot = gb + gw + gm;
+    var o = oa[m[1]] || { b: 0, w: 0, m: 0 }, otot = o.b + o.w + o.m;
+    var g = { b: g0.b + gb + o.b, w: g0.w + gw + o.w, m: g0.m + gm + o.m, k: g0.k }, gtot = gb + gw + gm;
     var bb = Number(w.budgetBuiten) || 0, bw = Number(w.budgetWerkplaats) || 0, bm = Number(w.budgetMeerwerk) || 0, verd = bb || bw || bm;
     var tot = verd ? bb + bw + bm : (Number(w.budget) || 0), gt = g.b + g.w + g.m + g.k;
     rijen.push([w.nr || '', w.naam || '', w.plaats || '', w.adres || '',
       verd ? bb : '', r2(g.b), verd ? bw : '', r2(g.w), verd ? bm : '', r2(g.m), r2(g.k),
-      tot, r2(gt), tot ? r2(tot - gt) : '', tot ? Math.round(gt / tot * 100) + '%' : '', w.actief === false ? 'Nee' : 'Ja', gtot ? r2(gtot) : '', gtot && w.beginTm ? String(w.beginTm).split('-').reverse().join('-') : '']);
+      tot, r2(gt), tot ? r2(tot - gt) : '', tot ? Math.round(gt / tot * 100) + '%' : '', w.actief === false ? 'Nee' : 'Ja', gtot ? r2(gtot) : '', gtot && w.beginTm ? String(w.beginTm).split('-').reverse().join('-') : '', otot ? r2(otot) : '']);
   });
   rijen.sort(function (a, b) { return String(b[0]).localeCompare(String(a[0]), 'nl', { numeric: true }); });
   schrijfTab_(SH_WERK, ['Projectnummer', 'Naam', 'Plaats', 'Adres', 'Budget buiten', 'Gerealiseerd buiten', 'Budget werkplaats', 'Gerealiseerd werkplaats',
-    'Budget meerwerk', 'Gerealiseerd meerwerk', 'Gerealiseerd kantoor', 'Urenbudget totaal', 'Gerealiseerd totaal', 'Resterend', '% van budget', 'Actief', 'Waarvan uren tot nu toe', 'Tot nu toe t/m'], rijen);
+    'Budget meerwerk', 'Gerealiseerd meerwerk', 'Gerealiseerd kantoor', 'Urenbudget totaal', 'Gerealiseerd totaal', 'Resterend', '% van budget', 'Actief', 'Waarvan uren tot nu toe', 'Tot nu toe t/m', 'Waarvan onderaannemers'], rijen);
 }
 
 function bouwBonnen_(docs) {
