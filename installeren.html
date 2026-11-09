@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Alwiti uren installeren</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#c8102e">
+<link rel="icon" type="image/png" href="favicon-64.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--red:#c8102e;--fg:#1a1a1a;--muted:#5f6368;--line:#e3e3e3;--bg:#f6f6f6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--red);padding-bottom:14px;margin-bottom:22px}
+header img{height:56px}
+h1{font-size:24px;margin:0;line-height:1.2}
+header p{margin:2px 0 0;color:var(--muted)}
+.open{display:block;text-align:center;background:var(--red);color:#fff;text-decoration:none;font-weight:700;font-size:18px;padding:16px;border-radius:10px;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card h2{font-size:17px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+ol{margin:0;padding-left:20px}li{margin:6px 0}
+.qr{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.qr img{width:150px;height:150px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.hint{color:var(--muted);font-size:14px}
+.inlog{margin-top:14px}
+code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:14px;word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+  <header><img src="icon-192.png" alt="Alwiti bv"><div><h1>Alwiti uren op je telefoon</h1><p>Uren invullen, materiaal bestellen, bonnetjes en meer</p></div></header>
+
+  <a class="open" href="./">Open de app</a>
+
+  <div class="grid">
+    <section class="card">
+      <h2>📱 iPhone</h2>
+      <ol>
+        <li>Open de link in <b>Safari</b>.</li>
+        <li>Tik onderaan op <b>Delen</b> (vierkantje met pijltje omhoog).</li>
+        <li>Kies <b>Zet op beginscherm</b> en tik op <b>Voeg toe</b>.</li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>🤖 Android</h2>
+      <ol>
+        <li>Open de link in <b>Chrome</b>.</li>
+        <li>Tik op <b>App installeren</b> in de app, of op de drie puntjes <b>⋮</b> en dan <b>App installeren</b> of <b>Toevoegen aan startscherm</b>.</li>
+        <li>Bevestig met <b>Installeren</b>.</li>
+      </ol>
+    </section>
+    <section class="card">
+      <h2>💻 Computer</h2>
+      <ol>
+        <li>Open de link in <b>Chrome</b> of <b>Edge</b>.</li>
+        <li>Klik in de adresbalk op het installeer-icoontje, of op <b>App installeren</b> rechtsboven in de app.</li>
+        <li>De app staat daarna in het startmenu en op je bureaublad.</li>
+      </ol>
+    </section>
+  </div>
+
+  <section class="card inlog">
+    <h2>🔑 Inloggen</h2>
+    <p style="margin:0">Kies je naam en vul je <b>pincode</b> in. Die krijg je van kantoor. Na 5 keer een verkeerde pincode gaat je account op slot; kantoor kan het weer vrijgeven.</p>
+  </section>
+
+  <section class="card inlog qr">
+    <img src="qr-app.png" alt="QR-code naar de app">
+    <div><b>Scan met je telefoon</b><p class="hint" style="margin:4px 0 0">Of gebruik deze link:<br><code>https://erkend-energielabel.github.io/alwiti-uren/</code></p></div>
+  </section>
+</main>
+</body>
+</html>
