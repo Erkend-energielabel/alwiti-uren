@@ -158,15 +158,22 @@ function login_(body) {
 function setPin_(body) {
   var me = auth_(body);
   if (!kantoor_(me)) throw fout_('Alleen kantoor kan pincodes instellen.', 'denied');
-  var mid = String(body.mid || '').trim(), naam = String(body.naam || '').trim();
+  var mid = String(body.mid || '').trim(), naam = String(body.naam || '').replace(/\s+/g, ' ').trim();
   var pin = pinStr_(body.nieuwePin), rol = body.rol === 'kantoor' ? 'kantoor' : null;
   if (!mid || !SEG.test(mid)) throw fout_('Onbekende monteur.');
   if (pin && !/^\d{4,6}$/.test(pin)) throw fout_('Een pincode is 4 tot 6 cijfers.');
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var sh = sheet_(SH_MON);
-    var m = monteurs_().filter(function (x) { return x.id === mid; })[0];
-    if (m) {
+    var alle = monteurs_(), m = alle.filter(function (x) { return x.id === mid; })[0];
+    if (naam && alle.some(function (x) { return x.id !== mid && String(x.naam).trim().toLowerCase() === naam.toLowerCase(); }))
+      throw fout_('Er is al een monteur met de naam ' + naam + '.');
+    if (body.alleenNaam === true) {
+      // alleen de naam wijzigen; pincode en rol blijven zoals ze zijn
+      if (!m) throw fout_('Onbekende monteur.');
+      if (!naam) throw fout_('Vul een naam in.');
+      sh.getRange(m.rij, 1).setValue(naam);
+    } else if (m) {
       sh.getRange(m.rij, 2).setNumberFormat('@').setValue(pin);
       if (pin) { sh.getRange(m.rij, 5).setValue(''); PropertiesService.getScriptProperties().deleteProperty('fout:' + mid); }
       if (naam) sh.getRange(m.rij, 1).setValue(naam);

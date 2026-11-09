@@ -571,6 +571,7 @@ nav.tabs button[aria-selected="true"] .rdot{box-shadow:0 0 0 2px var(--red-ink)}
 
 /* ---------- urenlijsten per monteur (A4) ---------- */
 .oatab td input:not(.oanm){width:84px!important;min-width:0!important}.oatab td input.oanm{width:100%;min-width:160px;text-align:left!important;font-weight:400!important;font-size:14px!important}.oatab th.num:nth-last-child(-n+2),.oatab td.num:nth-last-child(-n+2){white-space:nowrap}
+.knaam{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px}.knaam label{flex:1;min-width:200px}
 .pllijst{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px 12px;max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:6px;padding:8px}
 .pllijst label,#pl-ovl label.chk{display:flex!important;flex-direction:row!important;gap:8px;align-items:center;font-weight:400;text-transform:none;letter-spacing:0;font-size:14px;color:var(--fg)}.pllijst input,#pl-ovl label.chk input{width:auto;height:auto;margin:0}
 #pl-out{display:none}
@@ -1363,7 +1364,7 @@ const Store=(()=>{
     for(const x of r.docs){if(pend.has(x.p))continue;if(x.d==null){if(docs.has(x.p)){docs.delete(x.p);notify(x.p)}}else{docs.set(x.p,x.d);notify(x.p)}}
     since=r.now||since;
     if(r.monteurs){Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}
-    if(r.me&&sess&&(r.me.naam!==sess.naam||r.me.rol!==sess.rol||!!r.me.eigenaar!==!!sess.eigenaar)){const herlaad=r.me.rol!==sess.rol||!!r.me.eigenaar!==!!sess.eigenaar;sess={...sess,...r.me};lss(SKEY,JSON.stringify(sess));if(herlaad)location.reload()}
+    if(r.me&&sess&&(r.me.naam!==sess.naam||r.me.rol!==sess.rol||!!r.me.eigenaar!==!!sess.eigenaar)){const herlaad=r.me.rol!==sess.rol||!!r.me.eigenaar!==!!sess.eigenaar,nwNaam=r.me.naam&&r.me.naam!==sess.naam;sess={...sess,...r.me};lss(SKEY,JSON.stringify(sess));if(herlaad)location.reload();else if(nwNaam)window.dispatchEvent(new CustomEvent("alw-naam",{detail:r.me.naam}))}
     try{lss(ckey(),JSON.stringify({since,docs:[...docs]}))}catch(e){}
     if(!ready){ready=true;readyCbs.splice(0).forEach(f=>f())}
     status(true);
@@ -1457,6 +1458,10 @@ const ALW=(()=>{
     const kantoor=s.rol==="kantoor";
     const n=q("#i-naam");if(n){n.value=s.naam;try{localStorage.setItem("alw-naam",s.naam)}catch(e){}if(!kantoor)n.readOnly=true}
     const uit=q("#b-uit");if(uit){uit.hidden=false;uit.onclick=()=>Store.logout()}
+    /* naam door kantoor gewijzigd: eigen naam meteen bijwerken */
+    const zetNaam=nm=>{const f=q("#i-naam");if(!f||!nm||nm===f.value)return;s.naam=nm;f.value=nm;try{localStorage.setItem("alw-naam",nm)}catch(e){}f.dispatchEvent(new Event("change"));const w=q("#who");if(w&&!kantoor)w.textContent=nm};
+    window.addEventListener("alw-naam",e=>zetNaam(e.detail));
+    window.addEventListener("alw-monteurs",()=>{const me=(Store.monteurs||[]).find(x=>x.id===s.id);if(me)zetNaam(me.naam)});
     return s});
   let dbP=null;
   async function use(naam){
@@ -1490,6 +1495,7 @@ const ALW=(()=>{
   async function verwijderLogin(mid){try{const r=await Store.call("verwijderMonteur",{mid});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}catch(e){Store.toast("Inlog niet verwijderd: "+e.message,true)}}
   function isKantoor(id){const m=info(id);return !!(m&&m.rol==="kantoor")}
   /* nieuwe monteur direct met pincode in de Sheet zetten (meteen bij de server, zodat een fout direct zichtbaar is) */
+  async function hernoemLogin(mid,naam){const r=await Store.call("setPin",{mid,naam,alleenNaam:true});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}
   async function nieuwePin(mid,naam,pin){const r=await Store.call("setPin",{mid,naam,nieuwePin:pin});Store.monteurs=r.monteurs;window.dispatchEvent(new Event("alw-monteurs"))}
   /* document openen: ophalen uit de Sheet en tonen (PDF in nieuw tabblad, anders downloaden) */
   async function openBestand(fid,naam,type){const w=window.open("","_blank");if(w){try{w.document.title=naam||"Document";w.document.body.innerHTML='<p style="font:16px system-ui;padding:20px">Document laden…</p>'}catch(e){}}
@@ -1497,7 +1503,7 @@ const ALW=(()=>{
       const blob=new Blob([buf],{type:type||r.data.slice(5,r.data.indexOf(";"))}),url=URL.createObjectURL(blob);
       if(w&&!w.closed)w.location.href=url;else{const a=document.createElement("a");a.href=url;a.download=naam||"document";document.body.appendChild(a);a.click();a.remove()}setTimeout(()=>URL.revokeObjectURL(url),120000)}
     catch(e){if(w&&!w.closed)w.close();Store.toast("Openen mislukt: "+e.message,true)}}
-  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor,openBestand,nieuwePin};
+  return{heeftLogin,slotLabel,pinRij,verwijderLogin,isKantoor,openBestand,nieuwePin,hernoemLogin};
 })();
 
 /* ---------- app installeren (beginscherm) ---------- */
@@ -2708,7 +2714,8 @@ function renderKoppel(){
   const n=cnt(kSel);
   const keep=document.activeElement&&document.activeElement.id==="k-zoek";
   const isB=B.has(mon.id),aantal=state.uren.filter(r=>r.monteur===mon.monteur).length;
-  p.innerHTML=`<div class="mstat${isB?" isb":""}"><div><b>${isB?"Geblokkeerd":"Actief"}</b><small>${isB?"Kan geen uren meer invullen en staat niet meer in weekstaten, aanlevering en ranglijst. Zijn uren blijven bewaard.":"Kan uren invullen."}</small></div>
+  p.innerHTML=`<div class="knaam"><label>Naam<input id="k-naam" value="${esc(mon.monteur)}" autocomplete="off" maxlength="60"></label><button class="btn ghost sm" type="button" id="k-naamok">Naam wijzigen</button></div>
+   <div class="mstat${isB?" isb":""}"><div><b>${isB?"Geblokkeerd":"Actief"}</b><small>${isB?"Kan geen uren meer invullen en staat niet meer in weekstaten, aanlevering en ranglijst. Zijn uren blijven bewaard.":"Kan uren invullen."}</small></div>
      <div class="toolbar"><button class="btn ${isB?"":"ghost "}sm" type="button" id="k-blok">${isB?"Deblokkeren":"Blokkeren"}</button><button class="btn ghost sm" type="button" id="k-del"${aantal?' disabled title="Heeft uren; blokkeer in plaats van verwijderen"':""}>Verwijderen</button></div>
      ${aantal?`<small class="hint" style="flex-basis:100%">Verwijderen kan niet: ${mon.monteur} heeft ${aantal} urenregels. Blokkeer hem; zijn uren blijven dan bewaard voor de administratie.</small>`:""}</div>
    <label class="schak"><input type="checkbox" id="k-reis" role="switch" ${reisAan(mon.id)?"checked":""} ${state.cfg&&state.cfg.reistijd?"disabled":""}><span class="sw" aria-hidden="true"></span><span><b>Reistijd invullen</b><small>${state.cfg&&state.cfg.reistijd?"Staat aan voor alle monteurs (zie Instellingen hierboven).":"Aan: deze monteur vult per dag zijn reistijd in."}</small></span></label>
@@ -2746,7 +2753,30 @@ $("#k-panel").addEventListener("change",async e=>{if(e.target.id==="k-vjd"||e.ta
     try{await state.db.doc("kantoor/config").set({...state.cfg,reisMonteurs:[...set]})}catch(err){e.target.checked=!aan}return}if(e.target.id==="k-plek"){const v=e.target.value,mon=(state.monteurs||[]).find(x=>x.id===kSel);try{await state.db.doc(UREN_COL+"/"+kSel).update({plek:v});$("#k-msg").className="msg ok";$("#k-msg").textContent=`${mon?mon.monteur:"De monteur"} boekt standaard op ${v==="binnen"?"werkplaats":v==="kantoor"?"kantoor":"buiten"}.`}catch(err){$("#k-msg").className="msg err";$("#k-msg").textContent="Opslaan mislukt."}return}
   if(e.target.id==="k-norm"){const v=Number(e.target.value)||0;try{await state.db.doc(UREN_COL+"/"+kSel).update({weekUren:v});$("#k-msg").className="msg ok";$("#k-msg").textContent=v?"Standaard week: "+nl(v)+" uur.":"Standaard week teruggezet."}catch(err){$("#k-msg").className="msg err";$("#k-msg").textContent="Opslaan mislukt."}return}const id=e.target.dataset&&e.target.dataset.kw;if(!id)return;const w=state.werken.find(x=>x.id===id);
   try{await koppel(w,e.target.checked)}catch(err){e.target.checked=!e.target.checked;$("#k-msg").className="msg err";$("#k-msg").textContent="Opslaan mislukt. Alleen kantoor kan koppelen."}});
+/* naam van een monteur achteraf wijzigen: inlog in de Sheet en alle gegevens met zijn naam gaan mee */
+async function hernoemMonteur(id,nieuw){const mon=(state.monteurs||[]).find(x=>x.id===id);if(!mon)throw new Error("Monteur niet gevonden.");const oud=mon.monteur;
+  const lc=s=>String(s||"").trim().toLowerCase();if(lc(nieuw)!==lc(oud)&&((state.monteurs||[]).some(x=>x.id!==id&&lc(x.monteur)===lc(nieuw))||state.uren.some(r=>lc(r.monteur)===lc(nieuw)&&r.uid!==id)))throw new Error(`Er is al een monteur met de naam ${nieuw}.`);
+  if(typeof ALW!=="undefined"&&ALW.hernoemLogin&&ALW.heeftLogin&&ALW.heeftLogin(id))await ALW.hernoemLogin(id,nieuw);
+  const zelf=x=>x.monteur===oud&&(!x.uid||x.uid===id||(x._path||"").split("/")[1]===id);let n=0;const upd=async(path,data)=>{await state.db.doc(path).update(data);n++};
+  await state.db.doc(UREN_COL+"/"+id).update({monteur:nieuw});
+  for(const r of state.uren.filter(zelf))await upd(r._path,{monteur:nieuw});
+  if(state.uren.some(r=>(r._path||"").startsWith(GOED+"/"+id+"/")))try{await state.db.doc(GOED+"/"+id).set({monteur:nieuw})}catch(e){}
+  for(const b of (state.bonnen||[]).filter(zelf))await upd(b._path,{monteur:nieuw});
+  for(const b of (state.bestellingen||[]).filter(zelf))await upd(b._path,{monteur:nieuw});
+  for(const t of Object.values(state.tbAf||{}))if(t&&t._path&&t._path.split("/")[1]===id&&(t.monteur===oud||t.naam===oud))await upd(t._path,t.naam===oud?{naam:nieuw}:{monteur:nieuw});
+  if(state.sociaal&&state.sociaal[id]&&state.sociaal[id].naam===oud)try{await state.db.doc("sociaal/"+id).update({naam:nieuw})}catch(e){}
+  if(state.verj&&state.verj.lijst&&state.verj.lijst[id])try{await state.db.doc("kantoor/config/extra/verjaardagen").set({...state.verj,lijst:{...state.verj.lijst,[id]:{...state.verj.lijst[id],naam:nieuw}}})}catch(e){}
+  /* archief: weekstaten en te-laat staan op naam; verplaatsen naar de nieuwe naam */
+  for(const a of (state.archief||[]).filter(a=>a.monteur===oud)){const {id:aid,...d}=a,nid=slug(nieuw)+aid.slice(slug(oud).length);await state.db.collection("archief/weekstaten/items").doc(nid).set({...d,monteur:nieuw,monteurId:d.monteurId||id});if(nid!==aid)await state.db.collection("archief/weekstaten/items").doc(aid).delete();n++}
+  for(const [tid,d] of Object.entries(state.telaat||{}))if(tid.startsWith(slug(oud)+"-")&&(!d.monteur||d.monteur===oud)){const nid=slug(nieuw)+tid.slice(slug(oud).length);await state.db.collection("archief/telaat/items").doc(nid).set(d.monteur?{...d,monteur:nieuw}:d);if(nid!==tid)await state.db.collection("archief/telaat/items").doc(tid).delete();n++}
+  return n}
+$("#k-panel").addEventListener("keydown",e=>{if(e.target.id==="k-naam"&&e.key==="Enter"){e.preventDefault();$("#k-naamok").click()}});
 $("#k-panel").addEventListener("click",async e=>{
+  if(e.target.id==="k-naamok"){const m=$("#k-msg"),mon=(state.monteurs||[]).find(x=>x.id===kSel),nieuw=$("#k-naam").value.replace(/\s+/g," ").trim();if(!mon)return;
+    if(!nieuw){m.className="msg err";m.textContent="Vul een naam in.";return}if(nieuw===mon.monteur){m.className="msg";m.textContent="De naam is niet gewijzigd.";return}
+    if(!await vraag("Naam wijzigen?",`${mon.monteur} wordt ${nieuw}. Hij logt voortaan in met deze naam (zijn pincode blijft hetzelfde). Al zijn uren, weekstaten, bonnetjes en bestellingen gaan mee.`,"Ja, wijzigen"))return;
+    e.target.disabled=true;m.className="msg";m.textContent="Bezig…";
+    try{const n=await hernoemMonteur(kSel,nieuw),t=`Naam gewijzigd naar ${nieuw}. ${n} regel${n===1?"":"s"} omgezet.`;const zet=()=>{const k=$("#k-msg");if(k){k.className="msg ok";k.textContent=t}};zet();setTimeout(zet,400);setTimeout(zet,1500)}catch(err){m.className="msg err";m.textContent="Naam wijzigen mislukt: "+(err&&err.message||"probeer het opnieuw.")}finally{e.target.disabled=false}return}
   if(e.target.id==="k-blok"){const set=new Set(state.cfg.geblokkeerd||[]),aan=!set.has(kSel),mn=((state.monteurs||[]).find(x=>x.id===kSel)||{}).monteur||"deze monteur";
     if(!await vraag(aan?"Monteur blokkeren?":"Monteur deblokkeren?",aan?`Weet je zeker dat je ${mn} wilt blokkeren? Hij kan dan geen uren meer invullen. Zijn uren blijven bewaard.`:`Weet je zeker dat je ${mn} weer actief wilt maken? Hij kan dan weer uren invullen.`,aan?"Ja, blokkeren":"Ja, deblokkeren"))return;
     aan?set.add(kSel):set.delete(kSel);e.target.disabled=true;
